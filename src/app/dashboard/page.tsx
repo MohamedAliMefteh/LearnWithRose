@@ -1,0 +1,159 @@
+"use client";
+
+import { useState } from "react";
+import { ProtectedRoute } from "@/components/auth/protected-route";
+import { DashboardNavbar } from "@/components/dashboard/dashboard-navbar";
+import { CoursesManagement } from "@/components/dashboard/courses-management";
+import { BioManagement } from "@/components/dashboard/bio-management";
+import { DigitalResourcesManagement } from "@/components/dashboard/digital-resources-management";
+import { ReviewsManagement } from "@/components/dashboard/reviews-management";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { User, BookOpen, Download, Star } from "lucide-react";
+
+type ActiveSection = "overview" | "bio" | "courses" | "resources" | "reviews";
+
+export default function DashboardPage() {
+  const [activeSection, setActiveSection] = useState<ActiveSection>("overview");
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case "bio":
+        return <BioManagement />;
+      case "courses":
+        return <CoursesManagement />;
+      case "resources":
+        return <DigitalResourcesManagement />;
+      case "reviews":
+        return <ReviewsManagement />;
+      default:
+        return (
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => setActiveSection("bio")}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Bio Information</CardTitle>
+                <User className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">Profile</div>
+                <p className="text-xs text-muted-foreground">
+                  Manage your bio data
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => setActiveSection("courses")}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Courses</CardTitle>
+                <BookOpen className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">Manage</div>
+                <p className="text-xs text-muted-foreground">
+                  Add, edit, and delete courses
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => setActiveSection("resources")}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Digital Resources</CardTitle>
+                <Download className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">Library</div>
+                <p className="text-xs text-muted-foreground">
+                  Manage downloadable content
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => setActiveSection("reviews")}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Reviews</CardTitle>
+                <Star className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">Testimonials</div>
+                <p className="text-xs text-muted-foreground">
+                  Manage student reviews
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        );
+    }
+  };
+
+  return (
+    <ProtectedRoute>
+      <div className="min-h-screen bg-gray-50">
+        <DashboardNavbar />
+        <main className="container mx-auto px-4 py-8">
+          <div className="space-y-8">
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+                <p className="text-gray-600 mt-2">
+                  Manage your website content and settings
+                </p>
+              </div>
+              {activeSection !== "overview" && (
+                <Button variant="outline" onClick={() => setActiveSection("overview")}>
+                  Back to Overview
+                </Button>
+              )}
+            </div>
+
+            {activeSection === "overview" && (
+              <div className="flex gap-4 mb-6">
+                <Button
+                  variant="outline"
+                  onClick={() => setActiveSection("bio")}
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  Bio
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setActiveSection("courses")}
+                >
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  Courses
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setActiveSection("resources")}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Resources
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setActiveSection("reviews")}
+                >
+                  <Star className="h-4 w-4 mr-2" />
+                  Reviews
+                </Button>
+              </div>
+            )}
+
+            {renderContent()}
+          </div>
+        </main>
+      </div>
+    </ProtectedRoute>
+  );
+}
