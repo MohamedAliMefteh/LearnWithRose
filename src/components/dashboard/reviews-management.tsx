@@ -224,7 +224,7 @@ export function ReviewsManagement() {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDeleteReview(review.id)}>
+                        <AlertDialogAction onClick={() => handleDeleteReview(String(review.id))}>
                           Delete
                         </AlertDialogAction>
                       </AlertDialogFooter>
