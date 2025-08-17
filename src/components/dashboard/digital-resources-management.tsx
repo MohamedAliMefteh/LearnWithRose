@@ -315,7 +315,7 @@ export function DigitalResourcesManagement() {
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                          onClick={() => handleDeleteResource(resource.id)}
+                          onClick={() => handleDeleteResource(String(resource.id))}
                           className="bg-red-600 hover:bg-red-700"
                         >
                           Delete
