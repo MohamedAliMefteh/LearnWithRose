@@ -14,14 +14,14 @@ export function getDigitalResources(): DigitalResource[] {
 export function addDigitalResource(resource: Omit<DigitalResource, "id">): DigitalResource {
   const newResource: DigitalResource = {
     ...resource,
-    id: (digitalResourcesData.length + 1).toString(),
+    id: digitalResourcesData.length + 1,
   };
   digitalResourcesData.push(newResource);
   return newResource;
 }
 
 export function updateDigitalResource(id: string, resource: Partial<DigitalResource>): DigitalResource | null {
-  const index = digitalResourcesData.findIndex(r => r.id === id);
+  const index = digitalResourcesData.findIndex(r => r.id === Number(id));
   if (index === -1) return null;
   
   digitalResourcesData[index] = { ...digitalResourcesData[index], ...resource };
@@ -29,7 +29,7 @@ export function updateDigitalResource(id: string, resource: Partial<DigitalResou
 }
 
 export function deleteDigitalResource(id: string): boolean {
-  const index = digitalResourcesData.findIndex(r => r.id === id);
+  const index = digitalResourcesData.findIndex(r => r.id === Number(id));
   if (index === -1) return false;
   
   digitalResourcesData.splice(index, 1);

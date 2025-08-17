@@ -14,14 +14,14 @@ export function getReviews(): Review[] {
 export function addReview(review: Omit<Review, "id">): Review {
   const newReview: Review = {
     ...review,
-    id: (reviewsData.length + 1).toString(),
+    id: reviewsData.length + 1,
   };
   reviewsData.push(newReview);
   return newReview;
 }
 
 export function updateReview(id: string, review: Partial<Review>): Review | null {
-  const index = reviewsData.findIndex(r => r.id === id);
+  const index = reviewsData.findIndex(r => r.id === Number(id));
   if (index === -1) return null;
   
   reviewsData[index] = { ...reviewsData[index], ...review };
@@ -29,7 +29,7 @@ export function updateReview(id: string, review: Partial<Review>): Review | null
 }
 
 export function deleteReview(id: string): boolean {
-  const index = reviewsData.findIndex(r => r.id === id);
+  const index = reviewsData.findIndex(r => r.id === Number(id));
   if (index === -1) return false;
   
   reviewsData.splice(index, 1);
