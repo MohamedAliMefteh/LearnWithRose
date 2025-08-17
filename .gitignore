@@ -27,3 +27,28 @@ dist-ssr
 !.env
 
 .next/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Build output
+.turbo/
+.vercel/
+out/
+.next/
+coverage/
+*.lcov
+
+# TypeScript build info
+tsconfig.tsbuildinfo
+
+# OS-specific files
+Thumbs.db
+ehthumbs.db
+
+# Sensitive keys/certs
+*.pem
+*.key
+*.crt

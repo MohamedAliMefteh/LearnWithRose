@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const EXTERNAL_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://learn-with-rose-backend.onrender.com';
+const EXTERNAL_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function GET() {
   try {
