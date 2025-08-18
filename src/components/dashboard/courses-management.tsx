@@ -137,16 +137,11 @@ export function CoursesManagement() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
             <div>
               <CardTitle className="flex items-center gap-2">
                 Courses Management
-                {token && (
-                  <div className="flex items-center text-sm text-green-600">
-                    <Shield className="h-4 w-4 mr-1" />
-                    Authenticated
-                  </div>
-                )}
+              
               </CardTitle>
               <p className="text-gray-600 mt-2">
                 Manage the courses displayed on your homepage
@@ -155,7 +150,10 @@ export function CoursesManagement() {
                 )}
               </p>
             </div>
-            <Button onClick={handleAddCourse}>
+            <Button
+              onClick={handleAddCourse}
+              className="w-full md:w-auto mt-4 md:mt-0"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Course
             </Button>

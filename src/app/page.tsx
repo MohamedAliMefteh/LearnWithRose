@@ -165,11 +165,94 @@ export default function HomePage() {
 
   if (isLoading) {
     return (
-  <div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/10 to-accent/10 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/10 to-accent/10">
+        {/* Navigation Skeleton */}
+        <div className="h-16 w-full bg-white/80 border-b border-primary/20 animate-pulse" />
+        {/* Hero Section Skeleton */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8">
+              <div className="h-8 w-48 bg-gray-200 rounded animate-pulse mb-4" />
+              <div className="h-16 w-full bg-gray-200 rounded animate-pulse mb-4" />
+              <div className="h-6 w-2/3 bg-gray-200 rounded animate-pulse mb-4" />
+              <div className="flex gap-4">
+                <div className="h-12 w-32 bg-gray-200 rounded animate-pulse" />
+                <div className="h-12 w-32 bg-gray-200 rounded animate-pulse" />
+              </div>
+              <div className="flex items-center space-x-8 pt-4">
+                <div className="h-8 w-20 bg-gray-200 rounded animate-pulse" />
+                <div className="h-8 w-20 bg-gray-200 rounded animate-pulse" />
+                <div className="h-8 w-20 bg-gray-200 rounded animate-pulse" />
+              </div>
+            </div>
+            <div className="relative max-w-lg mx-auto">
+              <div className="w-64 h-64 bg-gray-200 rounded-full animate-pulse mx-auto" />
+            </div>
+          </div>
+        </section>
+        {/* About Section Skeleton */}
+        <section className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="h-10 w-1/2 bg-gray-200 rounded animate-pulse mx-auto mb-8" />
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="h-40 bg-gray-200 rounded animate-pulse" />
+              <div className="h-40 bg-gray-200 rounded animate-pulse" />
+              <div className="h-40 bg-gray-200 rounded animate-pulse" />
+            </div>
+          </div>
+        </section>
+        {/* Courses Section Skeleton */}
+        <section className="py-20 bg-gradient-to-br from-primary/5 via-secondary/10 to-accent/10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="h-10 w-1/2 bg-gray-200 rounded animate-pulse mx-auto mb-8" />
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="h-48 bg-gray-200 rounded animate-pulse" />
+              <div className="h-48 bg-gray-200 rounded animate-pulse" />
+            </div>
+          </div>
+        </section>
+        {/* Resources Section Skeleton */}
+        <section className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="h-10 w-1/2 bg-gray-200 rounded animate-pulse mx-auto mb-8" />
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="h-32 bg-gray-200 rounded animate-pulse" />
+              <div className="h-32 bg-gray-200 rounded animate-pulse" />
+              <div className="h-32 bg-gray-200 rounded animate-pulse" />
+            </div>
+          </div>
+        </section>
+        {/* Testimonials Section Skeleton */}
+        <section className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="h-10 w-1/2 bg-gray-200 rounded animate-pulse mx-auto mb-8" />
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="h-32 bg-gray-200 rounded animate-pulse" />
+              <div className="h-32 bg-gray-200 rounded animate-pulse" />
+              <div className="h-32 bg-gray-200 rounded animate-pulse" />
+            </div>
+          </div>
+        </section>
+        {/* Contact Form Skeleton */}
+        <section className="py-20 bg-gradient-to-br from-primary/5 via-secondary/10 to-accent/10">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="h-10 w-1/2 bg-gray-200 rounded animate-pulse mx-auto mb-8" />
+            <div className="h-96 bg-gray-200 rounded animate-pulse" />
+          </div>
+        </section>
+        {/* Footer Skeleton */}
+        <footer className="bg-gray-900 text-white py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid md:grid-cols-4 gap-8">
+              <div className="h-24 bg-gray-800 rounded animate-pulse" />
+              <div className="h-24 bg-gray-800 rounded animate-pulse" />
+              <div className="h-24 bg-gray-800 rounded animate-pulse" />
+              <div className="h-24 bg-gray-800 rounded animate-pulse" />
+            </div>
+            <div className="h-8 bg-gray-800 rounded animate-pulse my-8" />
+            <div className="h-6 bg-gray-800 rounded animate-pulse mx-auto" />
+          </div>
+        </footer>
       </div>
     );
   }
