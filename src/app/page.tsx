@@ -196,9 +196,11 @@ export default function HomePage() {
 
 
   return (
-  <div className={`min-h-screen bg-gradient-to-br from-primary/5 via-secondary/10 to-accent/10${isDark ? ' dark' : ''}`}> 
+    <div
+      className={`min-h-screen bg-gradient-to-br from-primary/5 via-secondary/10 to-accent/10${isDark ? " dark" : ""}`}
+    >
       {/* Navigation */}
-  <nav className="bg-white/80 backdrop-blur-md border-b border-primary/20 sticky top-0 z-50">
+      <nav className="bg-white/80 backdrop-blur-md border-b border-primary/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
@@ -252,7 +254,7 @@ export default function HomePage() {
                 {bioData?.tag && (
                   <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-full shadow-sm hover:shadow-md transition-all duration-300 group">
                     <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                    <span className="text-sm font-semibold text-[hsl(var(--secondary))] group-hover:text-[hsl(var(--secondary))]/80 transition-colors">
+                    <span className="text-sm font-semibold text-[hsl(var(--primary))] group-hover:text-[hsl(var(--primary))]/80 transition-colors">
                       {bioData.tag}
                     </span>
                   </div>
@@ -260,9 +262,9 @@ export default function HomePage() {
                 <h1 className="text-5xl lg:text-6xl font-bold text-[hsl(var(--foreground))] leading-tight">
                   Master Authentic
                   <span className="text-primary block">
-                    Palestinian & Lebanese
+                    Palestinian & Jordanian
                   </span>
-                  Arabic Accents
+                  Arabic Dialects
                 </h1>
                 {bioData?.description ? (
                   <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
@@ -270,7 +272,9 @@ export default function HomePage() {
                   </p>
                 ) : (
                   <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
-                    Discover the beauty and cultural richness of Palestinian and Lebanese dialects through personalized courses and authentic materials.
+                    Discover the beauty and cultural richness of Palestinian and
+                    Lebanese dialects through personalized courses and authentic
+                    materials.
                   </p>
                 )}
               </div>
@@ -296,20 +300,32 @@ export default function HomePage() {
                 <div className="flex items-center space-x-8 pt-4">
                   {bioData.totalStudent > 0 && (
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-[hsl(var(--secondary))]">{bioData.totalStudent}+</div>
-                      <div className="text-sm font-semibold text-[hsl(var(--secondary))]">Students Taught</div>
+                      <div className="text-3xl font-bold text-[hsl(var(--primary))]">
+                        {bioData.totalStudent}+
+                      </div>
+                      <div className="text-sm font-semibold text-[hsl(var(text-gray-800))]">
+                        Students Taught
+                      </div>
                     </div>
                   )}
                   {bioData.rating > 0 && (
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-[hsl(var(--secondary))]">{bioData.rating}★</div>
-                      <div className="text-sm font-semibold text-[hsl(var(--secondary))]">Average Rating</div>
+                      <div className="text-3xl font-bold text-[hsl(var(--primary))]">
+                        {bioData.rating}★
+                      </div>
+                      <div className="text-sm font-semibold text-[hsl(var(--text-gray-800))]">
+                        Average Rating
+                      </div>
                     </div>
                   )}
                   {bioData.experienceYears > 0 && (
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-[hsl(var(--secondary))]">{bioData.experienceYears}+</div>
-                      <div className="text-sm font-semibold text-[hsl(var(--secondary))]">Years Experience</div>
+                      <div className="text-3xl font-bold text-[hsl(var(--primary))]">
+                        {bioData.experienceYears}+
+                      </div>
+                      <div className="text-sm font-semibold text-[hsl(var(text-gray-800))]">
+                        Years Experience
+                      </div>
                     </div>
                   )}
                 </div>
@@ -342,7 +358,9 @@ export default function HomePage() {
                 <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gradient-to-br from-white via-white/95 to-primary/5 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-primary/10 hover:border-primary/20 transition-all duration-300 group">
                   <div className="text-center relative">
                     <div className="absolute -top-1 -left-1 w-3 h-3 bg-primary/20 rounded-full animate-ping"></div>
-                    <div className="text-xs font-bold text-[hsl(var(--secondary))]/70 uppercase tracking-wider mb-1">Certified</div>
+                    <div className="text-xs font-bold text-[hsl(var(--secondary))]/70 uppercase tracking-wider mb-1">
+                      Certified
+                    </div>
                     <div className="text-sm font-semibold text-[hsl(var(--secondary))] group-hover:text-[hsl(var(--secondary))]/80 transition-colors">
                       {bioData.tag}
                     </div>
@@ -419,15 +437,25 @@ export default function HomePage() {
       </section>
 
       {/* About Section */}
-  <section id="about" className="py-20 bg-gradient-to-br from-primary/10 via-accent/10 to-card/20 relative">
-    <div className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10" style={{background: "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)"}} />
+      <section
+        id="about"
+        className="py-20 bg-gradient-to-br from-primary/10 via-accent/10 to-card/20 relative"
+      >
+        <div
+          className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10"
+          style={{
+            background:
+              "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)",
+          }}
+        />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
               Meet Your Teacher
             </h2>
             <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
-              {bioData?.description || "Authentic Arabic language instruction with cultural insights from a dedicated teacher."}
+              {bioData?.description ||
+                "Authentic Arabic language instruction with cultural insights from a dedicated teacher."}
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -438,7 +466,8 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <p className="text-[hsl(var(--foreground))]">
-                   "MA in Arabic Linguistics with specialized training in dialect instruction and cultural immersion techniques."
+                  "MA in Arabic Linguistics with specialized training in dialect
+                  instruction and cultural immersion techniques."
                 </p>
               </CardContent>
             </Card>
@@ -475,7 +504,13 @@ export default function HomePage() {
         id="courses"
         className="py-20 bg-gradient-to-br from-secondary/10 via-card/10 to-background/20 relative"
       >
-        <div className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10" style={{background: "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)"}} />
+        <div
+          className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10"
+          style={{
+            background:
+              "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)",
+          }}
+        />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
@@ -502,15 +537,28 @@ export default function HomePage() {
                 />
               ))}
               {/* Course Details Modal */}
-              <CourseDetailsModal open={modalOpen} onClose={() => setModalOpen(false)} course={modalCourse} />
+              <CourseDetailsModal
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                course={modalCourse}
+              />
             </div>
           )}
         </div>
       </section>
 
       {/* Resources Section */}
-  <section id="resources" className="py-20 bg-gradient-to-br from-primary/10 via-accent/10 to-card/20 relative">
-    <div className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10" style={{background: "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)"}} />
+      <section
+        id="resources"
+        className="py-20 bg-gradient-to-br from-primary/10 via-accent/10 to-card/20 relative"
+      >
+        <div
+          className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10"
+          style={{
+            background:
+              "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)",
+          }}
+        />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
@@ -531,10 +579,7 @@ export default function HomePage() {
           ) : (
             <div className="grid md:grid-cols-3 gap-8">
               {resources.map((resource, index) => (
-                <DigitalResourceCard
-                  key={index}
-                  resource={resource}
-                />
+                <DigitalResourceCard key={index} resource={resource} />
               ))}
             </div>
           )}
@@ -542,8 +587,14 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials Section */}
-  <section className="py-20 bg-gradient-to-br from-secondary/10 via-card/10 to-background/20 relative">
-    <div className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10" style={{background: "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)"}} />
+      <section className="py-20 bg-gradient-to-br from-secondary/10 via-card/10 to-background/20 relative">
+        <div
+          className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10"
+          style={{
+            background:
+              "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)",
+          }}
+        />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
@@ -575,7 +626,13 @@ export default function HomePage() {
         id="contact"
         className="py-20 bg-gradient-to-br from-primary/10 via-accent/10 to-card/20 relative"
       >
-        <div className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10" style={{background: "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)"}} />
+        <div
+          className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10"
+          style={{
+            background:
+              "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)",
+          }}
+        />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
@@ -591,11 +648,19 @@ export default function HomePage() {
           <Card id="contact-form" className="border-orange-200">
             <CardHeader>
               <div className="mb-6 text-center">
-                <div className="text-3xl mb-2">🌟 Welcome to Learn Arabic with Rose 🌟</div>
-                <div className="text-lg text-[hsl(var(--foreground))] mb-2">
-                  Join our immersive Arabic courses designed to help you grow with confidence, joy, and cultural depth. Whether you’re starting fresh or building on what you know, our small-group, live classes give you the structure, support, and cultural connection you need to thrive.
+                <div className="text-3xl mb-2">
+                  🌟 Welcome to Learn Arabic with Rose 🌟
                 </div>
-                <div className="text-lg text-primary font-semibold">✨ A journey of language, culture, and community awaits you!</div>
+                <div className="text-lg text-[hsl(var(--foreground))] mb-2">
+                  Join our immersive Arabic courses designed to help you grow
+                  with confidence, joy, and cultural depth. Whether you’re
+                  starting fresh or building on what you know, our small-group,
+                  live classes give you the structure, support, and cultural
+                  connection you need to thrive.
+                </div>
+                <div className="text-lg text-primary font-semibold">
+                  ✨ A journey of language, culture, and community awaits you!
+                </div>
               </div>
               <CardTitle className="text-2xl">Course Inquiry Form</CardTitle>
               <CardDescription>
@@ -612,17 +677,23 @@ export default function HomePage() {
                     <Input
                       required
                       value={formData.fullName}
-                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, fullName: e.target.value })
+                      }
                       placeholder="Your full name"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Email Address *</label>
+                    <label className="text-sm font-medium">
+                      Email Address *
+                    </label>
                     <Input
                       type="email"
                       required
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
                       placeholder="your@email.com"
                     />
                   </div>
@@ -630,17 +701,29 @@ export default function HomePage() {
 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Whatsapp number with your country code *</label>
+                    <label className="text-sm font-medium">
+                      Whatsapp number with your country code *
+                    </label>
                     <Input
                       required
                       value={formData.phoneNumber}
-                      onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          phoneNumber: e.target.value,
+                        })
+                      }
                       placeholder="e.g. +44 7123 456789"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Interested Course</label>
-                    <Select value={selectedCourse} onValueChange={setSelectedCourse}>
+                    <label className="text-sm font-medium">
+                      Interested Course
+                    </label>
+                    <Select
+                      value={selectedCourse}
+                      onValueChange={setSelectedCourse}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select a course" />
                       </SelectTrigger>
@@ -657,90 +740,168 @@ export default function HomePage() {
 
                 {/* Motivation & Commitment */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">What makes you want to learn Pal-Jor dialect? *</label>
+                  <label className="text-sm font-medium">
+                    What makes you want to learn Pal-Jor dialect? *
+                  </label>
                   <Textarea
                     required
                     value={formData.motivation}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData({ ...formData, motivation: e.target.value })}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                      setFormData({ ...formData, motivation: e.target.value })
+                    }
                     placeholder="Your answer"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">What is your time zone? *</label>
+                  <label className="text-sm font-medium">
+                    What is your time zone? *
+                  </label>
                   <Select
                     required
                     value={formData.timeZone}
-                    onValueChange={(value) => setFormData({ ...formData, timeZone: value })}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, timeZone: value })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select your time zone" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="GMT-12">GMT-12:00 (International Date Line West)</SelectItem>
-                      <SelectItem value="GMT-11">GMT-11:00 (Midway Island, Samoa)</SelectItem>
+                      <SelectItem value="GMT-12">
+                        GMT-12:00 (International Date Line West)
+                      </SelectItem>
+                      <SelectItem value="GMT-11">
+                        GMT-11:00 (Midway Island, Samoa)
+                      </SelectItem>
                       <SelectItem value="GMT-10">GMT-10:00 (Hawaii)</SelectItem>
                       <SelectItem value="GMT-9">GMT-09:00 (Alaska)</SelectItem>
-                      <SelectItem value="GMT-8">GMT-08:00 (Pacific Time US & Canada)</SelectItem>
-                      <SelectItem value="GMT-7">GMT-07:00 (Mountain Time US & Canada)</SelectItem>
-                      <SelectItem value="GMT-6">GMT-06:00 (Central Time US & Canada)</SelectItem>
-                      <SelectItem value="GMT-5">GMT-05:00 (Eastern Time US & Canada)</SelectItem>
-                      <SelectItem value="GMT-4">GMT-04:00 (Atlantic Time Canada, Caracas)</SelectItem>
-                      <SelectItem value="GMT-3">GMT-03:00 (Brazil, Buenos Aires)</SelectItem>
-                      <SelectItem value="GMT-2">GMT-02:00 (Mid-Atlantic)</SelectItem>
-                      <SelectItem value="GMT-1">GMT-01:00 (Azores, Cape Verde)</SelectItem>
-                      <SelectItem value="GMT">GMT+00:00 (London, Lisbon, Casablanca)</SelectItem>
-                      <SelectItem value="GMT+1">GMT+01:00 (Berlin, Paris, Rome, Madrid)</SelectItem>
-                      <SelectItem value="GMT+2">GMT+02:00 (Cairo, Athens, Jerusalem, Istanbul)</SelectItem>
-                      <SelectItem value="GMT+3">GMT+03:00 (Moscow, Baghdad, Nairobi)</SelectItem>
-                      <SelectItem value="GMT+4">GMT+04:00 (Abu Dhabi, Dubai, Baku)</SelectItem>
-                      <SelectItem value="GMT+5">GMT+05:00 (Islamabad, Karachi, Tashkent)</SelectItem>
-                      <SelectItem value="GMT+6">GMT+06:00 (Almaty, Dhaka, Novosibirsk)</SelectItem>
-                      <SelectItem value="GMT+7">GMT+07:00 (Bangkok, Jakarta, Hanoi)</SelectItem>
-                      <SelectItem value="GMT+8">GMT+08:00 (Beijing, Hong Kong, Singapore)</SelectItem>
-                      <SelectItem value="GMT+9">GMT+09:00 (Tokyo, Seoul, Osaka)</SelectItem>
-                      <SelectItem value="GMT+10">GMT+10:00 (Sydney, Guam, Vladivostok)</SelectItem>
-                      <SelectItem value="GMT+11">GMT+11:00 (Magadan, Solomon Islands)</SelectItem>
-                      <SelectItem value="GMT+12">GMT+12:00 (Auckland, Fiji, Kamchatka)</SelectItem>
+                      <SelectItem value="GMT-8">
+                        GMT-08:00 (Pacific Time US & Canada)
+                      </SelectItem>
+                      <SelectItem value="GMT-7">
+                        GMT-07:00 (Mountain Time US & Canada)
+                      </SelectItem>
+                      <SelectItem value="GMT-6">
+                        GMT-06:00 (Central Time US & Canada)
+                      </SelectItem>
+                      <SelectItem value="GMT-5">
+                        GMT-05:00 (Eastern Time US & Canada)
+                      </SelectItem>
+                      <SelectItem value="GMT-4">
+                        GMT-04:00 (Atlantic Time Canada, Caracas)
+                      </SelectItem>
+                      <SelectItem value="GMT-3">
+                        GMT-03:00 (Brazil, Buenos Aires)
+                      </SelectItem>
+                      <SelectItem value="GMT-2">
+                        GMT-02:00 (Mid-Atlantic)
+                      </SelectItem>
+                      <SelectItem value="GMT-1">
+                        GMT-01:00 (Azores, Cape Verde)
+                      </SelectItem>
+                      <SelectItem value="GMT">
+                        GMT+00:00 (London, Lisbon, Casablanca)
+                      </SelectItem>
+                      <SelectItem value="GMT+1">
+                        GMT+01:00 (Berlin, Paris, Rome, Madrid)
+                      </SelectItem>
+                      <SelectItem value="GMT+2">
+                        GMT+02:00 (Cairo, Athens, Jerusalem, Istanbul)
+                      </SelectItem>
+                      <SelectItem value="GMT+3">
+                        GMT+03:00 (Moscow, Baghdad, Nairobi)
+                      </SelectItem>
+                      <SelectItem value="GMT+4">
+                        GMT+04:00 (Abu Dhabi, Dubai, Baku)
+                      </SelectItem>
+                      <SelectItem value="GMT+5">
+                        GMT+05:00 (Islamabad, Karachi, Tashkent)
+                      </SelectItem>
+                      <SelectItem value="GMT+6">
+                        GMT+06:00 (Almaty, Dhaka, Novosibirsk)
+                      </SelectItem>
+                      <SelectItem value="GMT+7">
+                        GMT+07:00 (Bangkok, Jakarta, Hanoi)
+                      </SelectItem>
+                      <SelectItem value="GMT+8">
+                        GMT+08:00 (Beijing, Hong Kong, Singapore)
+                      </SelectItem>
+                      <SelectItem value="GMT+9">
+                        GMT+09:00 (Tokyo, Seoul, Osaka)
+                      </SelectItem>
+                      <SelectItem value="GMT+10">
+                        GMT+10:00 (Sydney, Guam, Vladivostok)
+                      </SelectItem>
+                      <SelectItem value="GMT+11">
+                        GMT+11:00 (Magadan, Solomon Islands)
+                      </SelectItem>
+                      <SelectItem value="GMT+12">
+                        GMT+12:00 (Auckland, Fiji, Kamchatka)
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 {/* Arabic Learning Experience */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">What is your Arabic level? (Pal-Jor dialect specifically) *</label>
+                  <label className="text-sm font-medium">
+                    What is your Arabic level? (Pal-Jor dialect specifically) *
+                  </label>
                   <Select
                     required
                     value={formData.arabicLearningExperience}
-                    onValueChange={(value) => setFormData({ ...formData, arabicLearningExperience: value })}
+                    onValueChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        arabicLearningExperience: value,
+                      })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select your level" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="complete-beginner">Complete Beginner</SelectItem>
-                      <SelectItem value="some-basic">Some Basic Knowledge</SelectItem>
-                      <SelectItem value="intermediate">Intermediate Level</SelectItem>
+                      <SelectItem value="complete-beginner">
+                        Complete Beginner
+                      </SelectItem>
+                      <SelectItem value="some-basic">
+                        Some Basic Knowledge
+                      </SelectItem>
+                      <SelectItem value="intermediate">
+                        Intermediate Level
+                      </SelectItem>
                       <SelectItem value="advanced">Advanced Speaker</SelectItem>
-                      <SelectItem value="native">Native Speaker (Learning Dialects)</SelectItem>
+                      <SelectItem value="native">
+                        Native Speaker (Learning Dialects)
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 {/* Cultural Awareness */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Do you condemn Isre*l for committing a genocide in Gaza?</label>
+                  <label className="text-sm font-medium">
+                    Do you condemn Isre*l for committing a genocide in Gaza?
+                  </label>
                   <Select
                     value={formData.genocideCondemnation}
-                    onValueChange={(value) => setFormData({ ...formData, genocideCondemnation: value })}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, genocideCondemnation: value })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Choose your answer" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="of-course-yes">of course, yes!</SelectItem>
+                      <SelectItem value="of-course-yes">
+                        of course, yes!
+                      </SelectItem>
                       <SelectItem value="neutral">I am more neutral</SelectItem>
-                      <SelectItem value="no-right">No, they are doing okay, it has the right to self defense.</SelectItem>
+                      <SelectItem value="no-right">
+                        No, they are doing okay, it has the right to self
+                        defense.
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -748,13 +909,21 @@ export default function HomePage() {
                 {/* Commitment Checkbox */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium">
-                    By checking this box, I commit to joining Learn Arabic with Rose course for one full year of learning, growth, and cultural connection — and I’m ready to show up with consistency and heart.
+                    By checking this box, I commit to joining Learn Arabic with
+                    Rose course for one full year of learning, growth, and
+                    cultural connection — and I’m ready to show up with
+                    consistency and heart.
                   </label>
                   <div className="flex items-center gap-2">
                     <input
                       type="checkbox"
                       checked={formData.commitment}
-                      onChange={(e) => setFormData({ ...formData, commitment: e.target.checked })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          commitment: e.target.checked,
+                        })
+                      }
                       required
                       className="h-4 w-4 border-gray-300 rounded"
                     />
@@ -764,10 +933,17 @@ export default function HomePage() {
 
                 {/* Additional Message */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Additional Message</label>
+                  <label className="text-sm font-medium">
+                    Additional Message
+                  </label>
                   <Textarea
                     value={formData.additionalMessage}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData({ ...formData, additionalMessage: e.target.value })}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                      setFormData({
+                        ...formData,
+                        additionalMessage: e.target.value,
+                      })
+                    }
                     placeholder="Tell me about your learning goals, timeline, or any specific questions..."
                     rows={4}
                   />
@@ -784,7 +960,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-  <footer className="bg-[hsl(var(--background))] text-[hsl(var(--foreground))] py-12">
+      <footer className="bg-[hsl(var(--background))] text-[hsl(var(--foreground))] py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
             <div className="space-y-4">
