@@ -238,18 +238,6 @@ export default function HomePage() {
               >
                 Dashboard
               </Link>
-              <button
-                onClick={() => {
-                  setIsDark((prev) => !prev);
-                  if (typeof document !== 'undefined') {
-                    document.documentElement.classList.toggle('dark');
-                  }
-                }}
-                className="ml-4 px-3 py-1 rounded bg-primary text-white hover:bg-primary/80 transition-colors"
-                aria-label="Toggle dark mode"
-              >
-                {isDark ? 'Light Mode' : 'Dark Mode'}
-              </button>
             </div>
           </div>
         </div>
