@@ -1,8 +1,11 @@
-import { BioData } from '@/types/api';
+import { LegacyBioData } from '@/types/api';
+
+// DEPRECATED: This file is deprecated. Use bioAPI.get() instead.
+// Kept for backward compatibility only.
 
 // Minimal placeholder data for initial load
-// In production, real data should be loaded from backend API
-export const initialBioData: BioData = {
+// In production, real data should be loaded from backend API via bioAPI.get()
+export const initialBioData: LegacyBioData = {
   id: "bio-1",
   name: "ROSE",
   title: "Native Arabic Speaker & Cultural Expert",
@@ -22,11 +25,11 @@ export const initialBioData: BioData = {
 // In a real app, this would be connected to a database or API
 let bioData = { ...initialBioData };
 
-export function getBioData(): BioData {
+export function getBioData(): LegacyBioData {
   return bioData;
 }
 
-export function updateBioData(updates: Partial<BioData>): BioData {
+export function updateBioData(updates: Partial<LegacyBioData>): LegacyBioData {
   bioData = { ...bioData, ...updates };
   return bioData;
 }

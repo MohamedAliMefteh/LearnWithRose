@@ -9,96 +9,45 @@
    * A different format will require also updating the theme in tailwind.config.ts.
   */
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 13%;
+  --background: 220 25% 18%; /* softer navy */
+  --foreground: 220 15% 92%; /* off-white */
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 13%;
+  --card: 220 20% 22%; /* slightly lighter navy */
+  --card-foreground: 220 15% 92%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 13%;
+  --popover: 220 20% 22%;
+  --popover-foreground: 220 15% 92%;
 
-    --primary: 10 80% 55%;
-    --primary-foreground: 0 0% 98%;
+  --primary: 265 60% 60%; /* violet purple */
+  --primary-foreground: 220 15% 92%;
 
-    --secondary: 30 85% 95%;
-    /* Updated colors: primary (#0420bf), accent (#f50ca0), secondary (#fbfb40) */
-    --primary: 230 97% 38%;
-    --primary-foreground: 0 0% 98%;
+  --secondary: 38 80% 55%; /* amber, less saturated */
+  --secondary-foreground: 220 15% 92%;
 
-  /* Default accent is yellow, but can be switched to purple site-wide */
-  --secondary-yellow: 48 98% 48%; /* #bfae04 - darker yellow */
-  --secondary-purple: 270 98% 60%; /* #a020f0 */
-  --secondary: var(--secondary-purple);
-  --secondary-foreground: 0 0% 13%;
+  --accent: 265 60% 60%; /* violet, less saturated */
+  --accent-foreground: 220 15% 92%;
 
-    --accent: 320 98% 51%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+  --destructive: 0 50% 40%;
+  --destructive-foreground: 220 15% 92%;
 
-    --border: 30 30% 90%;
-    --input: 30 30% 90%;
-    --ring: 10 80% 55%;
+  --border: 220 10% 30%; /* softer blue-gray */
+  --input: 220 10% 30%;
+  --ring: 152 60% 45%;
 
-    --radius: 0.75rem;
+  --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+  --sidebar-background: 220 20% 22%;
+  --sidebar-foreground: 220 15% 92%;
+  --sidebar-primary: 152 60% 45%;
+  --sidebar-primary-foreground: 220 15% 92%;
+  --sidebar-accent: 38 80% 55%;
+  --sidebar-accent-foreground: 220 15% 92%;
+  --sidebar-border: 220 10% 30%;
+  --sidebar-ring: 152 60% 45%;
   }
 
   .dark {
-    --background: 20 20% 8%;
-    --foreground: 30 40% 92%;
-
-    --card: 20 20% 10%;
-    --card-foreground: 30 40% 92%;
-
-    --popover: 20 20% 10%;
-    --popover-foreground: 30 40% 92%;
-
-    --primary: 15 75% 60%;
-    --primary-foreground: 0 0% 100%;
-
-    /* Updated colors: primary (#0420bf), accent (#f50ca0), secondary (#fbfb40) */
-    --primary: 230 97% 38%;
-    --primary-foreground: 0 0% 98%;
-
-  --secondary-yellow: 48 98% 48%; /* #bfae04 - darker yellow */
-  --secondary-purple: 270 98% 60%; /* #a020f0 */
-  --secondary: var(--secondary-purple);
-  --secondary-foreground: 0 0% 13%;
-
-    --accent: 320 98% 51%;
-    --accent-foreground: 0 0% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 20 15% 20%;
-    --input: 20 15% 20%;
-    --ring: 15 75% 60%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+  /* No-op: dark theme is now default, no separate .dark variables needed */
   }
 }
 

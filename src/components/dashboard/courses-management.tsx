@@ -135,13 +135,13 @@ export function CoursesManagement() {
 
   return (
     <div className="space-y-6">
+      {/* Courses Management Section */}
       <Card>
         <CardHeader>
           <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
             <div>
               <CardTitle className="flex items-center gap-2">
                 Courses Management
-              
               </CardTitle>
               <p className="text-gray-600 mt-2">
                 Manage the courses displayed on your homepage
@@ -222,6 +222,7 @@ export function CoursesManagement() {
         </CardContent>
       </Card>
 
+      {/* Course Statistics Section */}
       <Card>
         <CardHeader>
           <CardTitle>Course Statistics</CardTitle>
@@ -253,6 +254,16 @@ export function CoursesManagement() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Inquiries Management Section */}
+      <div>
+        {/* Dynamically import to avoid SSR issues if needed */}
+        {typeof window !== 'undefined' && (
+          <>
+            {require('./inquiries-management').InquiriesManagement()}
+          </>
+        )}
+      </div>
     </div>
   );
 }

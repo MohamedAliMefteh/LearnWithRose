@@ -44,7 +44,7 @@ import { Course, DigitalResource, Review, BioData } from "@/types/api";
 import { coursesAPI } from "@/lib/courses-api";
 import { getDigitalResources } from "@/lib/digital-resources-data";
 import { getReviews } from "@/lib/reviews-data";
-import { getBioData } from "@/lib/bio-data";
+import { bioAPI } from "@/lib/bio-api";
 
 
 
@@ -54,18 +54,28 @@ export default function HomePage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalCourse, setModalCourse] = useState<Course | null>(null);
   const [formData, setFormData] = useState({
-  fullName: "",
-  email: "",
-  phoneNumber: "",
-  interestedCourse: "",
-  arabicLearningExperience: "",
-  additionalMessage: "",
+    fullName: "",
+    email: "",
+    phoneNumber: "",
+    interestedCourse: "",
+    arabicLearningExperience: "",
+    motivation: "",
+    timeZone: "",
+    genocideCondemnation: "of-course-yes",
+    commitment: false,
+    additionalMessage: "",
   });
   const [courses, setCourses] = useState<Course[]>([]);
   const [resources, setResources] = useState<DigitalResource[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [bioData, setBioData] = useState<BioData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loadingStates, setLoadingStates] = useState({
+    courses: true,
+    resources: true,
+    reviews: true,
+    bio: true
+  });
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,7 +84,7 @@ export default function HomePage() {
           coursesAPI.getAll(),
           fetch("/api/library-items"),
           fetch("/api/testimonials"),
-          Promise.resolve(getBioData()),
+          bioAPI.get(),
         ]);
 
         // Handle courses data (with fallback already built into API)
@@ -84,28 +94,38 @@ export default function HomePage() {
           console.error('Failed to load courses:', coursesData.reason);
           setCourses([]); // Empty array as fallback
         }
+        setLoadingStates(prev => ({ ...prev, courses: false }));
 
         // Handle digital resources from backend
         if (resourcesResponse.status === 'fulfilled') {
           const resourcesData = await resourcesResponse.value.json();
           setResources(Array.isArray(resourcesData) ? resourcesData : []);
         }
+        setLoadingStates(prev => ({ ...prev, resources: false }));
+
         if (reviewsResponse.status === 'fulfilled') {
           const reviewsData = await reviewsResponse.value.json();
           setReviews(Array.isArray(reviewsData) ? reviewsData : []);
         }
+        setLoadingStates(prev => ({ ...prev, reviews: false }));
+
         if (bioInfo.status === 'fulfilled') {
           setBioData(bioInfo.value);
         }
+        setLoadingStates(prev => ({ ...prev, bio: false }));
       } catch (error) {
         console.error('Failed to load data:', error);
         // Fallback to empty/default data
         setCourses([]);
         setResources(getDigitalResources());
         setReviews([]);
-        setBioData(getBioData());
-      } finally {
-        setIsLoading(false);
+        setBioData(null);
+        setLoadingStates({
+          courses: false,
+          resources: false,
+          reviews: false,
+          bio: false
+        });
       }
     };
 
@@ -129,9 +149,15 @@ export default function HomePage() {
         interestedCourse: selectedCourse || formData.interestedCourse,
         arabicLearningExperience: formData.arabicLearningExperience,
         additionalMessage: formData.additionalMessage,
+        customQuestions: {
+          motivation: formData.motivation,
+          timeZone: formData.timeZone,
+          genocideCondemnation: formData.genocideCondemnation,
+          commitment: formData.commitment ? "true" : "false",
+        }
       };
 
-  const response = await fetch('/api/inquiries', {
+      const response = await fetch('/api/inquiries', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -147,6 +173,10 @@ export default function HomePage() {
           phoneNumber: "",
           interestedCourse: "",
           arabicLearningExperience: "",
+          motivation: "",
+          timeZone: "",
+          genocideCondemnation: "of-course-yes",
+          commitment: false,
           additionalMessage: "",
         });
         setSelectedCourse("");
@@ -163,102 +193,10 @@ export default function HomePage() {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/10 to-accent/10">
-        {/* Navigation Skeleton */}
-        <div className="h-16 w-full bg-white/80 border-b border-primary/20 animate-pulse" />
-        {/* Hero Section Skeleton */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="h-8 w-48 bg-gray-200 rounded animate-pulse mb-4" />
-              <div className="h-16 w-full bg-gray-200 rounded animate-pulse mb-4" />
-              <div className="h-6 w-2/3 bg-gray-200 rounded animate-pulse mb-4" />
-              <div className="flex gap-4">
-                <div className="h-12 w-32 bg-gray-200 rounded animate-pulse" />
-                <div className="h-12 w-32 bg-gray-200 rounded animate-pulse" />
-              </div>
-              <div className="flex items-center space-x-8 pt-4">
-                <div className="h-8 w-20 bg-gray-200 rounded animate-pulse" />
-                <div className="h-8 w-20 bg-gray-200 rounded animate-pulse" />
-                <div className="h-8 w-20 bg-gray-200 rounded animate-pulse" />
-              </div>
-            </div>
-            <div className="relative max-w-lg mx-auto">
-              <div className="w-64 h-64 bg-gray-200 rounded-full animate-pulse mx-auto" />
-            </div>
-          </div>
-        </section>
-        {/* About Section Skeleton */}
-        <section className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="h-10 w-1/2 bg-gray-200 rounded animate-pulse mx-auto mb-8" />
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="h-40 bg-gray-200 rounded animate-pulse" />
-              <div className="h-40 bg-gray-200 rounded animate-pulse" />
-              <div className="h-40 bg-gray-200 rounded animate-pulse" />
-            </div>
-          </div>
-        </section>
-        {/* Courses Section Skeleton */}
-        <section className="py-20 bg-gradient-to-br from-primary/5 via-secondary/10 to-accent/10">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="h-10 w-1/2 bg-gray-200 rounded animate-pulse mx-auto mb-8" />
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="h-48 bg-gray-200 rounded animate-pulse" />
-              <div className="h-48 bg-gray-200 rounded animate-pulse" />
-            </div>
-          </div>
-        </section>
-        {/* Resources Section Skeleton */}
-        <section className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="h-10 w-1/2 bg-gray-200 rounded animate-pulse mx-auto mb-8" />
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="h-32 bg-gray-200 rounded animate-pulse" />
-              <div className="h-32 bg-gray-200 rounded animate-pulse" />
-              <div className="h-32 bg-gray-200 rounded animate-pulse" />
-            </div>
-          </div>
-        </section>
-        {/* Testimonials Section Skeleton */}
-        <section className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="h-10 w-1/2 bg-gray-200 rounded animate-pulse mx-auto mb-8" />
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="h-32 bg-gray-200 rounded animate-pulse" />
-              <div className="h-32 bg-gray-200 rounded animate-pulse" />
-              <div className="h-32 bg-gray-200 rounded animate-pulse" />
-            </div>
-          </div>
-        </section>
-        {/* Contact Form Skeleton */}
-        <section className="py-20 bg-gradient-to-br from-primary/5 via-secondary/10 to-accent/10">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="h-10 w-1/2 bg-gray-200 rounded animate-pulse mx-auto mb-8" />
-            <div className="h-96 bg-gray-200 rounded animate-pulse" />
-          </div>
-        </section>
-        {/* Footer Skeleton */}
-        <footer className="bg-gray-900 text-white py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-4 gap-8">
-              <div className="h-24 bg-gray-800 rounded animate-pulse" />
-              <div className="h-24 bg-gray-800 rounded animate-pulse" />
-              <div className="h-24 bg-gray-800 rounded animate-pulse" />
-              <div className="h-24 bg-gray-800 rounded animate-pulse" />
-            </div>
-            <div className="h-8 bg-gray-800 rounded animate-pulse my-8" />
-            <div className="h-6 bg-gray-800 rounded animate-pulse mx-auto" />
-          </div>
-        </footer>
-      </div>
-    );
-  }
+
 
   return (
-  <div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/10 to-accent/10">
+  <div className={`min-h-screen bg-gradient-to-br from-primary/5 via-secondary/10 to-accent/10${isDark ? ' dark' : ''}`}> 
       {/* Navigation */}
   <nav className="bg-white/80 backdrop-blur-md border-b border-primary/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -272,34 +210,46 @@ export default function HomePage() {
             <div className="hidden md:flex items-center space-x-8">
               <button
                 onClick={() => scrollToSection("about")}
-                className="text-gray-700 hover:text-primary transition-colors"
+                className="text-gray-800 hover:text-primary transition-colors"
               >
                 About
               </button>
               <button
                 onClick={() => scrollToSection("courses")}
-                className="text-gray-700 hover:text-primary transition-colors"
+                className="text-gray-800 hover:text-primary transition-colors"
               >
                 Courses
               </button>
               <button
                 onClick={() => scrollToSection("resources")}
-                className="text-gray-700 hover:text-primary transition-colors"
+                className="text-gray-800 hover:text-primary transition-colors"
               >
                 Resources
               </button>
               <button
                 onClick={() => scrollToSection("contact")}
-                className="text-gray-700 hover:text-primary transition-colors"
+                className="text-gray-800 hover:text-primary transition-colors"
               >
                 Contact
               </button>
               <Link
                 href="/dashboard"
-                className="text-gray-700 hover:text-primary transition-colors"
+                className="text-gray-800 hover:text-primary transition-colors"
               >
                 Dashboard
               </Link>
+              <button
+                onClick={() => {
+                  setIsDark((prev) => !prev);
+                  if (typeof document !== 'undefined') {
+                    document.documentElement.classList.toggle('dark');
+                  }
+                }}
+                className="ml-4 px-3 py-1 rounded bg-primary text-white hover:bg-primary/80 transition-colors"
+                aria-label="Toggle dark mode"
+              >
+                {isDark ? 'Light Mode' : 'Dark Mode'}
+              </button>
             </div>
           </div>
         </div>
@@ -311,22 +261,30 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
-                <Badge className="w-fit bg-[hsl(var(--secondary-yellow))]/20 text-[hsl(var(--secondary-yellow))] hover:bg-[hsl(var(--secondary-yellow))]/40">
-                  Native Arabic Speaker & Cultural Expert
-                </Badge>
-                <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+                {bioData?.tag && (
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-full shadow-sm hover:shadow-md transition-all duration-300 group">
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                    <span className="text-sm font-semibold text-[hsl(var(--secondary))] group-hover:text-[hsl(var(--secondary))]/80 transition-colors">
+                      {bioData.tag}
+                    </span>
+                  </div>
+                )}
+                <h1 className="text-5xl lg:text-6xl font-bold text-[hsl(var(--foreground))] leading-tight">
                   Master Authentic
                   <span className="text-primary block">
                     Palestinian & Lebanese
                   </span>
                   Arabic Accents
                 </h1>
-                <p className="text-xl text-gray-600 leading-relaxed">
-                  Learn from a native speaker with 8+ years of teaching
-                  experience. Discover the beauty and cultural richness of
-                  Palestinian and Lebanese dialects through personalized courses
-                  and authentic materials.
-                </p>
+                {bioData?.description ? (
+                  <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
+                    {bioData.description}
+                  </p>
+                ) : (
+                  <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
+                    Discover the beauty and cultural richness of Palestinian and Lebanese dialects through personalized courses and authentic materials.
+                  </p>
+                )}
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
@@ -346,47 +304,63 @@ export default function HomePage() {
                   Start Learning Today
                 </Button>
               </div>
-              <div className="flex items-center space-x-8 pt-4">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-[hsl(var(--secondary-yellow))]">{bioData?.totalStudents || 500}+</div>
-                  <div className="text-sm text-gray-600">Students Taught</div>
+              {bioData && (
+                <div className="flex items-center space-x-8 pt-4">
+                  {bioData.totalStudent > 0 && (
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-[hsl(var(--secondary))]">{bioData.totalStudent}+</div>
+                      <div className="text-sm font-semibold text-[hsl(var(--secondary))]">Students Taught</div>
+                    </div>
+                  )}
+                  {bioData.rating > 0 && (
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-[hsl(var(--secondary))]">{bioData.rating}★</div>
+                      <div className="text-sm font-semibold text-[hsl(var(--secondary))]">Average Rating</div>
+                    </div>
+                  )}
+                  {bioData.experienceYears > 0 && (
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-[hsl(var(--secondary))]">{bioData.experienceYears}+</div>
+                      <div className="text-sm font-semibold text-[hsl(var(--secondary))]">Years Experience</div>
+                    </div>
+                  )}
                 </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-[hsl(var(--secondary-yellow))]">{bioData?.averageRating || 4.9}★</div>
-                  <div className="text-sm text-gray-600">Average Rating</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-[hsl(var(--secondary-yellow))]">{bioData?.yearsExperience || 8}+</div>
-                  <div className="text-sm text-gray-600">Years Experience</div>
-                </div>
-              </div>
+              )}
             </div>
             <div className="relative max-w-lg mx-auto">
-              {/* Rose's name */}
-              <div className="absolute -top-16 -left-16 bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-primary/20">
-                <div className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent text-3xl font-bold">
-                  {bioData?.name || "ROSE"}
-                </div>
-              </div>
-
-              {/* 8+ Years badge */}
-              <div className="absolute -top-8 -right-8 bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-primary/20">
-                <div className="text-center">
-                  <Award className="h-5 w-5 text-primary mx-auto mb-1" />
-                  <div className="text-sm font-semibold text-gray-700">
-                    {bioData?.yearsExperience || 8}+ Years
+              {/* Teacher's name */}
+              {bioData?.name && (
+                <div className="absolute -top-16 -left-16 bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-primary/20">
+                  <div className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent text-3xl font-bold">
+                    {bioData.name}
                   </div>
                 </div>
-              </div>
+              )}
 
-              {/* Native & Cultural Speaker badge */}
-              <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-primary/20">
-                <div className="text-center">
-                  <div className="text-sm font-semibold text-gray-700">
-                    {bioData?.title || "Native & Cultural Speaker"}
+              {/* Experience Years badge */}
+              {bioData?.experienceYears && bioData.experienceYears > 0 && (
+                <div className="absolute -top-8 -right-8 bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-primary/20">
+                  <div className="text-center">
+                    <Award className="h-5 w-5 text-primary mx-auto mb-1" />
+                    <div className="text-sm font-semibold text-gray-700">
+                      {bioData.experienceYears}+ Years
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {/* Tag badge */}
+              {bioData?.tag && (
+                <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gradient-to-br from-white via-white/95 to-primary/5 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-primary/10 hover:border-primary/20 transition-all duration-300 group">
+                  <div className="text-center relative">
+                    <div className="absolute -top-1 -left-1 w-3 h-3 bg-primary/20 rounded-full animate-ping"></div>
+                    <div className="text-xs font-bold text-[hsl(var(--secondary))]/70 uppercase tracking-wider mb-1">Certified</div>
+                    <div className="text-sm font-semibold text-[hsl(var(--secondary))] group-hover:text-[hsl(var(--secondary))]/80 transition-colors">
+                      {bioData.tag}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Dotted arrow with two turns from image to name */}
               <svg
@@ -434,15 +408,22 @@ export default function HomePage() {
                 />
               </svg>
 
-              {/* Main image container - placeholder */}
+              {/* Main image container */}
               <div className="w-64 h-64 bg-gradient-to-br from-primary/20 via-accent/10 to-primary/30 rounded-full p-4 relative overflow-hidden shadow-xl mx-auto">
-                {/* Placeholder content */}
-                <div className="w-full h-full bg-gray-200 rounded-full flex items-center justify-center">
-                  <div className="text-center text-gray-500">
-                    <div className="w-16 h-16 bg-gray-300 rounded-full mx-auto mb-2"></div>
-                    <div className="text-sm font-medium">Profile Photo</div>
+                {bioData?.img ? (
+                  <img
+                    src={bioData.img}
+                    alt={bioData.name}
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-200 rounded-full flex items-center justify-center">
+                    <div className="text-center text-gray-500">
+                      <div className="w-16 h-16 bg-gray-300 rounded-full mx-auto mb-2"></div>
+                      <div className="text-sm font-medium">Profile Photo</div>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -450,14 +431,15 @@ export default function HomePage() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-20 bg-white">
+  <section id="about" className="py-20 bg-gradient-to-br from-primary/10 via-accent/10 to-card/20 relative">
+    <div className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10" style={{background: "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)"}} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
               Meet Your Teacher
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {bioData?.description || "Born and raised in Palestine, with deep connections to Lebanese culture, I bring authentic language knowledge and cultural insights to every lesson."}
+            <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
+              {bioData?.description || "Authentic Arabic language instruction with cultural insights from a dedicated teacher."}
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -467,8 +449,8 @@ export default function HomePage() {
                 <CardTitle>Certified Educator</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
-                  {bioData?.experience || "MA in Arabic Linguistics with specialized training in dialect instruction and cultural immersion techniques."}
+                <p className="text-[hsl(var(--foreground))]">
+                   "MA in Arabic Linguistics with specialized training in dialect instruction and cultural immersion techniques."
                 </p>
               </CardContent>
             </Card>
@@ -478,7 +460,7 @@ export default function HomePage() {
                 <CardTitle>Cultural Ambassador</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
+                <p className="text-[hsl(var(--foreground))]">
                   Native speaker sharing the rich traditions, history, and
                   cultural nuances of Palestinian and Lebanese communities.
                 </p>
@@ -490,7 +472,7 @@ export default function HomePage() {
                 <CardTitle>Personalized Approach</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
+                <p className="text-[hsl(var(--foreground))]">
                   Every student receives customized lessons tailored to their
                   goals, learning style, and cultural interests.
                 </p>
@@ -503,88 +485,115 @@ export default function HomePage() {
       {/* Courses Section */}
       <section
         id="courses"
-  className="py-20 bg-gradient-to-br from-primary/5 via-secondary/10 to-accent/10"
+        className="py-20 bg-gradient-to-br from-secondary/10 via-card/10 to-background/20 relative"
       >
+        <div className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10" style={{background: "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)"}} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
               Arabic Accent Courses
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
               Choose from our carefully crafted courses designed to help you
               master authentic Palestinian and Lebanese Arabic pronunciation and
               conversation.
             </p>
           </div>
-          <div className="grid md:grid-cols-2 gap-8">
-            {courses.map((course) => (
-              <CourseCard
-                key={course.id}
-                course={course}
-                onInquiry={handleCourseInquiry}
-              />
-            ))}
-            {/* Course Details Modal */}
-            <CourseDetailsModal open={modalOpen} onClose={() => setModalOpen(false)} course={modalCourse} />
-          </div>
+          {loadingStates.courses ? (
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="h-48 bg-gray-200 rounded animate-pulse" />
+              <div className="h-48 bg-gray-200 rounded animate-pulse" />
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-8">
+              {courses.map((course) => (
+                <CourseCard
+                  key={course.id}
+                  course={course}
+                  onInquiry={handleCourseInquiry}
+                />
+              ))}
+              {/* Course Details Modal */}
+              <CourseDetailsModal open={modalOpen} onClose={() => setModalOpen(false)} course={modalCourse} />
+            </div>
+          )}
         </div>
       </section>
 
       {/* Resources Section */}
-      <section id="resources" className="py-20 bg-white">
+  <section id="resources" className="py-20 bg-gradient-to-br from-primary/10 via-accent/10 to-card/20 relative">
+    <div className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10" style={{background: "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)"}} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
               Digital Resources
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
               Complement your learning with our curated collection of PDFs,
               audio guides, and reference materials for Palestinian and Lebanese
               Arabic.
             </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {resources.map((resource, index) => (
-              <DigitalResourceCard
-                key={index}
-                resource={resource}
-              />
-            ))}
-          </div>
+          {loadingStates.resources ? (
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="h-32 bg-gray-200 rounded animate-pulse" />
+              <div className="h-32 bg-gray-200 rounded animate-pulse" />
+              <div className="h-32 bg-gray-200 rounded animate-pulse" />
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-3 gap-8">
+              {resources.map((resource, index) => (
+                <DigitalResourceCard
+                  key={index}
+                  resource={resource}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-white">
+  <section className="py-20 bg-gradient-to-br from-secondary/10 via-card/10 to-background/20 relative">
+    <div className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10" style={{background: "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)"}} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
               What Students Say
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
               Hear from learners who have transformed their Arabic pronunciation
               and cultural understanding.
             </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {reviews.map((review, index) => (
-              <ReviewCard key={index} review={review} />
-            ))}
-          </div>
+          {loadingStates.reviews ? (
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="h-32 bg-gray-200 rounded animate-pulse" />
+              <div className="h-32 bg-gray-200 rounded animate-pulse" />
+              <div className="h-32 bg-gray-200 rounded animate-pulse" />
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-3 gap-8">
+              {reviews.map((review, index) => (
+                <ReviewCard key={index} review={review} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
       {/* Contact Form */}
       <section
         id="contact"
-  className="py-20 bg-gradient-to-br from-primary/5 via-secondary/10 to-accent/10"
+        className="py-20 bg-gradient-to-br from-primary/10 via-accent/10 to-card/20 relative"
       >
+        <div className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10" style={{background: "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)"}} />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
               Start Your Arabic Journey
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-[hsl(var(--foreground))]">
               Fill out the form below and I'll personally contact you within 24
               hours to discuss your learning goals and recommend the perfect
               course.
@@ -593,6 +602,13 @@ export default function HomePage() {
 
           <Card id="contact-form" className="border-orange-200">
             <CardHeader>
+              <div className="mb-6 text-center">
+                <div className="text-3xl mb-2">🌟 Welcome to Learn Arabic with Rose 🌟</div>
+                <div className="text-lg text-[hsl(var(--foreground))] mb-2">
+                  Join our immersive Arabic courses designed to help you grow with confidence, joy, and cultural depth. Whether you’re starting fresh or building on what you know, our small-group, live classes give you the structure, support, and cultural connection you need to thrive.
+                </div>
+                <div className="text-lg text-primary font-semibold">✨ A journey of language, culture, and community awaits you!</div>
+              </div>
               <CardTitle className="text-2xl">Course Inquiry Form</CardTitle>
               <CardDescription>
                 Tell me about your Arabic learning goals and I'll help you
@@ -601,29 +617,24 @@ export default function HomePage() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Personal Information */}
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Full Name *</label>
                     <Input
                       required
                       value={formData.fullName}
-                      onChange={(e) =>
-                        setFormData({ ...formData, fullName: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                       placeholder="Your full name"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">
-                      Email Address *
-                    </label>
+                    <label className="text-sm font-medium">Email Address *</label>
                     <Input
                       type="email"
                       required
                       value={formData.email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       placeholder="your@email.com"
                     />
                   </div>
@@ -631,23 +642,17 @@ export default function HomePage() {
 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Phone Number</label>
+                    <label className="text-sm font-medium">Whatsapp number with your country code *</label>
                     <Input
+                      required
                       value={formData.phoneNumber}
-                      onChange={(e) =>
-                        setFormData({ ...formData, phoneNumber: e.target.value })
-                      }
-                      placeholder="Your phone number"
+                      onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                      placeholder="e.g. +44 7123 456789"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">
-                      Interested Course
-                    </label>
-                    <Select
-                      value={selectedCourse}
-                      onValueChange={setSelectedCourse}
-                    >
+                    <label className="text-sm font-medium">Interested Course</label>
+                    <Select value={selectedCourse} onValueChange={setSelectedCourse}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a course" />
                       </SelectTrigger>
@@ -662,46 +667,119 @@ export default function HomePage() {
                   </div>
                 </div>
 
+                {/* Motivation & Commitment */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    Arabic Learning Experience
-                  </label>
+                  <label className="text-sm font-medium">What makes you want to learn Pal-Jor dialect? *</label>
+                  <Textarea
+                    required
+                    value={formData.motivation}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData({ ...formData, motivation: e.target.value })}
+                    placeholder="Your answer"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">What is your time zone? *</label>
                   <Select
-                    value={formData.arabicLearningExperience}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, arabicLearningExperience: value })
-                    }
+                    required
+                    value={formData.timeZone}
+                    onValueChange={(value) => setFormData({ ...formData, timeZone: value })}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select your experience level" />
+                      <SelectValue placeholder="Select your time zone" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="complete-beginner">
-                        Complete Beginner
-                      </SelectItem>
-                      <SelectItem value="some-basic">
-                        Some Basic Knowledge
-                      </SelectItem>
-                      <SelectItem value="intermediate">
-                        Intermediate Level
-                      </SelectItem>
-                      <SelectItem value="advanced">Advanced Speaker</SelectItem>
-                      <SelectItem value="native">
-                        Native Speaker (Learning Dialects)
-                      </SelectItem>
+                      <SelectItem value="GMT-12">GMT-12:00 (International Date Line West)</SelectItem>
+                      <SelectItem value="GMT-11">GMT-11:00 (Midway Island, Samoa)</SelectItem>
+                      <SelectItem value="GMT-10">GMT-10:00 (Hawaii)</SelectItem>
+                      <SelectItem value="GMT-9">GMT-09:00 (Alaska)</SelectItem>
+                      <SelectItem value="GMT-8">GMT-08:00 (Pacific Time US & Canada)</SelectItem>
+                      <SelectItem value="GMT-7">GMT-07:00 (Mountain Time US & Canada)</SelectItem>
+                      <SelectItem value="GMT-6">GMT-06:00 (Central Time US & Canada)</SelectItem>
+                      <SelectItem value="GMT-5">GMT-05:00 (Eastern Time US & Canada)</SelectItem>
+                      <SelectItem value="GMT-4">GMT-04:00 (Atlantic Time Canada, Caracas)</SelectItem>
+                      <SelectItem value="GMT-3">GMT-03:00 (Brazil, Buenos Aires)</SelectItem>
+                      <SelectItem value="GMT-2">GMT-02:00 (Mid-Atlantic)</SelectItem>
+                      <SelectItem value="GMT-1">GMT-01:00 (Azores, Cape Verde)</SelectItem>
+                      <SelectItem value="GMT">GMT+00:00 (London, Lisbon, Casablanca)</SelectItem>
+                      <SelectItem value="GMT+1">GMT+01:00 (Berlin, Paris, Rome, Madrid)</SelectItem>
+                      <SelectItem value="GMT+2">GMT+02:00 (Cairo, Athens, Jerusalem, Istanbul)</SelectItem>
+                      <SelectItem value="GMT+3">GMT+03:00 (Moscow, Baghdad, Nairobi)</SelectItem>
+                      <SelectItem value="GMT+4">GMT+04:00 (Abu Dhabi, Dubai, Baku)</SelectItem>
+                      <SelectItem value="GMT+5">GMT+05:00 (Islamabad, Karachi, Tashkent)</SelectItem>
+                      <SelectItem value="GMT+6">GMT+06:00 (Almaty, Dhaka, Novosibirsk)</SelectItem>
+                      <SelectItem value="GMT+7">GMT+07:00 (Bangkok, Jakarta, Hanoi)</SelectItem>
+                      <SelectItem value="GMT+8">GMT+08:00 (Beijing, Hong Kong, Singapore)</SelectItem>
+                      <SelectItem value="GMT+9">GMT+09:00 (Tokyo, Seoul, Osaka)</SelectItem>
+                      <SelectItem value="GMT+10">GMT+10:00 (Sydney, Guam, Vladivostok)</SelectItem>
+                      <SelectItem value="GMT+11">GMT+11:00 (Magadan, Solomon Islands)</SelectItem>
+                      <SelectItem value="GMT+12">GMT+12:00 (Auckland, Fiji, Kamchatka)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
+                {/* Arabic Learning Experience */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">What is your Arabic level? (Pal-Jor dialect specifically) *</label>
+                  <Select
+                    required
+                    value={formData.arabicLearningExperience}
+                    onValueChange={(value) => setFormData({ ...formData, arabicLearningExperience: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select your level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="complete-beginner">Complete Beginner</SelectItem>
+                      <SelectItem value="some-basic">Some Basic Knowledge</SelectItem>
+                      <SelectItem value="intermediate">Intermediate Level</SelectItem>
+                      <SelectItem value="advanced">Advanced Speaker</SelectItem>
+                      <SelectItem value="native">Native Speaker (Learning Dialects)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Cultural Awareness */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Do you condemn Isre*l for committing a genocide in Gaza?</label>
+                  <Select
+                    value={formData.genocideCondemnation}
+                    onValueChange={(value) => setFormData({ ...formData, genocideCondemnation: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose your answer" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="of-course-yes">of course, yes!</SelectItem>
+                      <SelectItem value="neutral">I am more neutral</SelectItem>
+                      <SelectItem value="no-right">No, they are doing okay, it has the right to self defense.</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Commitment Checkbox */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium">
-                    Additional Message
+                    By checking this box, I commit to joining Learn Arabic with Rose course for one full year of learning, growth, and cultural connection — and I’m ready to show up with consistency and heart.
                   </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={formData.commitment}
+                      onChange={(e) => setFormData({ ...formData, commitment: e.target.checked })}
+                      required
+                      className="h-4 w-4 border-gray-300 rounded"
+                    />
+                    <span>I commit to this journey.</span>
+                  </div>
+                </div>
+
+                {/* Additional Message */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Additional Message</label>
                   <Textarea
                     value={formData.additionalMessage}
-                    onChange={(e) =>
-                      setFormData({ ...formData, additionalMessage: e.target.value })
-                    }
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData({ ...formData, additionalMessage: e.target.value })}
                     placeholder="Tell me about your learning goals, timeline, or any specific questions..."
                     rows={4}
                   />
@@ -718,7 +796,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+  <footer className="bg-[hsl(var(--background))] text-[hsl(var(--foreground))] py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
             <div className="space-y-4">

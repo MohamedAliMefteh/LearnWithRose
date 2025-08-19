@@ -118,6 +118,18 @@ export interface Review {
 }
 
 export interface BioData {
+  id: number;
+  name: string;
+  experienceYears: number;
+  tag: string;
+  description: string;
+  img: string;
+  rating: number;
+  totalStudent: number;
+}
+
+// Legacy BioData interface for backward compatibility
+export interface LegacyBioData {
   id: string;
   name: string;
   title: string;

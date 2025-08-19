@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, BookOpen, Download, Star, Palette } from "lucide-react";
 import { ColorManagement } from "@/components/dashboard/color-management";
 
-type ActiveSection = "overview" | "bio" | "courses" | "resources" | "reviews" | "colors";
+type ActiveSection = "overview" | "bio" | "courses" | "resources" | "reviews";
 
 export default function DashboardPage() {
   const [activeSection, setActiveSection] = useState<ActiveSection>("overview");
@@ -27,8 +27,6 @@ export default function DashboardPage() {
         return <DigitalResourcesManagement />;
       case "reviews":
         return <ReviewsManagement />;
-      case "colors":
-        return <ColorManagement />;
       default:
         return (
           <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
@@ -44,21 +42,6 @@ export default function DashboardPage() {
                 <div className="text-2xl font-bold">Profile</div>
                 <p className="text-xs text-muted-foreground">
                   Manage your bio data
-                </p>
-              </CardContent>
-            </Card>
-            <Card
-              className="cursor-pointer hover:shadow-lg transition-shadow"
-              onClick={() => setActiveSection("colors")}
-            >
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Site Colors</CardTitle>
-                <Palette className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">Colors</div>
-                <p className="text-xs text-muted-foreground">
-                  Control the accent and theme colors
                 </p>
               </CardContent>
             </Card>

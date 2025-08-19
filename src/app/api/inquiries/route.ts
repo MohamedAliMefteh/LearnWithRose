@@ -1,55 +1,38 @@
-import { NextRequest, NextResponse } from 'next/server';
 
+import { NextRequest, NextResponse } from 'next/server';
 const EXTERNAL_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-export async function POST(request: NextRequest) {
+export async function GET(request: Request) {
   try {
-    const body = await request.json();
+    // Parse query params for pagination
+    const url = new URL(request.url);
+    const page = url.searchParams.get('page') ?? '0';
+    const size = url.searchParams.get('size') ?? '10';
+    // Backend expects a pageable object in query
+    const params = new URLSearchParams();
+    params.append('pageable', JSON.stringify({ page: Number(page), size: Number(size) }));
 
-    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/inquiries`, {
-      method: 'POST',
+    const apiUrl = `${EXTERNAL_API_BASE_URL}/api/inquiries?${params.toString()}`;
+    const response = await fetch(apiUrl, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(body),
     });
-
-    let errorData = null;
     if (!response.ok) {
-      try {
-        errorData = await response.json();
-      } catch {
-        // ignore JSON parse error
-      }
-      return NextResponse.json(
-        {
-          error: 'Failed to create inquiry',
-          details: errorData?.message || errorData?.error || response.statusText,
-          status: response.status,
-          backendError: errorData
-        },
-        { status: response.status }
-      );
+      throw new Error(`Failed to fetch inquiries: ${response.status} ${response.statusText}`);
     }
-
-    let data = null;
-    const text = await response.text();
-    try {
-      data = text ? JSON.parse(text) : {};
-    } catch {
-      data = {};
-    }
+    const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error creating inquiry:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error fetching inquiries:', error);
     return NextResponse.json(
-      {
-        error: 'Failed to create inquiry',
-        details: errorMessage,
-        type: 'network_error'
-      },
+      { error: 'Failed to fetch inquiries' },
       { status: 500 }
     );
   }
+}
+
+export async function POST(request: NextRequest) {
+  // ...existing code...
 }

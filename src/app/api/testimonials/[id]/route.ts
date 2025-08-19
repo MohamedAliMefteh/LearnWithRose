@@ -1,3 +1,36 @@
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const { id } = params;
+    const body = await request.json();
+    const authToken = request.cookies.get('auth_token')?.value;
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (authToken) {
+      headers['Authorization'] = `Bearer ${authToken}`;
+    }
+    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/testimonials/${id}`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(body),
+      credentials: 'include',
+    });
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: 'Failed to update testimonial' },
+        { status: response.status }
+      );
+    }
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Error updating testimonial:', error);
+    return NextResponse.json(
+      { error: 'Failed to update testimonial' },
+      { status: 500 }
+    );
+  }
+}
 import { NextRequest, NextResponse } from 'next/server';
 
 const EXTERNAL_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
