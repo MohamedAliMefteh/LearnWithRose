@@ -33,6 +33,7 @@ export function BioManagement() {
     meetYourTeacher: []
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     fetchBioData();
@@ -40,6 +41,7 @@ export function BioManagement() {
 
   const fetchBioData = async () => {
     try {
+      setHasError(false);
       const data = await bioAPI.get();
       setBioData(data);
       setFormData(data || {
@@ -56,8 +58,9 @@ export function BioManagement() {
         meetYourTeacher: []
       });
     } catch (error) {
-      toast.error("Failed to load bio data");
       console.error("Error fetching bio data:", error);
+      setHasError(true);
+      // Don't show error toast, just handle gracefully
     } finally {
       setIsLoading(false);
     }
@@ -69,6 +72,7 @@ export function BioManagement() {
       const updatedData = await bioAPI.save(formData as BioData);
       setBioData(updatedData);
       setIsEditing(false);
+      setHasError(false);
       toast.success("Bio data saved successfully");
     } catch (error) {
       toast.error("Failed to save bio data");
@@ -166,6 +170,11 @@ export function BioManagement() {
         </CardContent>
       </Card>
     );
+  }
+
+  // Don't render the bio section if there's an error
+  if (hasError) {
+    return null;
   }
 
   return (
