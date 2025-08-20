@@ -250,30 +250,24 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
-                {bioData?.tag && (
+                {bioData?.heroSection?.tag && (
                   <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-full shadow-sm hover:shadow-md transition-all duration-300 group">
                     <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
                     <span className="text-sm font-semibold text-[hsl(var(--primary))] group-hover:text-[hsl(var(--primary))]/80 transition-colors">
-                      {bioData.tag}
+                      {bioData.heroSection.tag}
                     </span>
                   </div>
                 )}
                 <h1 className="text-5xl lg:text-6xl font-bold text-[hsl(var(--foreground))] leading-tight">
-                  Master Authentic
-                  <span className="text-primary block">
-                    Palestinian & Jordanian
-                  </span>
-                  Arabic Dialects
+                  {bioData?.heroSection?.title || "Master Authentic Palestinian & Lebanese Arabic Accents"}
                 </h1>
-                {bioData?.description ? (
+                {bioData?.heroSection?.description ? (
                   <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
-                    {bioData.description}
+                    {bioData.heroSection.description}
                   </p>
                 ) : (
                   <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
-                    Discover the beauty and cultural richness of Palestinian and
-                    Lebanese dialects through personalized courses and authentic
-                    materials.
+                    Learn from a native speaker with 8+ years of teaching experience. Discover the beauty and cultural richness of Palestinian and Lebanese dialects through personalized courses and authentic materials.
                   </p>
                 )}
               </div>
@@ -295,32 +289,32 @@ export default function HomePage() {
                   Start Learning Today
                 </Button>
               </div>
-              {bioData && (
+              {bioData?.heroSection?.stats && (
                 <div className="flex items-center space-x-8 pt-4">
-                  {bioData.totalStudent > 0 && (
+                  {bioData.heroSection.stats.studentsTaught && (
                     <div className="text-center">
                       <div className="text-3xl font-bold text-[hsl(var(--primary))]">
-                        {bioData.totalStudent}+
+                        {bioData.heroSection.stats.studentsTaught}
                       </div>
                       <div className="text-sm font-semibold text-[hsl(var(text-gray-800))]">
                         Students Taught
                       </div>
                     </div>
                   )}
-                  {bioData.rating > 0 && (
+                  {bioData.heroSection.stats.averageRating && (
                     <div className="text-center">
                       <div className="text-3xl font-bold text-[hsl(var(--primary))]">
-                        {bioData.rating}★
+                        {bioData.heroSection.stats.averageRating}
                       </div>
                       <div className="text-sm font-semibold text-[hsl(var(--text-gray-800))]">
                         Average Rating
                       </div>
                     </div>
                   )}
-                  {bioData.experienceYears > 0 && (
+                  {bioData.heroSection.stats.yearsExperience && (
                     <div className="text-center">
                       <div className="text-3xl font-bold text-[hsl(var(--primary))]">
-                        {bioData.experienceYears}+
+                        {bioData.heroSection.stats.yearsExperience}
                       </div>
                       <div className="text-sm font-semibold text-[hsl(var(text-gray-800))]">
                         Years Experience
