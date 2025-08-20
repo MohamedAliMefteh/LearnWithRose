@@ -1,4 +1,4 @@
-import { LegacyBioData } from '@/types/api';
+import { LegacyBioData } from "@/types/api";
 
 // DEPRECATED: This file is deprecated. Use bioAPI.get() instead.
 // Kept for backward compatibility only.
@@ -10,7 +10,8 @@ export const initialBioData: LegacyBioData = {
   name: "ROSE",
   title: "Native Arabic Speaker & Cultural Expert",
   description: "Authentic Arabic language instruction with cultural insights.",
-  experience: "Specialized training in dialect instruction and cultural immersion techniques.",
+  experience:
+    "Specialized training in dialect instruction and cultural immersion techniques.",
   totalStudents: 0,
   averageRating: 0,
   yearsExperience: 0,
