@@ -46,9 +46,6 @@ import { getDigitalResources } from "@/lib/digital-resources-data";
 import { getReviews } from "@/lib/reviews-data";
 import { bioAPI } from "@/lib/bio-api";
 
-
-
-
 export default function HomePage() {
   const [selectedCourse, setSelectedCourse] = useState<string>("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -73,48 +70,49 @@ export default function HomePage() {
     courses: true,
     resources: true,
     reviews: true,
-    bio: true
+    bio: true,
   });
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [coursesData, resourcesResponse, reviewsResponse, bioInfo] = await Promise.allSettled([
-          coursesAPI.getAll(),
-          fetch("/api/library-items"),
-          fetch("/api/testimonials"),
-          bioAPI.get(),
-        ]);
+        const [coursesData, resourcesResponse, reviewsResponse, bioInfo] =
+          await Promise.allSettled([
+            coursesAPI.getAll(),
+            fetch("/api/library-items"),
+            fetch("/api/testimonials"),
+            bioAPI.get(),
+          ]);
 
         // Handle courses data (with fallback already built into API)
-        if (coursesData.status === 'fulfilled') {
+        if (coursesData.status === "fulfilled") {
           setCourses(coursesData.value);
         } else {
-          console.error('Failed to load courses:', coursesData.reason);
+          console.error("Failed to load courses:", coursesData.reason);
           setCourses([]); // Empty array as fallback
         }
-        setLoadingStates(prev => ({ ...prev, courses: false }));
+        setLoadingStates((prev) => ({ ...prev, courses: false }));
 
         // Handle digital resources from backend
-        if (resourcesResponse.status === 'fulfilled') {
+        if (resourcesResponse.status === "fulfilled") {
           const resourcesData = await resourcesResponse.value.json();
           setResources(Array.isArray(resourcesData) ? resourcesData : []);
         }
-        setLoadingStates(prev => ({ ...prev, resources: false }));
+        setLoadingStates((prev) => ({ ...prev, resources: false }));
 
-        if (reviewsResponse.status === 'fulfilled') {
+        if (reviewsResponse.status === "fulfilled") {
           const reviewsData = await reviewsResponse.value.json();
           setReviews(Array.isArray(reviewsData) ? reviewsData : []);
         }
-        setLoadingStates(prev => ({ ...prev, reviews: false }));
+        setLoadingStates((prev) => ({ ...prev, reviews: false }));
 
-        if (bioInfo.status === 'fulfilled') {
+        if (bioInfo.status === "fulfilled") {
           setBioData(bioInfo.value);
         }
-        setLoadingStates(prev => ({ ...prev, bio: false }));
+        setLoadingStates((prev) => ({ ...prev, bio: false }));
       } catch (error) {
-        console.error('Failed to load data:', error);
+        console.error("Failed to load data:", error);
         // Fallback to empty/default data
         setCourses([]);
         setResources(getDigitalResources());
@@ -124,7 +122,7 @@ export default function HomePage() {
           courses: false,
           resources: false,
           reviews: false,
-          bio: false
+          bio: false,
         });
       }
     };
@@ -133,7 +131,7 @@ export default function HomePage() {
   }, []);
 
   const handleCourseInquiry = (courseId: string | number) => {
-    const course = courses.find(c => c.id === courseId);
+    const course = courses.find((c) => c.id === courseId);
     setModalCourse(course || null);
     setModalOpen(true);
   };
@@ -143,29 +141,31 @@ export default function HomePage() {
 
     try {
       const inquiryData = {
-        "fullName": "string",
-        "email": "string",
-        "phoneNumber": "string",
-        "interestedCourse": "string",
-        "arabicLearningExperience": "string",
-        "additionalMessage": "string",
-        "customQuestions": {
-          "additionalProp1": "string",
-          "additionalProp2": "string",
-          "additionalProp3": "string"
-        }
-      }
+        fullName: "string",
+        email: "string",
+        phoneNumber: "string",
+        interestedCourse: "string",
+        arabicLearningExperience: "string",
+        additionalMessage: "string",
+        customQuestions: {
+          additionalProp1: "string",
+          additionalProp2: "string",
+          additionalProp3: "string",
+        },
+      };
 
-      const response = await fetch('/api/inquiries', {
-        method: 'POST',
+      const response = await fetch("/api/inquiries", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(inquiryData),
       });
 
       if (response.ok) {
-        alert("Thank you for your inquiry! I will contact you within 24 hours.");
+        alert(
+          "Thank you for your inquiry! I will contact you within 24 hours.",
+        );
         setFormData({
           fullName: "",
           email: "",
@@ -180,19 +180,19 @@ export default function HomePage() {
         });
         setSelectedCourse("");
       } else {
-        throw new Error('Failed to submit inquiry');
+        throw new Error("Failed to submit inquiry");
       }
     } catch (error) {
-      console.error('Error submitting inquiry:', error);
-      alert("Sorry, there was an error submitting your inquiry. Please try again.");
+      console.error("Error submitting inquiry:", error);
+      alert(
+        "Sorry, there was an error submitting your inquiry. Please try again.",
+      );
     }
   };
 
   const scrollToSection = (sectionId: string) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
   };
-
-
 
   return (
     <div
@@ -259,7 +259,8 @@ export default function HomePage() {
                   </div>
                 )}
                 <h1 className="text-5xl lg:text-6xl font-bold text-[hsl(var(--foreground))] leading-tight">
-                  {bioData?.heroSection?.title || "Master Authentic Palestinian & Jordanian Arabic Accents"}
+                  {bioData?.heroSection?.title ||
+                    "Master Authentic Palestinian & Jordanian Arabic Accents"}
                 </h1>
                 {bioData?.heroSection?.description ? (
                   <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
@@ -267,7 +268,10 @@ export default function HomePage() {
                   </p>
                 ) : (
                   <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
-                    Learn from a native speaker with 8+ years of teaching experience. Discover the beauty and cultural richness of Palestinian and Jordanian dialects through personalized courses and authentic materials.
+                    Learn from a native speaker with 8+ years of teaching
+                    experience. Discover the beauty and cultural richness of
+                    Palestinian and Jordanian dialects through personalized
+                    courses and authentic materials.
                   </p>
                 )}
               </div>
@@ -465,7 +469,8 @@ export default function HomePage() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-[hsl(var(--foreground))]">
-                      Specialized training in dialect instruction and cultural immersion techniques.
+                      Specialized training in dialect instruction and cultural
+                      immersion techniques.
                     </p>
                   </CardContent>
                 </Card>
@@ -488,8 +493,8 @@ export default function HomePage() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-[hsl(var(--foreground))]">
-                      Every student receives customized lessons tailored to their
-                      goals, learning style, and cultural interests.
+                      Every student receives customized lessons tailored to
+                      their goals, learning style, and cultural interests.
                     </p>
                   </CardContent>
                 </Card>
@@ -518,8 +523,8 @@ export default function HomePage() {
             </h2>
             <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
               Choose from our carefully crafted courses designed to help you
-              master authentic Palestinian and Jordanian Arabic pronunciation and
-              conversation.
+              master authentic Palestinian and Jordanian Arabic pronunciation
+              and conversation.
             </p>
           </div>
           {loadingStates.courses ? (
@@ -566,8 +571,8 @@ export default function HomePage() {
             </h2>
             <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
               Complement your learning with our curated collection of PDFs,
-              audio guides, and reference materials for Palestinian and Jordanian
-              Arabic.
+              audio guides, and reference materials for Palestinian and
+              Jordanian Arabic.
             </p>
           </div>
           {loadingStates.resources ? (
