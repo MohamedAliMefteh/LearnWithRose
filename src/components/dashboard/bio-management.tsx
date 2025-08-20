@@ -341,34 +341,34 @@ export function BioManagement() {
               <div className="grid gap-4">
                 <div>
                   <h4 className="font-medium text-gray-900">Title</h4>
-                  <p className="text-gray-600">{bioData.heroSection.title}</p>
+                  <p className="text-gray-600">{bioData.heroSection?.title || 'Not set'}</p>
                 </div>
                 <div>
                   <h4 className="font-medium text-gray-900">Description</h4>
-                  <p className="text-gray-600">{bioData.heroSection.description}</p>
+                  <p className="text-gray-600">{bioData.heroSection?.description || 'Not set'}</p>
                 </div>
                 <div>
                   <h4 className="font-medium text-gray-900">Tag</h4>
-                  <p className="text-gray-600">{bioData.heroSection.tag}</p>
+                  <p className="text-gray-600">{bioData.heroSection?.tag || 'Not set'}</p>
                 </div>
               </div>
 
               <div className="grid md:grid-cols-3 gap-6">
                 <div className="text-center p-4 bg-primary/5 rounded-lg">
                   <div className="text-2xl font-bold text-primary">
-                    {bioData.heroSection.stats.studentsTaught}
+                    {bioData.heroSection?.stats?.studentsTaught || 'Not set'}
                   </div>
                   <div className="text-sm text-gray-600">Students Taught</div>
                 </div>
                 <div className="text-center p-4 bg-yellow-50 rounded-lg">
                   <div className="text-2xl font-bold text-yellow-600">
-                    {bioData.heroSection.stats.averageRating}
+                    {bioData.heroSection?.stats?.averageRating || 'Not set'}
                   </div>
                   <div className="text-sm text-gray-600">Average Rating</div>
                 </div>
                 <div className="text-center p-4 bg-green-50 rounded-lg">
                   <div className="text-2xl font-bold text-green-600">
-                    {bioData.heroSection.stats.yearsExperience}
+                    {bioData.heroSection?.stats?.yearsExperience || 'Not set'}
                   </div>
                   <div className="text-sm text-gray-600">Years Experience</div>
                 </div>
@@ -380,12 +380,12 @@ export function BioManagement() {
               <h3 className="text-lg font-semibold">Meet Your Teacher</h3>
               
               <div className="grid gap-4">
-                {bioData.meetYourTeacher.map((item, index) => (
+                {bioData.meetYourTeacher?.map((item, index) => (
                   <div key={index} className="border rounded-lg p-4">
                     <h4 className="font-medium text-gray-900 mb-2">{item.title}</h4>
                     <p className="text-gray-600">{item.description}</p>
                   </div>
-                ))}
+                )) || <p className="text-gray-500">No teacher information available</p>}
               </div>
             </div>
           </div>
