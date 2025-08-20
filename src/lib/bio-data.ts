@@ -6,7 +6,7 @@ import { LegacyBioData } from '@/types/api';
 // Minimal placeholder data for initial load
 // In production, real data should be loaded from backend API via bioAPI.get()
 export const initialBioData: LegacyBioData = {
-  id: "bio-1",
+  id: 1,
   name: "ROSE",
   title: "Native Arabic Speaker & Cultural Expert",
   description: "Authentic Arabic language instruction with cultural insights.",
