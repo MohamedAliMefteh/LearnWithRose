@@ -259,7 +259,7 @@ export default function HomePage() {
                   </div>
                 )}
                 <h1 className="text-5xl lg:text-6xl font-bold text-[hsl(var(--foreground))] leading-tight">
-                  {bioData?.heroSection?.title || "Master Authentic Palestinian & Lebanese Arabic Accents"}
+                  {bioData?.heroSection?.title || "Master Authentic Palestinian & Jordanian Arabic Accents"}
                 </h1>
                 {bioData?.heroSection?.description ? (
                   <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
@@ -267,7 +267,7 @@ export default function HomePage() {
                   </p>
                 ) : (
                   <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
-                    Learn from a native speaker with 8+ years of teaching experience. Discover the beauty and cultural richness of Palestinian and Lebanese dialects through personalized courses and authentic materials.
+                    Learn from a native speaker with 8+ years of teaching experience. Discover the beauty and cultural richness of Palestinian and Jordanian dialects through personalized courses and authentic materials.
                   </p>
                 )}
               </div>
@@ -433,7 +433,7 @@ export default function HomePage() {
             </h2>
             <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
               {bioData?.heroSection?.description ||
-                "Learn from a native speaker with 8+ years of teaching experience. Discover the beauty and cultural richness of Palestinian and Lebanese dialects through personalized courses and authentic materials."}
+                "Learn from a native speaker with 8+ years of teaching experience. Discover the beauty and cultural richness of Palestinian and Jordanian dialects through personalized courses and authentic materials."}
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -477,7 +477,7 @@ export default function HomePage() {
                   <CardContent>
                     <p className="text-[hsl(var(--foreground))]">
                       Native speaker sharing the rich traditions, history, and
-                      cultural nuances of Palestinian and Lebanese communities.
+                      cultural nuances of Palestinian and Jordanian communities.
                     </p>
                   </CardContent>
                 </Card>
@@ -518,7 +518,7 @@ export default function HomePage() {
             </h2>
             <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
               Choose from our carefully crafted courses designed to help you
-              master authentic Palestinian and Lebanese Arabic pronunciation and
+              master authentic Palestinian and Jordanian Arabic pronunciation and
               conversation.
             </p>
           </div>
@@ -566,7 +566,7 @@ export default function HomePage() {
             </h2>
             <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
               Complement your learning with our curated collection of PDFs,
-              audio guides, and reference materials for Palestinian and Lebanese
+              audio guides, and reference materials for Palestinian and Jordanian
               Arabic.
             </p>
           </div>
@@ -971,7 +971,7 @@ export default function HomePage() {
                 </span>
               </div>
               <p className="text-gray-400">
-                Authentic Palestinian and Lebanese Arabic instruction with
+                Authentic Palestinian and Joradanian Arabic instruction with
                 cultural immersion.
               </p>
             </div>
@@ -979,7 +979,7 @@ export default function HomePage() {
               <h3 className="font-semibold mb-4">Courses</h3>
               <div className="space-y-2 text-gray-400">
                 <div>Palestinian Accent</div>
-                <div>Lebanese Accent</div>
+                <div>Jordanian Accent</div>
                 <div>Business Arabic</div>
                 <div>Cultural Immersion</div>
               </div>
