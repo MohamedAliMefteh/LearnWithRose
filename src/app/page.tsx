@@ -432,47 +432,69 @@ export default function HomePage() {
               Meet Your Teacher
             </h2>
             <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
-              {bioData?.description ||
-                "Authentic Arabic language instruction with cultural insights from a dedicated teacher."}
+              {bioData?.heroSection?.description ||
+                "Learn from a native speaker with 8+ years of teaching experience. Discover the beauty and cultural richness of Palestinian and Lebanese dialects through personalized courses and authentic materials."}
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
-            <Card className="border-orange-200">
-              <CardHeader>
-                <Award className="h-12 w-12 text-primary mb-4" />
-                <CardTitle>Certified Educator</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-[hsl(var(--foreground))]">
-                  "MA in Arabic Linguistics with specialized training in dialect
-                  instruction and cultural immersion techniques."
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="border-orange-200">
-              <CardHeader>
-                <Users className="h-12 w-12 text-primary mb-4" />
-                <CardTitle>Cultural Ambassador</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-[hsl(var(--foreground))]">
-                  Native speaker sharing the rich traditions, history, and
-                  cultural nuances of Palestinian and Lebanese communities.
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="border-orange-200">
-              <CardHeader>
-                <BookOpen className="h-12 w-12 text-primary mb-4" />
-                <CardTitle>Personalized Approach</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-[hsl(var(--foreground))]">
-                  Every student receives customized lessons tailored to their
-                  goals, learning style, and cultural interests.
-                </p>
-              </CardContent>
-            </Card>
+            {bioData?.meetYourTeacher && bioData.meetYourTeacher.length > 0 ? (
+              bioData.meetYourTeacher.map((item, index) => {
+                const icons = [Award, Users, BookOpen];
+                const IconComponent = icons[index % icons.length];
+                return (
+                  <Card key={index} className="border-orange-200">
+                    <CardHeader>
+                      <IconComponent className="h-12 w-12 text-primary mb-4" />
+                      <CardTitle>{item.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-[hsl(var(--foreground))]">
+                        {item.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                );
+              })
+            ) : (
+              // Fallback content if no bio data
+              <>
+                <Card className="border-orange-200">
+                  <CardHeader>
+                    <Award className="h-12 w-12 text-primary mb-4" />
+                    <CardTitle>Certified Educator</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-[hsl(var(--foreground))]">
+                      Specialized training in dialect instruction and cultural immersion techniques.
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="border-orange-200">
+                  <CardHeader>
+                    <Users className="h-12 w-12 text-primary mb-4" />
+                    <CardTitle>Cultural Ambassador</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-[hsl(var(--foreground))]">
+                      Native speaker sharing the rich traditions, history, and
+                      cultural nuances of Palestinian and Lebanese communities.
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="border-orange-200">
+                  <CardHeader>
+                    <BookOpen className="h-12 w-12 text-primary mb-4" />
+                    <CardTitle>Personalized Approach</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-[hsl(var(--foreground))]">
+                      Every student receives customized lessons tailored to their
+                      goals, learning style, and cultural interests.
+                    </p>
+                  </CardContent>
+                </Card>
+              </>
+            )}
           </div>
         </div>
       </section>
