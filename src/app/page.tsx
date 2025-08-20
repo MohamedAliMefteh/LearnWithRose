@@ -261,6 +261,11 @@ export default function HomePage() {
                 <h1 className="text-5xl lg:text-6xl font-bold text-[hsl(var(--foreground))] leading-tight">
                   {bioData?.heroSection?.title || "Master Authentic Palestinian & Lebanese Arabic Accents"}
                 </h1>
+                <div className="mt-4 mb-2">
+                  <h2 className="text-2xl lg:text-3xl font-semibold text-primary italic">
+                    Learn with Rose
+                  </h2>
+                </div>
                 {bioData?.heroSection?.description ? (
                   <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
                     {bioData.heroSection.description}
@@ -429,7 +434,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
-              Meet Your Teacher
+              Meet Rose, Your Teacher
             </h2>
             <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
               {bioData?.heroSection?.description ||
