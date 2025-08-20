@@ -261,11 +261,6 @@ export default function HomePage() {
                 <h1 className="text-5xl lg:text-6xl font-bold text-[hsl(var(--foreground))] leading-tight">
                   {bioData?.heroSection?.title || "Master Authentic Palestinian & Lebanese Arabic Accents"}
                 </h1>
-                <div className="mt-4 mb-2">
-                  <h2 className="text-2xl lg:text-3xl font-semibold text-primary italic">
-                    Learn with Rose
-                  </h2>
-                </div>
                 {bioData?.heroSection?.description ? (
                   <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
                     {bioData.heroSection.description}
