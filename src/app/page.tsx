@@ -434,7 +434,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
-              Meet <span className="text-rose-500">Rose</span>, Your Teacher
+              Meet <span className="text-primary">Rose</span>, Your Teacher
             </h2>
             <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
               {bioData?.heroSection?.description ||
