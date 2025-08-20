@@ -26,16 +26,22 @@ export async function GET() {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
+
+    // Add Id: 0 as required by the backend
+    const bodyWithId = {
+      ...body,
+      Id: 0
+    };
 
     // Get the auth token from the httpOnly cookie
     const authToken = request.cookies.get('auth_token')?.value;
 
     console.log('Bio save attempt:');
     console.log('- Auth token present:', !!authToken);
-    console.log('- Request body keys:', Object.keys(body));
+    console.log('- Request body keys:', Object.keys(bodyWithId));
 
     if (!authToken) {
       console.log('- No auth token available, rejecting request');
@@ -51,9 +57,9 @@ export async function POST(request: NextRequest) {
     };
 
     const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/bios`, {
-      method: 'POST',
+      method: 'PUT',
       headers,
-      body: JSON.stringify(body),
+      body: JSON.stringify(bodyWithId),
       credentials: 'include',
     });
 
@@ -102,9 +108,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-export async function PUT(request: NextRequest) {
-  // For backward compatibility, redirect PUT to POST
-  return POST(request);
 }
