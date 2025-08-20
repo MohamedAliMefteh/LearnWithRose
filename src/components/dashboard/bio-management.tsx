@@ -43,8 +43,21 @@ export function BioManagement() {
     try {
       setHasError(false);
       const data = await bioAPI.get();
-      setBioData(data);
-      setFormData(data || {
+
+      // Ensure the data has the proper structure
+      const normalizedData = data ? {
+        heroSection: {
+          title: data.heroSection?.title || "",
+          description: data.heroSection?.description || "",
+          tag: data.heroSection?.tag || "",
+          stats: {
+            studentsTaught: data.heroSection?.stats?.studentsTaught || "",
+            averageRating: data.heroSection?.stats?.averageRating || "",
+            yearsExperience: data.heroSection?.stats?.yearsExperience || ""
+          }
+        },
+        meetYourTeacher: data.meetYourTeacher || []
+      } : {
         heroSection: {
           title: "",
           description: "",
@@ -56,7 +69,10 @@ export function BioManagement() {
           }
         },
         meetYourTeacher: []
-      });
+      };
+
+      setBioData(normalizedData);
+      setFormData(normalizedData);
     } catch (error) {
       console.error("Error fetching bio data:", error);
       setHasError(true);
