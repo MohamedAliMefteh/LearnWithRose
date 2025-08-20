@@ -143,19 +143,18 @@ export default function HomePage() {
 
     try {
       const inquiryData = {
-        fullName: formData.fullName,
-        email: formData.email,
-        phoneNumber: formData.phoneNumber,
-        interestedCourse: selectedCourse || formData.interestedCourse,
-        arabicLearningExperience: formData.arabicLearningExperience,
-        additionalMessage: formData.additionalMessage,
-        customQuestions: {
-          motivation: formData.motivation,
-          timeZone: formData.timeZone,
-          genocideCondemnation: formData.genocideCondemnation,
-          commitment: formData.commitment ? "true" : "false",
+        "fullName": "string",
+        "email": "string",
+        "phoneNumber": "string",
+        "interestedCourse": "string",
+        "arabicLearningExperience": "string",
+        "additionalMessage": "string",
+        "customQuestions": {
+          "additionalProp1": "string",
+          "additionalProp2": "string",
+          "additionalProp3": "string"
         }
-      };
+      }
 
       const response = await fetch('/api/inquiries', {
         method: 'POST',
