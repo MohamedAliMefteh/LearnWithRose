@@ -27,6 +27,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { InquiriesManagement } from "./inquiries-management";
 
 type ViewMode = "list" | "add" | "edit";
 
@@ -256,14 +257,7 @@ export function CoursesManagement() {
       </Card>
 
       {/* Inquiries Management Section */}
-      <div>
-        {/* Dynamically import to avoid SSR issues if needed */}
-        {typeof window !== 'undefined' && (
-          <>
-            {require('./inquiries-management').InquiriesManagement()}
-          </>
-        )}
-      </div>
+      <InquiriesManagement />
     </div>
   );
 }
