@@ -325,29 +325,22 @@ export default function HomePage() {
               )}
             </div>
             <div className="relative max-w-lg mx-auto">
-              {/* Teacher's name */}
-              {bioData?.name && (
-                <div className="absolute -top-16 -left-16 bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-primary/20">
-                  <div className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent text-3xl font-bold">
-                    {bioData.name}
-                  </div>
-                </div>
-              )}
+              {/* Teacher's name - removed as it's not in new schema */}
 
               {/* Experience Years badge */}
-              {bioData?.experienceYears && bioData.experienceYears > 0 && (
+              {bioData?.heroSection?.stats?.yearsExperience && (
                 <div className="absolute -top-8 -right-8 bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-primary/20">
                   <div className="text-center">
                     <Award className="h-5 w-5 text-primary mx-auto mb-1" />
                     <div className="text-sm font-semibold text-gray-700">
-                      {bioData.experienceYears}+ Years
+                      {bioData.heroSection.stats.yearsExperience}
                     </div>
                   </div>
                 </div>
               )}
 
               {/* Tag badge */}
-              {bioData?.tag && (
+              {bioData?.heroSection?.tag && (
                 <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gradient-to-br from-white via-white/95 to-primary/5 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-primary/10 hover:border-primary/20 transition-all duration-300 group">
                   <div className="text-center relative">
                     <div className="absolute -top-1 -left-1 w-3 h-3 bg-primary/20 rounded-full animate-ping"></div>
@@ -355,7 +348,7 @@ export default function HomePage() {
                       Certified
                     </div>
                     <div className="text-sm font-semibold text-[hsl(var(--secondary))] group-hover:text-[hsl(var(--secondary))]/80 transition-colors">
-                      {bioData.tag}
+                      {bioData.heroSection.tag}
                     </div>
                   </div>
                 </div>
@@ -409,20 +402,12 @@ export default function HomePage() {
 
               {/* Main image container */}
               <div className="w-64 h-64 bg-gradient-to-br from-primary/20 via-accent/10 to-primary/30 rounded-full p-4 relative overflow-hidden shadow-xl mx-auto">
-                {bioData?.img ? (
-                  <img
-                    src={bioData.img}
-                    alt={bioData.name}
-                    className="w-full h-full object-cover rounded-full"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gray-200 rounded-full flex items-center justify-center">
-                    <div className="text-center text-gray-500">
-                      <div className="w-16 h-16 bg-gray-300 rounded-full mx-auto mb-2"></div>
-                      <div className="text-sm font-medium">Profile Photo</div>
-                    </div>
+                <div className="w-full h-full bg-gray-200 rounded-full flex items-center justify-center">
+                  <div className="text-center text-gray-500">
+                    <div className="w-16 h-16 bg-gray-300 rounded-full mx-auto mb-2"></div>
+                    <div className="text-sm font-medium">Profile Photo</div>
                   </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
