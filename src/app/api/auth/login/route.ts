@@ -92,11 +92,14 @@ export async function POST(request: NextRequest) {
     if (token) {
       nextResponse.cookies.set('auth_token', token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        secure: false, // Allow for development on localhost
+        sameSite: 'lax', // Less strict for development
         maxAge: 60 * 60 * 24 * 7, // 7 days
         path: '/',
       });
+      console.log('Auth token cookie set successfully');
+    } else {
+      console.error('No token found in authentication response');
     }
 
     return nextResponse;
