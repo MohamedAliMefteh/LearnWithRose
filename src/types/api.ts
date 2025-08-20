@@ -118,6 +118,24 @@ export interface Review {
 }
 
 export interface BioData {
+  heroSection: {
+    title: string;
+    description: string;
+    tag: string;
+    stats: {
+      studentsTaught: string;
+      averageRating: string;
+      yearsExperience: string;
+    };
+  };
+  meetYourTeacher: Array<{
+    title: string;
+    description: string;
+  }>;
+}
+
+// Legacy BioData interface for backward compatibility
+export interface LegacyBioData {
   id: number;
   name: string;
   experienceYears: number;

@@ -46,9 +46,6 @@ import { getDigitalResources } from "@/lib/digital-resources-data";
 import { getReviews } from "@/lib/reviews-data";
 import { bioAPI } from "@/lib/bio-api";
 
-
-
-
 export default function HomePage() {
   const [selectedCourse, setSelectedCourse] = useState<string>("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -73,48 +70,49 @@ export default function HomePage() {
     courses: true,
     resources: true,
     reviews: true,
-    bio: true
+    bio: true,
   });
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [coursesData, resourcesResponse, reviewsResponse, bioInfo] = await Promise.allSettled([
-          coursesAPI.getAll(),
-          fetch("/api/library-items"),
-          fetch("/api/testimonials"),
-          bioAPI.get(),
-        ]);
+        const [coursesData, resourcesResponse, reviewsResponse, bioInfo] =
+          await Promise.allSettled([
+            coursesAPI.getAll(),
+            fetch("/api/library-items"),
+            fetch("/api/testimonials"),
+            bioAPI.get(),
+          ]);
 
         // Handle courses data (with fallback already built into API)
-        if (coursesData.status === 'fulfilled') {
+        if (coursesData.status === "fulfilled") {
           setCourses(coursesData.value);
         } else {
-          console.error('Failed to load courses:', coursesData.reason);
+          console.error("Failed to load courses:", coursesData.reason);
           setCourses([]); // Empty array as fallback
         }
-        setLoadingStates(prev => ({ ...prev, courses: false }));
+        setLoadingStates((prev) => ({ ...prev, courses: false }));
 
         // Handle digital resources from backend
-        if (resourcesResponse.status === 'fulfilled') {
+        if (resourcesResponse.status === "fulfilled") {
           const resourcesData = await resourcesResponse.value.json();
           setResources(Array.isArray(resourcesData) ? resourcesData : []);
         }
-        setLoadingStates(prev => ({ ...prev, resources: false }));
+        setLoadingStates((prev) => ({ ...prev, resources: false }));
 
-        if (reviewsResponse.status === 'fulfilled') {
+        if (reviewsResponse.status === "fulfilled") {
           const reviewsData = await reviewsResponse.value.json();
           setReviews(Array.isArray(reviewsData) ? reviewsData : []);
         }
-        setLoadingStates(prev => ({ ...prev, reviews: false }));
+        setLoadingStates((prev) => ({ ...prev, reviews: false }));
 
-        if (bioInfo.status === 'fulfilled') {
+        if (bioInfo.status === "fulfilled") {
           setBioData(bioInfo.value);
         }
-        setLoadingStates(prev => ({ ...prev, bio: false }));
+        setLoadingStates((prev) => ({ ...prev, bio: false }));
       } catch (error) {
-        console.error('Failed to load data:', error);
+        console.error("Failed to load data:", error);
         // Fallback to empty/default data
         setCourses([]);
         setResources(getDigitalResources());
@@ -124,7 +122,7 @@ export default function HomePage() {
           courses: false,
           resources: false,
           reviews: false,
-          bio: false
+          bio: false,
         });
       }
     };
@@ -133,7 +131,7 @@ export default function HomePage() {
   }, []);
 
   const handleCourseInquiry = (courseId: string | number) => {
-    const course = courses.find(c => c.id === courseId);
+    const course = courses.find((c) => c.id === courseId);
     setModalCourse(course || null);
     setModalOpen(true);
   };
@@ -143,30 +141,31 @@ export default function HomePage() {
 
     try {
       const inquiryData = {
-        fullName: formData.fullName,
-        email: formData.email,
-        phoneNumber: formData.phoneNumber,
-        interestedCourse: selectedCourse || formData.interestedCourse,
-        arabicLearningExperience: formData.arabicLearningExperience,
-        additionalMessage: formData.additionalMessage,
+        fullName: "string",
+        email: "string",
+        phoneNumber: "string",
+        interestedCourse: "string",
+        arabicLearningExperience: "string",
+        additionalMessage: "string",
         customQuestions: {
-          motivation: formData.motivation,
-          timeZone: formData.timeZone,
-          genocideCondemnation: formData.genocideCondemnation,
-          commitment: formData.commitment ? "true" : "false",
-        }
+          additionalProp1: "string",
+          additionalProp2: "string",
+          additionalProp3: "string",
+        },
       };
 
-      const response = await fetch('/api/inquiries', {
-        method: 'POST',
+      const response = await fetch("/api/inquiries", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(inquiryData),
       });
 
       if (response.ok) {
-        alert("Thank you for your inquiry! I will contact you within 24 hours.");
+        alert(
+          "Thank you for your inquiry! I will contact you within 24 hours.",
+        );
         setFormData({
           fullName: "",
           email: "",
@@ -181,19 +180,19 @@ export default function HomePage() {
         });
         setSelectedCourse("");
       } else {
-        throw new Error('Failed to submit inquiry');
+        throw new Error("Failed to submit inquiry");
       }
     } catch (error) {
-      console.error('Error submitting inquiry:', error);
-      alert("Sorry, there was an error submitting your inquiry. Please try again.");
+      console.error("Error submitting inquiry:", error);
+      alert(
+        "Sorry, there was an error submitting your inquiry. Please try again.",
+      );
     }
   };
 
   const scrollToSection = (sectionId: string) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
   };
-
-
 
   return (
     <div
@@ -251,30 +250,28 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
-                {bioData?.tag && (
+                {bioData?.heroSection?.tag && (
                   <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-full shadow-sm hover:shadow-md transition-all duration-300 group">
                     <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
                     <span className="text-sm font-semibold text-[hsl(var(--primary))] group-hover:text-[hsl(var(--primary))]/80 transition-colors">
-                      {bioData.tag}
+                      {bioData.heroSection.tag}
                     </span>
                   </div>
                 )}
                 <h1 className="text-5xl lg:text-6xl font-bold text-[hsl(var(--foreground))] leading-tight">
-                  Master Authentic
-                  <span className="text-primary block">
-                    Palestinian & Jordanian
-                  </span>
-                  Arabic Dialects
+                  {bioData?.heroSection?.title ||
+                    "Master Authentic Palestinian & Jordanian Arabic Accents"}
                 </h1>
-                {bioData?.description ? (
+                {bioData?.heroSection?.description ? (
                   <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
-                    {bioData.description}
+                    {bioData.heroSection.description}
                   </p>
                 ) : (
                   <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
-                    Discover the beauty and cultural richness of Palestinian and
-                    Lebanese dialects through personalized courses and authentic
-                    materials.
+                    Learn from a native speaker with 8+ years of teaching
+                    experience. Discover the beauty and cultural richness of
+                    Palestinian and Jordanian dialects through personalized
+                    courses and authentic materials.
                   </p>
                 )}
               </div>
@@ -296,32 +293,32 @@ export default function HomePage() {
                   Start Learning Today
                 </Button>
               </div>
-              {bioData && (
+              {bioData?.heroSection?.stats && (
                 <div className="flex items-center space-x-8 pt-4">
-                  {bioData.totalStudent > 0 && (
+                  {bioData.heroSection.stats.studentsTaught && (
                     <div className="text-center">
                       <div className="text-3xl font-bold text-[hsl(var(--primary))]">
-                        {bioData.totalStudent}+
+                        {bioData.heroSection.stats.studentsTaught}
                       </div>
                       <div className="text-sm font-semibold text-[hsl(var(text-gray-800))]">
                         Students Taught
                       </div>
                     </div>
                   )}
-                  {bioData.rating > 0 && (
+                  {bioData.heroSection.stats.averageRating && (
                     <div className="text-center">
                       <div className="text-3xl font-bold text-[hsl(var(--primary))]">
-                        {bioData.rating}★
+                        {bioData.heroSection.stats.averageRating}
                       </div>
                       <div className="text-sm font-semibold text-[hsl(var(--text-gray-800))]">
                         Average Rating
                       </div>
                     </div>
                   )}
-                  {bioData.experienceYears > 0 && (
+                  {bioData.heroSection.stats.yearsExperience && (
                     <div className="text-center">
                       <div className="text-3xl font-bold text-[hsl(var(--primary))]">
-                        {bioData.experienceYears}+
+                        {bioData.heroSection.stats.yearsExperience}
                       </div>
                       <div className="text-sm font-semibold text-[hsl(var(text-gray-800))]">
                         Years Experience
@@ -332,29 +329,22 @@ export default function HomePage() {
               )}
             </div>
             <div className="relative max-w-lg mx-auto">
-              {/* Teacher's name */}
-              {bioData?.name && (
-                <div className="absolute -top-16 -left-16 bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-primary/20">
-                  <div className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent text-3xl font-bold">
-                    {bioData.name}
-                  </div>
-                </div>
-              )}
+              {/* Teacher's name - removed as it's not in new schema */}
 
               {/* Experience Years badge */}
-              {bioData?.experienceYears && bioData.experienceYears > 0 && (
+              {bioData?.heroSection?.stats?.yearsExperience && (
                 <div className="absolute -top-8 -right-8 bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-primary/20">
                   <div className="text-center">
                     <Award className="h-5 w-5 text-primary mx-auto mb-1" />
                     <div className="text-sm font-semibold text-gray-700">
-                      {bioData.experienceYears}+ Years
+                      {bioData.heroSection.stats.yearsExperience}
                     </div>
                   </div>
                 </div>
               )}
 
               {/* Tag badge */}
-              {bioData?.tag && (
+              {bioData?.heroSection?.tag && (
                 <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gradient-to-br from-white via-white/95 to-primary/5 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-primary/10 hover:border-primary/20 transition-all duration-300 group">
                   <div className="text-center relative">
                     <div className="absolute -top-1 -left-1 w-3 h-3 bg-primary/20 rounded-full animate-ping"></div>
@@ -362,7 +352,7 @@ export default function HomePage() {
                       Certified
                     </div>
                     <div className="text-sm font-semibold text-[hsl(var(--secondary))] group-hover:text-[hsl(var(--secondary))]/80 transition-colors">
-                      {bioData.tag}
+                      {bioData.heroSection.tag}
                     </div>
                   </div>
                 </div>
@@ -416,20 +406,12 @@ export default function HomePage() {
 
               {/* Main image container */}
               <div className="w-64 h-64 bg-gradient-to-br from-primary/20 via-accent/10 to-primary/30 rounded-full p-4 relative overflow-hidden shadow-xl mx-auto">
-                {bioData?.img ? (
-                  <img
-                    src={bioData.img}
-                    alt={bioData.name}
-                    className="w-full h-full object-cover rounded-full"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gray-200 rounded-full flex items-center justify-center">
-                    <div className="text-center text-gray-500">
-                      <div className="w-16 h-16 bg-gray-300 rounded-full mx-auto mb-2"></div>
-                      <div className="text-sm font-medium">Profile Photo</div>
-                    </div>
+                <div className="w-full h-full bg-gray-200 rounded-full flex items-center justify-center">
+                  <div className="text-center text-gray-500">
+                    <div className="w-16 h-16 bg-gray-300 rounded-full mx-auto mb-2"></div>
+                    <div className="text-sm font-medium">Profile Photo</div>
                   </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
@@ -451,50 +433,73 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
-              Meet Your Teacher
+              Meet <span className="text-primary">Rose</span>, Your Teacher
             </h2>
             <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
-              {bioData?.description ||
-                "Authentic Arabic language instruction with cultural insights from a dedicated teacher."}
+              {bioData?.heroSection?.description ||
+                "Learn from a native speaker with 8+ years of teaching experience. Discover the beauty and cultural richness of Palestinian and Jordanian dialects through personalized courses and authentic materials."}
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
-            <Card className="border-orange-200">
-              <CardHeader>
-                <Award className="h-12 w-12 text-primary mb-4" />
-                <CardTitle>Certified Educator</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-[hsl(var(--foreground))]">
-                  "MA in Arabic Linguistics with specialized training in dialect
-                  instruction and cultural immersion techniques."
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="border-orange-200">
-              <CardHeader>
-                <Users className="h-12 w-12 text-primary mb-4" />
-                <CardTitle>Cultural Ambassador</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-[hsl(var(--foreground))]">
-                  Native speaker sharing the rich traditions, history, and
-                  cultural nuances of Palestinian and Lebanese communities.
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="border-orange-200">
-              <CardHeader>
-                <BookOpen className="h-12 w-12 text-primary mb-4" />
-                <CardTitle>Personalized Approach</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-[hsl(var(--foreground))]">
-                  Every student receives customized lessons tailored to their
-                  goals, learning style, and cultural interests.
-                </p>
-              </CardContent>
-            </Card>
+            {bioData?.meetYourTeacher && bioData.meetYourTeacher.length > 0 ? (
+              bioData.meetYourTeacher.map((item, index) => {
+                const icons = [Award, Users, BookOpen];
+                const IconComponent = icons[index % icons.length];
+                return (
+                  <Card key={index} className="border-orange-200">
+                    <CardHeader>
+                      <IconComponent className="h-12 w-12 text-primary mb-4" />
+                      <CardTitle>{item.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-[hsl(var(--foreground))]">
+                        {item.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                );
+              })
+            ) : (
+              // Fallback content if no bio data
+              <>
+                <Card className="border-orange-200">
+                  <CardHeader>
+                    <Award className="h-12 w-12 text-primary mb-4" />
+                    <CardTitle>Certified Educator</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-[hsl(var(--foreground))]">
+                      Specialized training in dialect instruction and cultural
+                      immersion techniques.
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="border-orange-200">
+                  <CardHeader>
+                    <Users className="h-12 w-12 text-primary mb-4" />
+                    <CardTitle>Cultural Ambassador</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-[hsl(var(--foreground))]">
+                      Native speaker sharing the rich traditions, history, and
+                      cultural nuances of Palestinian and Jordanian communities.
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="border-orange-200">
+                  <CardHeader>
+                    <BookOpen className="h-12 w-12 text-primary mb-4" />
+                    <CardTitle>Personalized Approach</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-[hsl(var(--foreground))]">
+                      Every student receives customized lessons tailored to
+                      their goals, learning style, and cultural interests.
+                    </p>
+                  </CardContent>
+                </Card>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -518,8 +523,8 @@ export default function HomePage() {
             </h2>
             <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
               Choose from our carefully crafted courses designed to help you
-              master authentic Palestinian and Lebanese Arabic pronunciation and
-              conversation.
+              master authentic Palestinian and Jordanian Arabic pronunciation
+              and conversation.
             </p>
           </div>
           {loadingStates.courses ? (
@@ -566,8 +571,8 @@ export default function HomePage() {
             </h2>
             <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
               Complement your learning with our curated collection of PDFs,
-              audio guides, and reference materials for Palestinian and Lebanese
-              Arabic.
+              audio guides, and reference materials for Palestinian and
+              Jordanian Arabic.
             </p>
           </div>
           {loadingStates.resources ? (
@@ -971,7 +976,7 @@ export default function HomePage() {
                 </span>
               </div>
               <p className="text-gray-400">
-                Authentic Palestinian and Lebanese Arabic instruction with
+                Authentic Palestinian and Joradanian Arabic instruction with
                 cultural immersion.
               </p>
             </div>
@@ -979,7 +984,7 @@ export default function HomePage() {
               <h3 className="font-semibold mb-4">Courses</h3>
               <div className="space-y-2 text-gray-400">
                 <div>Palestinian Accent</div>
-                <div>Lebanese Accent</div>
+                <div>Jordanian Accent</div>
                 <div>Business Arabic</div>
                 <div>Cultural Immersion</div>
               </div>
