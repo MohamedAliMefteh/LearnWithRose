@@ -33,7 +33,7 @@ export async function PUT(request: NextRequest) {
     // Add Id: 0 as required by the backend
     const bodyWithId = {
       ...body,
-      Id: 0
+      Id: 1
     };
 
     // Get the auth token from the httpOnly cookie
