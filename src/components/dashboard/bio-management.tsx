@@ -131,14 +131,25 @@ export function BioManagement() {
   };
 
   const updateHeroSection = (field: string, value: string) => {
+    const currentHeroSection = formData.heroSection || {
+      title: "",
+      description: "",
+      tag: "",
+      stats: {
+        studentsTaught: "",
+        averageRating: "",
+        yearsExperience: ""
+      }
+    };
+
     if (field.startsWith('stats.')) {
       const statsField = field.replace('stats.', '');
       setFormData({
         ...formData,
         heroSection: {
-          ...formData.heroSection!,
+          ...currentHeroSection,
           stats: {
-            ...formData.heroSection!.stats,
+            ...currentHeroSection.stats,
             [statsField]: value
           }
         }
@@ -147,7 +158,7 @@ export function BioManagement() {
       setFormData({
         ...formData,
         heroSection: {
-          ...formData.heroSection!,
+          ...currentHeroSection,
           [field]: value
         }
       });
