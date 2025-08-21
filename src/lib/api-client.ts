@@ -25,6 +25,23 @@ class ApiClient {
     // Include credentials for authenticated requests (to send httpOnly cookies)
     if (requireAuth) {
       config.credentials = 'include';
+
+      // Also try to get token from localStorage as fallback for debugging
+      if (typeof window !== 'undefined') {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          try {
+            const userData = JSON.parse(storedUser);
+            // We'll add the token to the stored user data from auth provider
+            const fallbackToken = localStorage.getItem('fallback_auth_token');
+            if (fallbackToken) {
+              (config.headers as Record<string, string>)['Authorization'] = `Bearer ${fallbackToken}`;
+            }
+          } catch (e) {
+            // Ignore parsing errors
+          }
+        }
+      }
     }
 
     const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`;
