@@ -90,11 +90,10 @@ export async function POST(request: NextRequest) {
     // Backend returns JWT as "jwt" property
     const token = data.jwt || data.token || data.accessToken || data.access_token;
     if (token) {
-      // Try the most permissive settings for development
       nextResponse.cookies.set('auth_token', token, {
         httpOnly: true,
         secure: false,
-        sameSite: 'none' as const, // Most permissive for development
+        sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 7, // 7 days
         path: '/',
       });
