@@ -4,11 +4,21 @@ const EXTERNAL_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function GET() {
   try {
-    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/bios`, {
+    // Add cache-busting timestamp to ensure fresh data
+    const timestamp = Date.now();
+    const url = `${EXTERNAL_API_BASE_URL}/api/bios?_t=${timestamp}`;
+
+    console.log(`Fetching bio data from: ${url}`);
+
+    const response = await fetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0"
       },
+      cache: 'no-store', // Disable Next.js caching
     });
 
     if (!response.ok) {
