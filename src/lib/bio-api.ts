@@ -8,11 +8,17 @@ export const bioAPI = {
     try {
       const response = await apiClient.get<BioData | BioData[]>('/api/bios', { requireAuth: false });
 
+      console.log('Bio API client received data:');
+      console.log('- Response type:', Array.isArray(response) ? 'array' : typeof response);
+      console.log('- Response data:', JSON.stringify(response, null, 2));
+
       // Handle both single object and array responses
       if (Array.isArray(response)) {
+        console.log('- Returning first item from array:', response.length > 0 ? 'yes' : 'no');
         return response.length > 0 ? response[0] : null;
       }
 
+      console.log('- Returning single object');
       return response;
     } catch (error) {
       console.warn('Failed to fetch bio data from API:', error);
