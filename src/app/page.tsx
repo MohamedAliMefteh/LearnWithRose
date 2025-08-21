@@ -473,14 +473,52 @@ export default function HomePage() {
             <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
               Meet <span className="text-primary">Rose</span>, Your Teacher
             </h2>
-            <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
-              {bioData?.heroSection?.description ||
-                "Learn from a native speaker with 8+ years of teaching experience. Discover the beauty and cultural richness of Palestinian and Jordanian dialects through personalized courses and authentic materials."}
-            </p>
+            {loadingStates.bio ? (
+              <Skeleton className="h-6 w-96 mx-auto" />
+            ) : (
+              bioData?.heroSection?.description && (
+                <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
+                  {bioData.heroSection.description}
+                </p>
+              )
+            )}
           </div>
           <div className="grid md:grid-cols-3 gap-8">
-            {bioData?.meetYourTeacher && bioData.meetYourTeacher.length > 0 ? (
-              bioData.meetYourTeacher.map((item, index) => {
+            {loadingStates.bio ? (
+              <>
+                <Card className="border-orange-200">
+                  <CardHeader>
+                    <Skeleton className="h-12 w-12 mb-4" />
+                    <Skeleton className="h-6 w-32" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-3/4" />
+                  </CardContent>
+                </Card>
+                <Card className="border-orange-200">
+                  <CardHeader>
+                    <Skeleton className="h-12 w-12 mb-4" />
+                    <Skeleton className="h-6 w-32" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-3/4" />
+                  </CardContent>
+                </Card>
+                <Card className="border-orange-200">
+                  <CardHeader>
+                    <Skeleton className="h-12 w-12 mb-4" />
+                    <Skeleton className="h-6 w-32" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-3/4" />
+                  </CardContent>
+                </Card>
+              </>
+            ) : (
+              bioData?.meetYourTeacher?.map((item, index) => {
                 const icons = [Award, Users, BookOpen];
                 const IconComponent = icons[index % icons.length];
                 return (
@@ -497,46 +535,6 @@ export default function HomePage() {
                   </Card>
                 );
               })
-            ) : (
-              // Fallback content if no bio data
-              <>
-                <Card className="border-orange-200">
-                  <CardHeader>
-                    <Award className="h-12 w-12 text-primary mb-4" />
-                    <CardTitle>Certified Educator</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-[hsl(var(--foreground))]">
-                      Specialized training in dialect instruction and cultural
-                      immersion techniques.
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card className="border-orange-200">
-                  <CardHeader>
-                    <Users className="h-12 w-12 text-primary mb-4" />
-                    <CardTitle>Cultural Ambassador</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-[hsl(var(--foreground))]">
-                      Native speaker sharing the rich traditions, history, and
-                      cultural nuances of Palestinian and Jordanian communities.
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card className="border-orange-200">
-                  <CardHeader>
-                    <BookOpen className="h-12 w-12 text-primary mb-4" />
-                    <CardTitle>Personalized Approach</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-[hsl(var(--foreground))]">
-                      Every student receives customized lessons tailored to
-                      their goals, learning style, and cultural interests.
-                    </p>
-                  </CardContent>
-                </Card>
-              </>
             )}
           </div>
         </div>
