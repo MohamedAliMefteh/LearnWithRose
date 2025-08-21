@@ -8,6 +8,7 @@ export async function GET() {
     const timestamp = Date.now();
     const url = `${EXTERNAL_API_BASE_URL}/api/bios?_t=${timestamp}`;
 
+    console.log(`External API Base URL: ${EXTERNAL_API_BASE_URL}`);
     console.log(`Fetching bio data from: ${url}`);
 
     const response = await fetch(url, {
