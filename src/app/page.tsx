@@ -296,39 +296,56 @@ export default function HomePage() {
                   Start Learning Today
                 </Button>
               </div>
-              {bioData?.heroSection?.stats && (
+              {loadingStates.bio ? (
                 <div className="flex items-center space-x-8 pt-4">
-                  {bioData.heroSection.stats.studentsTaught && (
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-[hsl(var(--primary))]">
-                        {bioData.heroSection.stats.studentsTaught}
-                      </div>
-                      <div className="text-sm font-semibold text-[hsl(var(text-gray-800))]">
-                        Students Taught
-                      </div>
-                    </div>
-                  )}
-                  {bioData.heroSection.stats.averageRating && (
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-[hsl(var(--primary))]">
-                        {bioData.heroSection.stats.averageRating}
-                      </div>
-                      <div className="text-sm font-semibold text-[hsl(var(--text-gray-800))]">
-                        Average Rating
-                      </div>
-                    </div>
-                  )}
-                  {bioData.heroSection.stats.yearsExperience && (
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-[hsl(var(--primary))]">
-                        {bioData.heroSection.stats.yearsExperience}
-                      </div>
-                      <div className="text-sm font-semibold text-[hsl(var(text-gray-800))]">
-                        Years Experience
-                      </div>
-                    </div>
-                  )}
+                  <div className="text-center">
+                    <Skeleton className="h-8 w-16 mx-auto mb-2" />
+                    <Skeleton className="h-4 w-20 mx-auto" />
+                  </div>
+                  <div className="text-center">
+                    <Skeleton className="h-8 w-16 mx-auto mb-2" />
+                    <Skeleton className="h-4 w-20 mx-auto" />
+                  </div>
+                  <div className="text-center">
+                    <Skeleton className="h-8 w-16 mx-auto mb-2" />
+                    <Skeleton className="h-4 w-20 mx-auto" />
+                  </div>
                 </div>
+              ) : (
+                bioData?.heroSection?.stats && (
+                  <div className="flex items-center space-x-8 pt-4">
+                    {bioData.heroSection.stats.studentsTaught && (
+                      <div className="text-center">
+                        <div className="text-3xl font-bold text-[hsl(var(--primary))]">
+                          {bioData.heroSection.stats.studentsTaught}
+                        </div>
+                        <div className="text-sm font-semibold text-[hsl(var(text-gray-800))]">
+                          Students Taught
+                        </div>
+                      </div>
+                    )}
+                    {bioData.heroSection.stats.averageRating && (
+                      <div className="text-center">
+                        <div className="text-3xl font-bold text-[hsl(var(--primary))]">
+                          {bioData.heroSection.stats.averageRating}
+                        </div>
+                        <div className="text-sm font-semibold text-[hsl(var(--text-gray-800))]">
+                          Average Rating
+                        </div>
+                      </div>
+                    )}
+                    {bioData.heroSection.stats.yearsExperience && (
+                      <div className="text-center">
+                        <div className="text-3xl font-bold text-[hsl(var(--primary))]">
+                          {bioData.heroSection.stats.yearsExperience}
+                        </div>
+                        <div className="text-sm font-semibold text-[hsl(var(text-gray-800))]">
+                          Years Experience
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )
               )}
             </div>
             <div className="relative max-w-lg mx-auto">
