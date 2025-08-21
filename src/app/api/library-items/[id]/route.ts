@@ -81,8 +81,16 @@ export async function DELETE(
   try {
     const { id } = params;
 
-    // Get the auth token from the httpOnly cookie
-    const authToken = request.cookies.get('auth_token')?.value;
+    // Get the auth token from the httpOnly cookie or Authorization header
+    let authToken = request.cookies.get('auth_token')?.value;
+
+    // Fallback to Authorization header if cookie is not present
+    if (!authToken) {
+      const authHeader = request.headers.get('Authorization');
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        authToken = authHeader.substring(7);
+      }
+    }
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
