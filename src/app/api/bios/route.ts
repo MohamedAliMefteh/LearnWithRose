@@ -10,14 +10,12 @@ export async function GET() {
         'Content-Type': 'application/json',
       },
     });
-    
 
     if (!response.ok) {
       throw new Error(`Failed to fetch bios: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
-    Console.log(data)
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error fetching bios:', error);
