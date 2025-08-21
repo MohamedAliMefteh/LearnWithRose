@@ -352,30 +352,48 @@ export default function HomePage() {
               {/* Teacher's name - removed as it's not in new schema */}
 
               {/* Experience Years badge */}
-              {bioData?.heroSection?.stats?.yearsExperience && (
+              {loadingStates.bio ? (
                 <div className="absolute -top-8 -right-8 bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-primary/20">
                   <div className="text-center">
-                    <Award className="h-5 w-5 text-primary mx-auto mb-1" />
-                    <div className="text-sm font-semibold text-gray-700">
-                      {bioData.heroSection.stats.yearsExperience}
-                    </div>
+                    <Skeleton className="h-5 w-5 mx-auto mb-1" />
+                    <Skeleton className="h-4 w-8" />
                   </div>
                 </div>
+              ) : (
+                bioData?.heroSection?.stats?.yearsExperience && (
+                  <div className="absolute -top-8 -right-8 bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-primary/20">
+                    <div className="text-center">
+                      <Award className="h-5 w-5 text-primary mx-auto mb-1" />
+                      <div className="text-sm font-semibold text-gray-700">
+                        {bioData.heroSection.stats.yearsExperience}
+                      </div>
+                    </div>
+                  </div>
+                )
               )}
 
               {/* Tag badge */}
-              {bioData?.heroSection?.tag && (
-                <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gradient-to-br from-white via-white/95 to-primary/5 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-primary/10 hover:border-primary/20 transition-all duration-300 group">
-                  <div className="text-center relative">
-                    <div className="absolute -top-1 -left-1 w-3 h-3 bg-primary/20 rounded-full animate-ping"></div>
-                    <div className="text-xs font-bold text-[hsl(var(--secondary))]/70 uppercase tracking-wider mb-1">
-                      Certified
-                    </div>
-                    <div className="text-sm font-semibold text-[hsl(var(--secondary))] group-hover:text-[hsl(var(--secondary))]/80 transition-colors">
-                      {bioData.heroSection.tag}
-                    </div>
+              {loadingStates.bio ? (
+                <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gradient-to-br from-white via-white/95 to-primary/5 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-primary/10">
+                  <div className="text-center">
+                    <Skeleton className="h-3 w-16 mb-1" />
+                    <Skeleton className="h-4 w-20" />
                   </div>
                 </div>
+              ) : (
+                bioData?.heroSection?.tag && (
+                  <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gradient-to-br from-white via-white/95 to-primary/5 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-primary/10 hover:border-primary/20 transition-all duration-300 group">
+                    <div className="text-center relative">
+                      <div className="absolute -top-1 -left-1 w-3 h-3 bg-primary/20 rounded-full animate-ping"></div>
+                      <div className="text-xs font-bold text-[hsl(var(--secondary))]/70 uppercase tracking-wider mb-1">
+                        Certified
+                      </div>
+                      <div className="text-sm font-semibold text-[hsl(var(--secondary))] group-hover:text-[hsl(var(--secondary))]/80 transition-colors">
+                        {bioData.heroSection.tag}
+                      </div>
+                    </div>
+                  </div>
+                )
               )}
 
               {/* Dotted arrow with two turns from image to name */}
