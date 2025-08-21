@@ -113,7 +113,7 @@ export function CourseForm({ course, onSave, onCancel }: CourseFormProps) {
               <label className="text-sm font-medium">Accent *</label>
               <Select
                 value={formData.accent}
-                onValueChange={(value: "palestinian" | "lebanese") =>
+                onValueChange={(value: "palestinian" | "jordanian") =>
                   setFormData({ ...formData, accent: value })
                 }
               >
@@ -122,7 +122,7 @@ export function CourseForm({ course, onSave, onCancel }: CourseFormProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="palestinian">Palestinian</SelectItem>
-                  <SelectItem value="lebanese">Lebanese</SelectItem>
+                  <SelectItem value="jordanian">Jordanian</SelectItem>
                 </SelectContent>
               </Select>
             </div>
