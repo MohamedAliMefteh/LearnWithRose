@@ -1,0 +1,102 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+const EXTERNAL_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const body = await request.json();
+    const { id } = params;
+
+    // Add Id: 0 as required by the backend
+    const bodyWithId = {
+      ...body,
+      Id: 1
+    };
+
+    // Get the auth token from the httpOnly cookie or Authorization header
+    let authToken = request.cookies.get('auth_token')?.value;
+    const allCookies = request.cookies.getAll();
+    
+    // Fallback to Authorization header if cookie is not present
+    if (!authToken) {
+      const authHeader = request.headers.get('Authorization');
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        authToken = authHeader.substring(7);
+      }
+    }
+
+    console.log(`Bio update attempt for ID ${id}:`);
+    console.log('- Auth token from cookie:', !!request.cookies.get('auth_token')?.value);
+    console.log('- Auth token from header:', !!request.headers.get('Authorization'));
+    console.log('- Final auth token present:', !!authToken);
+    console.log('- Auth token length:', authToken?.length || 0);
+    console.log('- All cookies:', allCookies.map(c => `${c.name}=${c.value?.substring(0, 20)}...`));
+    console.log('- Total cookies count:', allCookies.length);
+    console.log('- Request body keys:', Object.keys(bodyWithId));
+
+    if (!authToken) {
+      console.log('- No auth token available, rejecting request');
+      return NextResponse.json(
+        { error: 'Authentication required - please log in first' },
+        { status: 401 }
+      );
+    }
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${authToken}`,
+    };
+
+    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/bios/${id}`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(bodyWithId),
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      let errorMessage = `Backend returned ${response.status}: ${response.statusText}`;
+      let errorData = null;
+
+      try {
+        errorData = await response.json();
+        errorMessage = errorData.message || errorData.error || errorMessage;
+      } catch {
+        // If we can't parse error response, use the status text
+      }
+
+      console.log('Backend bio update failed:');
+      console.log('- Status:', response.status);
+      console.log('- Error data:', errorData);
+
+      if (response.status === 401) {
+        return NextResponse.json(
+          { error: 'Authentication required - please log in again' },
+          { status: 401 }
+        );
+      }
+
+      if (response.status === 403) {
+        return NextResponse.json(
+          { error: 'Access denied - insufficient permissions' },
+          { status: 403 }
+        );
+      }
+
+      return NextResponse.json(
+        { error: 'Failed to update bio data', details: errorMessage },
+        { status: response.status }
+      );
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Error updating bio:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json(
+      { error: 'Failed to update bio data', details: errorMessage },
+      { status: 500 }
+    );
+  }
+}

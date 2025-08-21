@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Star,
   Play,
@@ -250,29 +251,31 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
-                {bioData?.heroSection?.tag && (
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-full shadow-sm hover:shadow-md transition-all duration-300 group">
-                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                    <span className="text-sm font-semibold text-[hsl(var(--primary))] group-hover:text-[hsl(var(--primary))]/80 transition-colors">
-                      {bioData.heroSection.tag}
-                    </span>
-                  </div>
-                )}
-                <h1 className="text-5xl lg:text-6xl font-bold text-[hsl(var(--foreground))] leading-tight">
-                  {bioData?.heroSection?.title ||
-                    "Master Authentic Palestinian & Jordanian Arabic Accents"}
-                </h1>
-                {bioData?.heroSection?.description ? (
-                  <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
-                    {bioData.heroSection.description}
-                  </p>
+                {loadingStates.bio ? (
+                  <>
+                    <Skeleton className="h-8 w-48 rounded-full" />
+                    <Skeleton className="h-16 w-full" />
+                    <Skeleton className="h-24 w-full" />
+                  </>
                 ) : (
-                  <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
-                    Learn from a native speaker with 8+ years of teaching
-                    experience. Discover the beauty and cultural richness of
-                    Palestinian and Jordanian dialects through personalized
-                    courses and authentic materials.
-                  </p>
+                  <>
+                    {bioData?.heroSection?.tag && (
+                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-full shadow-sm hover:shadow-md transition-all duration-300 group">
+                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                        <span className="text-sm font-semibold text-[hsl(var(--primary))] group-hover:text-[hsl(var(--primary))]/80 transition-colors">
+                          {bioData.heroSection.tag}
+                        </span>
+                      </div>
+                    )}
+                    <h1 className="text-5xl lg:text-6xl font-bold text-[hsl(var(--foreground))] leading-tight">
+                      {bioData?.heroSection?.title || "Loading..."}
+                    </h1>
+                    {bioData?.heroSection?.description && (
+                      <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
+                        {bioData.heroSection.description}
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
@@ -293,69 +296,104 @@ export default function HomePage() {
                   Start Learning Today
                 </Button>
               </div>
-              {bioData?.heroSection?.stats && (
+              {loadingStates.bio ? (
                 <div className="flex items-center space-x-8 pt-4">
-                  {bioData.heroSection.stats.studentsTaught && (
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-[hsl(var(--primary))]">
-                        {bioData.heroSection.stats.studentsTaught}
-                      </div>
-                      <div className="text-sm font-semibold text-[hsl(var(text-gray-800))]">
-                        Students Taught
-                      </div>
-                    </div>
-                  )}
-                  {bioData.heroSection.stats.averageRating && (
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-[hsl(var(--primary))]">
-                        {bioData.heroSection.stats.averageRating}
-                      </div>
-                      <div className="text-sm font-semibold text-[hsl(var(--text-gray-800))]">
-                        Average Rating
-                      </div>
-                    </div>
-                  )}
-                  {bioData.heroSection.stats.yearsExperience && (
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-[hsl(var(--primary))]">
-                        {bioData.heroSection.stats.yearsExperience}
-                      </div>
-                      <div className="text-sm font-semibold text-[hsl(var(text-gray-800))]">
-                        Years Experience
-                      </div>
-                    </div>
-                  )}
+                  <div className="text-center">
+                    <Skeleton className="h-8 w-16 mx-auto mb-2" />
+                    <Skeleton className="h-4 w-20 mx-auto" />
+                  </div>
+                  <div className="text-center">
+                    <Skeleton className="h-8 w-16 mx-auto mb-2" />
+                    <Skeleton className="h-4 w-20 mx-auto" />
+                  </div>
+                  <div className="text-center">
+                    <Skeleton className="h-8 w-16 mx-auto mb-2" />
+                    <Skeleton className="h-4 w-20 mx-auto" />
+                  </div>
                 </div>
+              ) : (
+                bioData?.heroSection?.stats && (
+                  <div className="flex items-center space-x-8 pt-4">
+                    {bioData.heroSection.stats.studentsTaught && (
+                      <div className="text-center">
+                        <div className="text-3xl font-bold text-[hsl(var(--primary))]">
+                          {bioData.heroSection.stats.studentsTaught}
+                        </div>
+                        <div className="text-sm font-semibold text-[hsl(var(text-gray-800))]">
+                          Students Taught
+                        </div>
+                      </div>
+                    )}
+                    {bioData.heroSection.stats.averageRating && (
+                      <div className="text-center">
+                        <div className="text-3xl font-bold text-[hsl(var(--primary))]">
+                          {bioData.heroSection.stats.averageRating}
+                        </div>
+                        <div className="text-sm font-semibold text-[hsl(var(--text-gray-800))]">
+                          Average Rating
+                        </div>
+                      </div>
+                    )}
+                    {bioData.heroSection.stats.yearsExperience && (
+                      <div className="text-center">
+                        <div className="text-3xl font-bold text-[hsl(var(--primary))]">
+                          {bioData.heroSection.stats.yearsExperience}
+                        </div>
+                        <div className="text-sm font-semibold text-[hsl(var(text-gray-800))]">
+                          Years Experience
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )
               )}
             </div>
             <div className="relative max-w-lg mx-auto">
               {/* Teacher's name - removed as it's not in new schema */}
 
               {/* Experience Years badge */}
-              {bioData?.heroSection?.stats?.yearsExperience && (
+              {loadingStates.bio ? (
                 <div className="absolute -top-8 -right-8 bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-primary/20">
                   <div className="text-center">
-                    <Award className="h-5 w-5 text-primary mx-auto mb-1" />
-                    <div className="text-sm font-semibold text-gray-700">
-                      {bioData.heroSection.stats.yearsExperience}
-                    </div>
+                    <Skeleton className="h-5 w-5 mx-auto mb-1" />
+                    <Skeleton className="h-4 w-8" />
                   </div>
                 </div>
+              ) : (
+                bioData?.heroSection?.stats?.yearsExperience && (
+                  <div className="absolute -top-8 -right-8 bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-primary/20">
+                    <div className="text-center">
+                      <Award className="h-5 w-5 text-primary mx-auto mb-1" />
+                      <div className="text-sm font-semibold text-gray-700">
+                        {bioData.heroSection.stats.yearsExperience}
+                      </div>
+                    </div>
+                  </div>
+                )
               )}
 
               {/* Tag badge */}
-              {bioData?.heroSection?.tag && (
-                <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gradient-to-br from-white via-white/95 to-primary/5 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-primary/10 hover:border-primary/20 transition-all duration-300 group">
-                  <div className="text-center relative">
-                    <div className="absolute -top-1 -left-1 w-3 h-3 bg-primary/20 rounded-full animate-ping"></div>
-                    <div className="text-xs font-bold text-[hsl(var(--secondary))]/70 uppercase tracking-wider mb-1">
-                      Certified
-                    </div>
-                    <div className="text-sm font-semibold text-[hsl(var(--secondary))] group-hover:text-[hsl(var(--secondary))]/80 transition-colors">
-                      {bioData.heroSection.tag}
-                    </div>
+              {loadingStates.bio ? (
+                <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gradient-to-br from-white via-white/95 to-primary/5 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-primary/10">
+                  <div className="text-center">
+                    <Skeleton className="h-3 w-16 mb-1" />
+                    <Skeleton className="h-4 w-20" />
                   </div>
                 </div>
+              ) : (
+                bioData?.heroSection?.tag && (
+                  <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gradient-to-br from-white via-white/95 to-primary/5 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-primary/10 hover:border-primary/20 transition-all duration-300 group">
+                    <div className="text-center relative">
+                      <div className="absolute -top-1 -left-1 w-3 h-3 bg-primary/20 rounded-full animate-ping"></div>
+                      <div className="text-xs font-bold text-[hsl(var(--secondary))]/70 uppercase tracking-wider mb-1">
+                        Certified
+                      </div>
+                      <div className="text-sm font-semibold text-[hsl(var(--secondary))] group-hover:text-[hsl(var(--secondary))]/80 transition-colors">
+                        {bioData.heroSection.tag}
+                      </div>
+                    </div>
+                  </div>
+                )
               )}
 
               {/* Dotted arrow with two turns from image to name */}
@@ -435,14 +473,52 @@ export default function HomePage() {
             <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
               Meet <span className="text-primary">Rose</span>, Your Teacher
             </h2>
-            <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
-              {bioData?.heroSection?.description ||
-                "Learn from a native speaker with 8+ years of teaching experience. Discover the beauty and cultural richness of Palestinian and Jordanian dialects through personalized courses and authentic materials."}
-            </p>
+            {loadingStates.bio ? (
+              <Skeleton className="h-6 w-96 mx-auto" />
+            ) : (
+              bioData?.heroSection?.description && (
+                <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
+                  {bioData.heroSection.description}
+                </p>
+              )
+            )}
           </div>
           <div className="grid md:grid-cols-3 gap-8">
-            {bioData?.meetYourTeacher && bioData.meetYourTeacher.length > 0 ? (
-              bioData.meetYourTeacher.map((item, index) => {
+            {loadingStates.bio ? (
+              <>
+                <Card className="border-orange-200">
+                  <CardHeader>
+                    <Skeleton className="h-12 w-12 mb-4" />
+                    <Skeleton className="h-6 w-32" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-3/4" />
+                  </CardContent>
+                </Card>
+                <Card className="border-orange-200">
+                  <CardHeader>
+                    <Skeleton className="h-12 w-12 mb-4" />
+                    <Skeleton className="h-6 w-32" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-3/4" />
+                  </CardContent>
+                </Card>
+                <Card className="border-orange-200">
+                  <CardHeader>
+                    <Skeleton className="h-12 w-12 mb-4" />
+                    <Skeleton className="h-6 w-32" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-3/4" />
+                  </CardContent>
+                </Card>
+              </>
+            ) : (
+              bioData?.meetYourTeacher?.map((item, index) => {
                 const icons = [Award, Users, BookOpen];
                 const IconComponent = icons[index % icons.length];
                 return (
@@ -459,46 +535,6 @@ export default function HomePage() {
                   </Card>
                 );
               })
-            ) : (
-              // Fallback content if no bio data
-              <>
-                <Card className="border-orange-200">
-                  <CardHeader>
-                    <Award className="h-12 w-12 text-primary mb-4" />
-                    <CardTitle>Certified Educator</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-[hsl(var(--foreground))]">
-                      Specialized training in dialect instruction and cultural
-                      immersion techniques.
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card className="border-orange-200">
-                  <CardHeader>
-                    <Users className="h-12 w-12 text-primary mb-4" />
-                    <CardTitle>Cultural Ambassador</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-[hsl(var(--foreground))]">
-                      Native speaker sharing the rich traditions, history, and
-                      cultural nuances of Palestinian and Jordanian communities.
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card className="border-orange-200">
-                  <CardHeader>
-                    <BookOpen className="h-12 w-12 text-primary mb-4" />
-                    <CardTitle>Personalized Approach</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-[hsl(var(--foreground))]">
-                      Every student receives customized lessons tailored to
-                      their goals, learning style, and cultural interests.
-                    </p>
-                  </CardContent>
-                </Card>
-              </>
             )}
           </div>
         </div>
