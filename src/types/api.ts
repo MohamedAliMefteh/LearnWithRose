@@ -3,7 +3,7 @@ export interface Course {
   id: string | number;
   title: string;
   description: string;
-  accent: "palestinian" | "lebanese";
+  accent: "palestinian" | "jordanian";
   level: "beginner" | "intermediate" | "advanced";
   duration: string;
   price: number;
