@@ -91,13 +91,13 @@ export async function POST(request: NextRequest) {
     const token = data.jwt || data.token || data.accessToken || data.access_token;
     if (token) {
       nextResponse.cookies.set('auth_token', token, {
-        httpOnly: true,
+        httpOnly: false, // Allow access from client-side for debugging in development
         secure: false, // Allow for development on localhost
         sameSite: 'lax', // Less strict for development
         maxAge: 60 * 60 * 24 * 7, // 7 days
         path: '/',
       });
-      console.log('Auth token cookie set successfully');
+      console.log('Auth token cookie set successfully with value length:', token.length);
     } else {
       console.error('No token found in authentication response');
     }
