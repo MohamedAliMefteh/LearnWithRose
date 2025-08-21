@@ -145,6 +145,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
             if (typeof window !== 'undefined') {
               localStorage.setItem('user', JSON.stringify(minimalUser));
+              // Also store token as fallback for debugging cookie issues
+              localStorage.setItem('fallback_auth_token', token);
             }
             return true;
           }
