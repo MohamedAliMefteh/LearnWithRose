@@ -242,7 +242,7 @@ export function BioManagement() {
                 <Input
                   value={formData.heroSection?.title || ""}
                   onChange={(e) => updateHeroSection("title", e.target.value)}
-                  placeholder="Master Authentic Palestinian & Lebanese Arabic Accents"
+                  placeholder="Master Authentic Palestinian & Jordanian Arabic Accents"
                 />
               </div>
 

@@ -242,9 +242,9 @@ export function CoursesManagement() {
             </div>
             <div className="text-center p-4 bg-blue-50 rounded-lg">
               <div className="text-2xl font-bold text-blue-600">
-                {courses.filter(c => c.accent === "lebanese").length}
+                {courses.filter(c => c.accent === "jordanian").length}
               </div>
-              <div className="text-sm text-gray-600">Lebanese Courses</div>
+              <div className="text-sm text-gray-600">Jordanian Courses</div>
             </div>
             <div className="text-center p-4 bg-amber-50 rounded-lg">
               <div className="text-2xl font-bold text-amber-600">

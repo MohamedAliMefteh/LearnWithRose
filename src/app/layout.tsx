@@ -10,13 +10,13 @@ import { AuthProvider } from "@/components/providers/auth-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Learn Arabic with Rose - Master Palestinian & Lebanese Accents",
-  description: "Learn authentic Palestinian and Lebanese Arabic accents from a native speaker with 8+ years of teaching experience. Personalized courses and cultural immersion.",
-  keywords: ["Arabic", "Palestinian", "Lebanese", "accent", "language learning", "cultural immersion"],
+  title: "Learn Arabic with Rose - Master Palestinian & Jordanian Accents",
+  description: "Learn authentic Palestinian and Jordanian Arabic accents from a native speaker with 8+ years of teaching experience. Personalized courses and cultural immersion.",
+  keywords: ["Arabic", "Palestinian", "Jordanian", "accent", "language learning", "cultural immersion"],
   authors: [{ name: "Rose" }],
   openGraph: {
     title: "Learn Arabic with Rose",
-    description: "Master authentic Palestinian & Lebanese Arabic accents",
+    description: "Master authentic Palestinian & Jordanian Arabic accents",
     type: "website",
   },
 };
