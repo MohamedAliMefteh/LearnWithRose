@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-const EXTERNAL_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+// Ensure Node.js runtime on Vercel and disable static optimization for this route
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
+// Prefer server-only env var, with fallback to public one if that is how it's configured
+const EXTERNAL_API_BASE_URL = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function GET(request: Request) {
   try {

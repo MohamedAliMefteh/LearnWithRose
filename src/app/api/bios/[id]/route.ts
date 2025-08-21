@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const EXTERNAL_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
+const EXTERNAL_API_BASE_URL = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
 
 type BioPayload = {
   id?: number;
