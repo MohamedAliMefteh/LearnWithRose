@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 interface User {
   id: string;
@@ -23,7 +23,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }
@@ -43,7 +43,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setIsClient(true);
 
     try {
-      const storedUser = localStorage.getItem('user');
+      const storedUser = localStorage.getItem("user");
 
       if (storedUser) {
         setUser(JSON.parse(storedUser));
@@ -53,8 +53,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setIsLoading(false);
       }
     } catch (error) {
-      console.error('Error parsing stored auth data:', error);
-      localStorage.removeItem('user');
+      console.error("Error parsing stored auth data:", error);
+      localStorage.removeItem("user");
       setIsLoading(false);
     }
   }, []);
@@ -62,9 +62,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Verify authentication with backend using httpOnly cookie
   const verifyAuthentication = async () => {
     try {
-      const response = await fetch('/api/auth/verify', {
-        method: 'GET',
-        credentials: 'include',
+      const response = await fetch("/api/auth/verify", {
+        method: "GET",
+        credentials: "include",
       });
 
       if (response.ok) {
@@ -76,90 +76,97 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // If verification fails, clear user data
         setUser(null);
         setToken(null);
-        localStorage.removeItem('user');
+        localStorage.removeItem("user");
       }
     } catch (error) {
-      console.error('Error verifying authentication:', error);
+      console.error("Error verifying authentication:", error);
       setUser(null);
       setToken(null);
-      localStorage.removeItem('user');
+      localStorage.removeItem("user");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const login = async (username: string, password: string): Promise<boolean> => {
+  const login = async (
+    username: string,
+    password: string,
+  ): Promise<boolean> => {
     try {
       // Authenticate only with the backend API
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
-        credentials: 'include', // Include cookies for secure authentication
+        credentials: "include", // Include cookies for secure authentication
       });
 
       if (response.ok) {
         const data = await response.json();
 
         // The backend returns JWT token as "jwt" property, no user object
-        const token = data.jwt || data.token || data.accessToken || data.access_token;
+        const token =
+          data.jwt || data.token || data.accessToken || data.access_token;
 
         if (token) {
           // Decode JWT to extract user information (basic decode, no verification needed here)
           try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
+            const payload = JSON.parse(atob(token.split(".")[1]));
 
             // Create user object from JWT payload
             const user = {
-              id: payload.sub || payload.userId || '1',
-              name: payload.sub || payload.name || payload.username || 'User',
-              email: payload.email || ''
+              id: payload.sub || payload.userId || "1",
+              name: payload.sub || payload.name || payload.username || "User",
+              email: payload.email || "",
             };
-
 
             // Update state immediately
             setUser(user);
             setToken(token);
 
             // Store user data in localStorage (token will be in httpOnly cookie)
-            if (typeof window !== 'undefined') {
-              localStorage.setItem('user', JSON.stringify(user));
+            if (typeof window !== "undefined") {
+              localStorage.setItem("user", JSON.stringify(user));
               // Also store token as fallback for debugging cookie issues
-              localStorage.setItem('fallback_auth_token', token);
+              localStorage.setItem("fallback_auth_token", token);
             }
             return true;
           } catch (jwtError) {
-            console.error('Error decoding JWT:', jwtError);
+            console.error("Error decoding JWT:", jwtError);
 
             // Fallback: create minimal user object without JWT decoding
             const minimalUser = {
-              id: '1',
-              name: username || 'User', // Use the username that was entered
-              email: ''
+              id: "1",
+              name: username || "User", // Use the username that was entered
+              email: "",
             };
 
             setUser(minimalUser);
             setToken(token);
 
-            if (typeof window !== 'undefined') {
-              localStorage.setItem('user', JSON.stringify(minimalUser));
+            if (typeof window !== "undefined") {
+              localStorage.setItem("user", JSON.stringify(minimalUser));
               // Also store token as fallback for debugging cookie issues
-              localStorage.setItem('fallback_auth_token', token);
+              localStorage.setItem("fallback_auth_token", token);
             }
             return true;
           }
         } else {
-          console.error('No JWT token found in response:', data);
+          console.error("No JWT token found in response:", data);
           return false;
         }
       } else {
-        console.error('Authentication failed:', response.status, response.statusText);
+        console.error(
+          "Authentication failed:",
+          response.status,
+          response.statusText,
+        );
         return false;
       }
     } catch (error) {
-      console.error('Authentication error:', error);
+      console.error("Authentication error:", error);
       return false;
     }
   };
@@ -167,12 +174,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const logout = async () => {
     try {
       // Call logout API to clear httpOnly cookie
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
       });
     } catch (error) {
-      console.error('Error during logout:', error);
+      console.error("Error during logout:", error);
     }
 
     // Clear client-side state
@@ -180,8 +187,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setToken(null);
 
     // Clear localStorage if available
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('user');
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("user");
     }
   };
 
@@ -199,9 +206,5 @@ export function AuthProvider({ children }: AuthProviderProps) {
     getAuthToken,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
