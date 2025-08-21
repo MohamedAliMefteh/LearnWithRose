@@ -251,29 +251,31 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
-                {bioData?.heroSection?.tag && (
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-full shadow-sm hover:shadow-md transition-all duration-300 group">
-                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                    <span className="text-sm font-semibold text-[hsl(var(--primary))] group-hover:text-[hsl(var(--primary))]/80 transition-colors">
-                      {bioData.heroSection.tag}
-                    </span>
-                  </div>
-                )}
-                <h1 className="text-5xl lg:text-6xl font-bold text-[hsl(var(--foreground))] leading-tight">
-                  {bioData?.heroSection?.title ||
-                    "Master Authentic Palestinian & Jordanian Arabic Accents"}
-                </h1>
-                {bioData?.heroSection?.description ? (
-                  <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
-                    {bioData.heroSection.description}
-                  </p>
+                {loadingStates.bio ? (
+                  <>
+                    <Skeleton className="h-8 w-48 rounded-full" />
+                    <Skeleton className="h-16 w-full" />
+                    <Skeleton className="h-24 w-full" />
+                  </>
                 ) : (
-                  <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
-                    Learn from a native speaker with 8+ years of teaching
-                    experience. Discover the beauty and cultural richness of
-                    Palestinian and Jordanian dialects through personalized
-                    courses and authentic materials.
-                  </p>
+                  <>
+                    {bioData?.heroSection?.tag && (
+                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-full shadow-sm hover:shadow-md transition-all duration-300 group">
+                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                        <span className="text-sm font-semibold text-[hsl(var(--primary))] group-hover:text-[hsl(var(--primary))]/80 transition-colors">
+                          {bioData.heroSection.tag}
+                        </span>
+                      </div>
+                    )}
+                    <h1 className="text-5xl lg:text-6xl font-bold text-[hsl(var(--foreground))] leading-tight">
+                      {bioData?.heroSection?.title || "Loading..."}
+                    </h1>
+                    {bioData?.heroSection?.description && (
+                      <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
+                        {bioData.heroSection.description}
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
