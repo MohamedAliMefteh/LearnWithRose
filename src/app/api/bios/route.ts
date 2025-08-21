@@ -8,9 +8,6 @@ export async function GET() {
     const timestamp = Date.now();
     const url = `${EXTERNAL_API_BASE_URL}/api/bios?_t=${timestamp}`;
 
-    console.log(`External API Base URL: ${EXTERNAL_API_BASE_URL}`);
-    console.log(`Fetching bio data from: ${url}`);
-
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -29,11 +26,6 @@ export async function GET() {
     }
 
     const data = await response.json();
-    console.log('Bio data fetched from external API:');
-    console.log('- Response status:', response.status);
-    console.log('- Data type:', Array.isArray(data) ? 'array' : typeof data);
-    console.log('- Data length (if array):', Array.isArray(data) ? data.length : 'not array');
-    console.log('- Data structure:', JSON.stringify(data, null, 2));
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error fetching bios:", error);
