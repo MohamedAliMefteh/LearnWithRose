@@ -23,7 +23,8 @@ export const bioAPI = {
   // Save bio data to the backend
   async save(bioData: Omit<BioData, 'id'> | BioData): Promise<BioData> {
     try {
-      return await apiClient.put<BioData>('/api/bios', bioData, { requireAuth: true });
+      // Always use ID 1 for bio updates as specified by the backend
+      return await apiClient.put<BioData>('/api/bios/1', bioData, { requireAuth: true });
     } catch (error) {
       console.error('Failed to save bio data to API:', error);
       throw error;
