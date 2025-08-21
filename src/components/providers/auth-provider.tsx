@@ -126,6 +126,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
             // Store user data in localStorage (token will be in httpOnly cookie)
             if (typeof window !== 'undefined') {
               localStorage.setItem('user', JSON.stringify(user));
+              // Also store token as fallback for debugging cookie issues
+              localStorage.setItem('fallback_auth_token', token);
             }
             return true;
           } catch (jwtError) {
