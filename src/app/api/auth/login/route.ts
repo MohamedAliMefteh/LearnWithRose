@@ -90,13 +90,13 @@ export async function POST(request: NextRequest) {
     // Backend returns JWT as "jwt" property
     const token = data.jwt || data.token || data.accessToken || data.access_token;
     if (token) {
+      // Try the most permissive settings for development
       nextResponse.cookies.set('auth_token', token, {
-        httpOnly: true, // Keep secure
-        secure: false, // Allow for development on localhost
-        sameSite: 'lax', // Less strict for development
+        httpOnly: true,
+        secure: false,
+        sameSite: 'none' as const, // Most permissive for development
         maxAge: 60 * 60 * 24 * 7, // 7 days
         path: '/',
-        domain: undefined, // Let it default to the current domain
       });
       console.log('Auth token cookie set successfully with value length:', token.length);
     } else {
