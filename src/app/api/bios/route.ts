@@ -37,12 +37,22 @@ export async function PUT(request: NextRequest) {
       Id: 1
     };
 
-    // Get the auth token from the httpOnly cookie
-    const authToken = request.cookies.get('auth_token')?.value;
+    // Get the auth token from the httpOnly cookie or Authorization header
+    let authToken = request.cookies.get('auth_token')?.value;
     const allCookies = request.cookies.getAll();
 
+    // Fallback to Authorization header if cookie is not present
+    if (!authToken) {
+      const authHeader = request.headers.get('Authorization');
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        authToken = authHeader.substring(7);
+      }
+    }
+
     console.log('Bio save attempt:');
-    console.log('- Auth token present:', !!authToken);
+    console.log('- Auth token from cookie:', !!request.cookies.get('auth_token')?.value);
+    console.log('- Auth token from header:', !!request.headers.get('Authorization'));
+    console.log('- Final auth token present:', !!authToken);
     console.log('- Auth token length:', authToken?.length || 0);
     console.log('- All cookies:', allCookies.map(c => `${c.name}=${c.value?.substring(0, 20)}...`));
     console.log('- Total cookies count:', allCookies.length);
