@@ -39,9 +39,13 @@ export async function PUT(request: NextRequest) {
 
     // Get the auth token from the httpOnly cookie
     const authToken = request.cookies.get('auth_token')?.value;
+    const allCookies = request.cookies.getAll();
 
     console.log('Bio save attempt:');
     console.log('- Auth token present:', !!authToken);
+    console.log('- Auth token length:', authToken?.length || 0);
+    console.log('- All cookies:', allCookies.map(c => `${c.name}=${c.value?.substring(0, 20)}...`));
+    console.log('- Total cookies count:', allCookies.length);
     console.log('- Request body keys:', Object.keys(bodyWithId));
 
     if (!authToken) {
