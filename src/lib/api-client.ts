@@ -27,25 +27,9 @@ class ApiClient {
 
     // Include credentials for authenticated requests (to send httpOnly cookies)
     if (requireAuth) {
+      // Only include cookies; do not add Authorization header here.
+      // Token forwarding is handled explicitly in the server bio PUT route.
       config.credentials = "include";
-
-      // Also try to get token from localStorage as fallback for debugging
-      if (typeof window !== "undefined") {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-          try {
-            const userData = JSON.parse(storedUser);
-            // We'll add the token to the stored user data from auth provider
-            const fallbackToken = localStorage.getItem("fallback_auth_token");
-            if (fallbackToken) {
-              (config.headers as Record<string, string>)["Authorization"] =
-                `Bearer ${fallbackToken}`;
-            }
-          } catch (e) {
-            // Ignore parsing errors
-          }
-        }
-      }
     }
 
     const url = endpoint.startsWith("http")
@@ -63,10 +47,11 @@ class ApiClient {
       }
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.error || `HTTP ${response.status}: ${response.statusText}`,
-        );
+        const errorData: any = await response.json().catch(() => ({}));
+        let baseMsg = errorData.error || `HTTP ${response.status}: ${response.statusText}`;
+        const extra = errorData.details || errorData.message || (errorData.backend && (errorData.backend.message || JSON.stringify(errorData.backend))) || '';
+        const finalMsg = extra ? `${baseMsg} – ${typeof extra === 'string' ? extra : JSON.stringify(extra)}` : baseMsg;
+        throw new Error(finalMsg);
       }
 
       return await response.json();

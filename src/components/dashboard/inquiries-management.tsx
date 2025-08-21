@@ -7,13 +7,14 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 
 export type Inquiry = {
-  id: string;
+  id: string | number;
   fullName: string;
   email: string;
   phoneNumber?: string;
   interestedCourse?: string;
   arabicLearningExperience?: string;
   additionalMessage?: string;
+  customQuestions?: Record<string, any> | null;
   createdAt?: string;
 };
 
@@ -53,7 +54,7 @@ export function InquiriesManagement() {
         ) : (
           <div className="space-y-6">
             {inquiries.map((inq) => (
-              <div key={inq.id} className="border rounded-lg p-4 bg-white shadow-sm">
+              <div key={inq.id} className="border rounded-lg p-4 bg-white shadow-sm break-words">
                 <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
                   <div>
                     <div className="font-semibold text-lg">{inq.fullName}</div>
@@ -65,11 +66,26 @@ export function InquiriesManagement() {
                     {inq.arabicLearningExperience && <Badge variant="secondary">{inq.arabicLearningExperience}</Badge>}
                   </div>
                 </div>
+
                 {inq.additionalMessage && (
                   <div className="mt-2 text-gray-700 text-sm">
                     <span className="font-medium">Message:</span> {inq.additionalMessage}
                   </div>
                 )}
+
+                {inq.customQuestions && typeof inq.customQuestions === "object" && Object.keys(inq.customQuestions || {}).length > 0 && (
+                  <div className="mt-3 text-sm text-gray-700">
+                    <div className="space-y-1">
+                      {Object.entries(inq.customQuestions as Record<string, any>).map(([k, v]) => (
+                        <div key={k} className="flex flex-col md:flex-row md:items-start md:gap-2">
+                          <span className="text-gray-500 capitalize">{k.replace(/[-_]/g, " ")}{":"}</span>
+                          <span className="text-gray-800 break-words">{String(v)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {inq.createdAt && (
                   <div className="mt-2 text-xs text-gray-400">Submitted: {new Date(inq.createdAt).toLocaleString()}</div>
                 )}

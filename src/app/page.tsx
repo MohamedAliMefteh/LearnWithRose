@@ -141,17 +141,28 @@ export default function HomePage() {
     e.preventDefault();
 
     try {
+      // Derive the selected course title (prefer a human-friendly name). Fallback to stored interestedCourse if any.
+      const selectedCourseTitle = (() => {
+        if (selectedCourse) {
+          const found = courses.find((c) => String(c.id) === String(selectedCourse));
+          return found?.title ?? String(selectedCourse);
+        }
+        return formData.interestedCourse || "";
+      })();
+
       const inquiryData = {
-        fullName: "string",
-        email: "string",
-        phoneNumber: "string",
-        interestedCourse: "string",
-        arabicLearningExperience: "string",
-        additionalMessage: "string",
+        fullName: formData.fullName,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber,
+        interestedCourse: selectedCourseTitle,
+        arabicLearningExperience: formData.arabicLearningExperience,
+        additionalMessage: formData.additionalMessage,
+        // Send extra form answers as a flexible map so backend can capture them
         customQuestions: {
-          additionalProp1: "string",
-          additionalProp2: "string",
-          additionalProp3: "string",
+          motivation: formData.motivation,
+          timeZone: formData.timeZone,
+          genocideCondemnation: formData.genocideCondemnation,
+          commitment: formData.commitment? "true":"false",
         },
       };
 
