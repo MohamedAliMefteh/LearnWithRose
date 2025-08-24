@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Globe, Home, Settings, User, LogOut } from "lucide-react";
+import { Home, Settings, User, LogOut } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
 import { toast } from "sonner";
 
@@ -30,7 +31,7 @@ export function DashboardNavbar() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-8">
             <Link href="/dashboard" className="flex items-center space-x-2">
-              <Globe className="h-8 w-8 text-primary" />
+              <Image src="/logo.png" alt="ROSE Logo" width={56} height={56} className="h-14 w-14" />
               <span className="text-xl font-bold text-primary">
                 Learn Arabic with ROSE
               </span>

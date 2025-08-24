@@ -19,6 +19,11 @@ export const metadata: Metadata = {
     description: "Master authentic Palestinian & Jordanian Arabic accents",
     type: "website",
   },
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({

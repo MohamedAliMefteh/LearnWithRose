@@ -1,15 +1,64 @@
-// Helper to strip HTML and limit preview length
-function getPreview(html: string, maxLength: number) {
-  if (typeof window !== 'undefined') {
-    const tmp = window.document.createElement("div");
-    tmp.innerHTML = html;
-    var text = tmp.textContent || tmp.innerText || "";
-    if (text.length > maxLength) {
-      return text.slice(0, maxLength) + "...";
-    }
-    return text;
+// Helper to strip Markdown/HTML and limit preview length
+function decodeEntities(str: string) {
+  return str
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+}
+
+function stripMarkdown(input: string) {
+  if (!input) return "";
+  let text = input
+    // Normalize line breaks
+    .replace(/\r\n?|\n/g, "\n")
+    // Remove fenced code blocks ``` ``` and ~~~ ~~~
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/~~~[\s\S]*?~~~/g, " ")
+    // Remove inline code `code`
+    .replace(/`[^`]*`/g, " ")
+    // Images ![alt](url) -> alt
+    .replace(/!\[([^\]]*)\]\([^\)]*\)/g, "$1")
+    // Links [text](url) -> text
+    .replace(/\[([^\]]+)\]\([^\)]*\)/g, "$1")
+    // Reference-style links: [text][id] -> text
+    .replace(/\[([^\]]+)\]\[[^\]]*\]/g, "$1")
+    // Remove link definitions: [id]: url "title"
+    .replace(/^\s*\[[^\]]+\]:\s+\S+.*$/gm, "")
+    // Autolinks <http://...> -> remove URL
+    .replace(/<https?:\/\/[^>]+>/gi, " ")
+    // ATX headings with/without space after #
+    .replace(/^\s{0,3}#{1,6}\s*/gm, "")
+    // Blockquotes > or >>
+    .replace(/^\s{0,3}>+\s?/gm, "")
+    // Lists: -, *, +, or ordered lists
+    .replace(/^\s{0,3}([*+-]|\d+\.)\s+/gm, "")
+    // Setext heading underline lines (=== or ---)
+    .replace(/^\s{0,3}(=+|-+)\s*$/gm, "")
+    // Tables: remove header separators and turn pipes into spaces
+    .replace(/^\s*[:\-| ]+\|[:\-\| ]+\s*$/gm, "")
+    .replace(/\|/g, " ")
+    // Emphasis/strong/strike markers left over
+    .replace(/[*_~]{1,3}/g, "")
+    // Remove remaining HTML tags
+    .replace(/<[^>]+>/g, " ")
+    // Collapse multiple newlines and spaces
+    .replace(/\n+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  // Decode common HTML entities
+  text = decodeEntities(text);
+  return text;
+}
+
+function getPreview(textOrMarkdown: string, maxLength: number) {
+  const text = stripMarkdown(textOrMarkdown);
+  if (text.length > maxLength) {
+    return text.slice(0, maxLength) + "...";
   }
-  return "";
+  return text;
 }
 import { Button } from "@/components/ui/button";
 import {
@@ -33,7 +82,7 @@ interface CourseCardProps {
 export function CourseCard({ course, onInquiry, showDetailsButton = true }: CourseCardProps) {
   return (
   <Card className="border-[hsl(var(--secondary-yellow))] hover:shadow-lg transition-shadow w-full max-w-md mx-auto md:max-w-none">
-  <div className="aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 rounded-t-lg flex items-center justify-center">
+  <div className="aspect-video bg-gradient-to-br from-white to-secondary/10 rounded-t-lg flex items-center justify-center">
         <Play className="h-12 w-12 sm:h-16 sm:w-16 text-primary" />
       </div>
       <CardHeader>

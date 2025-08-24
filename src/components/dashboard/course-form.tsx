@@ -1,7 +1,4 @@
 "use client";
-import dynamic from "next/dynamic";
-import "react-quill/dist/quill.snow.css";
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -88,24 +85,15 @@ export function CourseForm({ course, onSave, onCancel }: CourseFormProps) {
           </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Description *</label>
-                <ReactQuill
-                  theme="snow"
+                <label className="text-sm font-medium">Description (Markdown supported) *</label>
+                <Textarea
+                  required
                   value={formData.description}
-                  onChange={value => setFormData({ ...formData, description: value })}
-                  placeholder="Course description"
-                  modules={{
-                    toolbar: [
-                      [{ 'header': [1, 2, false] }],
-                      ['bold', 'italic', 'underline', 'strike'],
-                      [{ 'color': [] }, { 'background': [] }],
-                      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                      ['emoji'],
-                      ['link', 'image'],
-                      ['clean']
-                    ]
-                  }}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="Write the course description in Markdown (e.g., headings, lists, bold, links)"
+                  className="min-h-[220px] font-mono"
                 />
+                <p className="text-xs text-muted-foreground">Tip: Use Markdown syntax like # Heading, **bold**, *italic*, - lists, and [links](https://example.com).</p>
               </div>
 
           <div className="grid md:grid-cols-2 gap-6">

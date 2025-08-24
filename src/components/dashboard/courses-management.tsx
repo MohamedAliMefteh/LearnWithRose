@@ -147,7 +147,7 @@ export function CoursesManagement() {
               <p className="text-gray-600 mt-2">
                 Manage the courses displayed on your homepage
                 {!token && (
-                  <span className="text-orange-600"> (Creating/editing requires authentication)</span>
+                  <span className="text-[#0420bf]"> (Creating/editing requires authentication)</span>
                 )}
               </p>
             </div>

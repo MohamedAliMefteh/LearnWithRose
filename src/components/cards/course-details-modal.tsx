@@ -1,6 +1,12 @@
 import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Clock, Users, Star, Play } from "lucide-react";
+import Link from "next/link";
 import { Course } from "@/types/api";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface CourseDetailsModalProps {
   open: boolean;
@@ -12,27 +18,75 @@ export function CourseDetailsModal({ open, onClose, course }: CourseDetailsModal
   if (!course) return null;
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="w-[95vw] max-w-3xl h-[90vh] max-h-[90vh] p-0 rounded-2xl bg-white shadow-2xl flex flex-col overflow-hidden">
-        {/* Upper Section: Title & Details */}
-  <div className="p-6 sm:p-10 bg-gradient-to-r from-primary/10 to-secondary/10 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-12 border-b-2 border-[hsl(var(--secondary-yellow))]">
-          <div className="flex-1 w-full">
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-primary mb-4 text-center md:text-left">{course.title}</h2>
-            <div className="flex flex-wrap gap-4 sm:gap-6 text-base sm:text-lg justify-center md:justify-start">
-              <span className="bg-primary/10 px-3 py-1 sm:px-4 sm:py-2 rounded-lg"><strong>Accent:</strong> <span className="capitalize text-accent">{course.accent}</span></span>
-              <span className="bg-secondary/20 px-3 py-1 sm:px-4 sm:py-2 rounded-lg"><strong>Level:</strong> <span className="capitalize text-primary">{course.level}</span></span>
-              <span className="bg-primary/10 px-3 py-1 sm:px-4 sm:py-2 rounded-lg"><strong>Duration:</strong> <span className="text-primary">{course.duration}</span></span>
-              <span className="bg-secondary/20 px-3 py-1 sm:px-4 sm:py-2 rounded-lg"><strong>Students:</strong> <span className="text-primary">{course.students}</span></span>
-              <span className="bg-primary/10 px-3 py-1 sm:px-4 sm:py-2 rounded-lg"><strong>Price:</strong> <span className="text-primary font-bold">${course.price}</span></span>
-              <span className="bg-secondary/20 px-3 py-1 sm:px-4 sm:py-2 rounded-lg"><strong>Rating:</strong> <span className="text-primary">{course.rating}</span></span>
+      <DialogContent className="w-[96vw] max-w-4xl h-[92vh] max-h-[92vh] p-0 rounded-2xl bg-white/90 backdrop-blur-md shadow-2xl border border-primary/10 overflow-hidden">
+        {/* Hero + Title */}
+        <div className="relative isolate p-6 sm:p-8 md:p-10 bg-gradient-to-br from-white via-accent/10 to-secondary/10">
+          <div className="absolute -top-16 -right-16 size-40 sm:size-56 rounded-full bg-primary/10 blur-3xl" />
+          <div className="absolute -bottom-16 -left-16 size-40 sm:size-56 rounded-full bg-accent/10 blur-3xl" />
+
+          <div className="flex items-start gap-4 sm:gap-6">
+            <div className="shrink-0 inline-flex items-center justify-center size-14 sm:size-16 rounded-2xl bg-white/80 border border-primary/20 shadow-md">
+              <Play className="size-7 sm:size-8 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary leading-tight whitespace-normal break-words">
+                {course.title}
+              </h2>
+              <div className="mt-3 flex flex-wrap items-center gap-2 sm:gap-3">
+                <Badge variant="secondary" className="capitalize">{course.accent} accent</Badge>
+                <Badge className="capitalize">{course.level}</Badge>
+                <div className="flex items-center gap-1 rounded-md px-2 py-1 bg-primary/90 text-primary-foreground shadow-sm">
+                  <Star className="h-4 w-4 fill-current" />
+                  <span className="text-sm font-semibold">{course.rating}</span>
+                </div>
+                <div className="ml-auto hidden sm:flex items-center gap-4 text-sm text-foreground/80">
+                  <div className="inline-flex items-center gap-2"><Clock className="h-4 w-4" />{course.duration}</div>
+                  <div className="inline-flex items-center gap-2"><Users className="h-4 w-4" />{course.students} students</div>
+                </div>
+              </div>
             </div>
           </div>
-          {/* Removed custom close icon, using Dialog's built-in close icon */}
         </div>
-        {/* Lower Section: Description */}
-        <div className="flex-1 p-6 sm:p-10 overflow-y-auto">
-          <h3 className="text-xl sm:text-2xl font-bold text-primary mb-4">Course Description</h3>
-          <div className="text-base sm:text-xl text-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: course.description }} />
+
+        {/* Content */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-6 p-6 sm:p-8 h-[calc(92vh-180px)] md:h-[calc(92vh-196px)] overflow-hidden">
+          {/* Description */}
+          <div className="md:col-span-2 rounded-xl border border-primary/10 bg-white/70 backdrop-blur p-4 sm:p-6 overflow-y-auto">
+            <DialogHeader className="mb-3">
+              <DialogTitle className="text-lg sm:text-xl font-bold text-primary">Course Description</DialogTitle>
+              <DialogDescription className="sr-only">Detailed description of the selected course</DialogDescription>
+            </DialogHeader>
+            <div className="prose max-w-none text-foreground/90 leading-relaxed text-sm sm:text-base [&_button]:hidden [&_.button]:hidden [&_.btn]:hidden">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{course.description}</ReactMarkdown>
+            </div>
+          </div>
+
+          {/* At a glance (only) */}
+          <div className="space-y-4 md:space-y-6">
+            <div className="rounded-xl border border-primary/10 bg-white/70 backdrop-blur p-4 sm:p-5">
+              <h4 className="text-sm font-semibold text-primary mb-3">At a glance</h4>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="flex flex-col rounded-lg border border-primary/10 p-3">
+                  <span className="text-xs text-foreground/60">Duration</span>
+                  <span className="font-medium">{course.duration}</span>
+                </div>
+                <div className="flex flex-col rounded-lg border border-primary/10 p-3">
+                  <span className="text-xs text-foreground/60">Students</span>
+                  <span className="font-medium">{course.students}</span>
+                </div>
+                <div className="flex flex-col rounded-lg border border-primary/10 p-3">
+                  <span className="text-xs text-foreground/60">Level</span>
+                  <span className="font-medium capitalize">{course.level}</span>
+                </div>
+                <div className="flex flex-col rounded-lg border border-primary/10 p-3">
+                  <span className="text-xs text-foreground/60">Price</span>
+                  <span className="font-bold text-primary">${course.price}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
       </DialogContent>
     </Dialog>
   );

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -116,7 +117,7 @@ export default function HomePage() {
         console.error("Failed to load data:", error);
         // Fallback to empty/default data
         setCourses([]);
-        setResources(getDigitalResources());
+        setResources([]);
         setReviews([]);
         setBioData(null);
         setLoadingStates({
@@ -208,16 +209,16 @@ export default function HomePage() {
 
   return (
     <div
-      className={`min-h-screen bg-gradient-to-br from-primary/5 via-secondary/10 to-accent/10${isDark ? " dark" : ""}`}
+      className={`min-h-screen bg-gradient-to-br from-white via-secondary/10 to-accent/10${isDark ? " dark" : ""}`}
     >
       {/* Navigation */}
       <nav className="bg-white/80 backdrop-blur-md border-b border-primary/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
-              <Globe className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold text-primary">
-                Learn Arabic with ROSE
+              <Image src="/logo.png" alt="ROSE Logo" width={56} height={56} className="h-14 w-14" />
+              <span className="text-4xl font-bold text-primary">
+                ROSE
               </span>
             </div>
             <div className="hidden md:flex items-center space-x-8">
@@ -257,7 +258,7 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8">
+      <section className="relative py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
@@ -271,25 +272,25 @@ export default function HomePage() {
                 ) : (
                   <>
                     {bioData?.heroSection?.tag && (
-                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-full shadow-sm hover:shadow-md transition-all duration-300 group">
+                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-white to-accent/10 border border-primary/20 rounded-full shadow-sm hover:shadow-md transition-all duration-300 group">
                         <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
                         <span className="text-sm font-semibold text-[hsl(var(--primary))] group-hover:text-[hsl(var(--primary))]/80 transition-colors">
                           {bioData.heroSection.tag}
                         </span>
                       </div>
                     )}
-                    <h1 className="text-5xl lg:text-6xl font-bold text-[hsl(var(--foreground))] leading-tight">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[hsl(var(--foreground))] leading-tight tracking-tight text-center sm:text-left">
                       {bioData?.heroSection?.title || "Loading..."}
                     </h1>
                     {bioData?.heroSection?.description && (
-                      <p className="text-xl text-[hsl(var(--foreground))] leading-relaxed">
+                      <p className="text-base sm:text-lg md:text-xl text-[hsl(var(--foreground))] leading-relaxed text-center sm:text-left max-w-prose mx-auto sm:mx-0">
                         {bioData.heroSection.description}
                       </p>
                     )}
                   </>
                 )}
               </div>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center sm:justify-start">
                 <Button
                   size="lg"
                   className="bg-primary hover:bg-primary/90 text-lg px-8 py-6"
@@ -308,7 +309,7 @@ export default function HomePage() {
                 </Button>
               </div>
               {loadingStates.bio ? (
-                <div className="flex items-center space-x-8 pt-4">
+                <div className="flex items-center space-x-8 pt-4 justify-center sm:justify-start">
                   <div className="text-center">
                     <Skeleton className="h-8 w-16 mx-auto mb-2" />
                     <Skeleton className="h-4 w-20 mx-auto" />
@@ -324,7 +325,7 @@ export default function HomePage() {
                 </div>
               ) : (
                 bioData?.heroSection?.stats && (
-                  <div className="flex items-center space-x-8 pt-4">
+                  <div className="flex items-center space-x-8 pt-4 justify-center sm:justify-start">
                     {bioData.heroSection.stats.studentsTaught && (
                       <div className="text-center">
                         <div className="text-3xl font-bold text-[hsl(var(--primary))]">
@@ -360,109 +361,53 @@ export default function HomePage() {
               )}
             </div>
             <div className="relative max-w-lg mx-auto">
-              {/* Teacher's name - removed as it's not in new schema */}
+                <div className="relative flex items-center justify-center">
+                  <div
+                    className="absolute w-80 h-96 bg-primary/90"
+                    style={{
+                      borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%',
+                      transform: 'rotate(25deg) translate(-100px, 50px)',
+                      zIndex: 1,
+                    }}
+                  />
+                  <div
+                    className="relative w-[500px] h-[400px] bg-accent/90 overflow-hidden"
+                    style={{
+                      borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%',
+                      transform: 'rotate(-10deg)',
+                      zIndex: 2,
+                    }}
+                  >
+                    {/* Hero image clipped by the yellow blob shape */}
+                    <Image
+                      src="/HeroImage.png"
+                      alt="Learn Arabic with Rose"
+                      fill
+                      sizes="(min-width: 1024px) 500px, 100vw"
+                      className="object-cover object-center scale-110 translate-x-2"
+                      priority
+                    />
 
-              {/* Experience Years badge */}
-              {loadingStates.bio ? (
-                <div className="absolute -top-8 -right-8 bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-primary/20">
-                  <div className="text-center">
-                    <Skeleton className="h-5 w-5 mx-auto mb-1" />
-                    <Skeleton className="h-4 w-8" />
-                  </div>
-                </div>
-              ) : (
-                bioData?.heroSection?.stats?.yearsExperience && (
-                  <div className="absolute -top-8 -right-8 bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-primary/20">
-                    <div className="text-center">
-                      <Award className="h-5 w-5 text-primary mx-auto mb-1" />
-                      <div className="text-sm font-semibold text-gray-700">
-                        {bioData.heroSection.stats.yearsExperience}
-                      </div>
+                    {/* Decorative dots over the image */}
+                    <div className="pointer-events-none absolute top-8 right-12 grid grid-cols-4 gap-2 z-10">
+                      {Array.from({ length: 8 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className="w-3 h-3 rounded-full bg-foreground/70"
+                        />
+                      ))}
+                    </div>
+                    <div className="pointer-events-none absolute left-8 top-1/2 grid grid-cols-2 gap-2 z-10">
+                      {Array.from({ length: 8 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className="w-3 h-3 rounded-full bg-foreground/70"
+                        />
+                      ))}
                     </div>
                   </div>
-                )
-              )}
-
-              {/* Tag badge */}
-              {loadingStates.bio ? (
-                <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gradient-to-br from-white via-white/95 to-primary/5 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-primary/10">
-                  <div className="text-center">
-                    <Skeleton className="h-3 w-16 mb-1" />
-                    <Skeleton className="h-4 w-20" />
-                  </div>
                 </div>
-              ) : (
-                bioData?.heroSection?.tag && (
-                  <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gradient-to-br from-white via-white/95 to-primary/5 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-primary/10 hover:border-primary/20 transition-all duration-300 group">
-                    <div className="text-center relative">
-                      <div className="absolute -top-1 -left-1 w-3 h-3 bg-primary/20 rounded-full animate-ping"></div>
-                      <div className="text-xs font-bold text-[hsl(var(--secondary))]/70 uppercase tracking-wider mb-1">
-                        Certified
-                      </div>
-                      <div className="text-sm font-semibold text-[hsl(var(--secondary))] group-hover:text-[hsl(var(--secondary))]/80 transition-colors">
-                        {bioData.heroSection.tag}
-                      </div>
-                    </div>
-                  </div>
-                )
-              )}
-
-              {/* Dotted arrow with two turns from image to name */}
-              <svg
-                className="absolute -top-8 -left-8 w-32 h-32 pointer-events-none"
-                viewBox="0 0 128 128"
-              >
-                {/* First segment: from image center going up */}
-                <line
-                  x1="64"
-                  y1="64"
-                  x2="64"
-                  y2="32"
-                  stroke="rgb(232, 79, 48)"
-                  strokeWidth="2"
-                  strokeDasharray="4 4"
-                  opacity="0.7"
-                />
-                {/* Second segment: horizontal turn */}
-                <line
-                  x1="64"
-                  y1="32"
-                  x2="32"
-                  y2="32"
-                  stroke="rgb(232, 79, 48)"
-                  strokeWidth="2"
-                  strokeDasharray="4 4"
-                  opacity="0.7"
-                />
-                {/* Third segment: vertical to name */}
-                <line
-                  x1="32"
-                  y1="32"
-                  x2="32"
-                  y2="16"
-                  stroke="rgb(232, 79, 48)"
-                  strokeWidth="2"
-                  strokeDasharray="4 4"
-                  opacity="0.7"
-                />
-                {/* Arrow head */}
-                <polygon
-                  points="28,16 36,16 32,8"
-                  fill="rgb(232, 79, 48)"
-                  opacity="0.7"
-                />
-              </svg>
-
-              {/* Main image container */}
-              <div className="w-64 h-64 bg-gradient-to-br from-primary/20 via-accent/10 to-primary/30 rounded-full p-4 relative overflow-hidden shadow-xl mx-auto">
-                <div className="w-full h-full bg-gray-200 rounded-full flex items-center justify-center">
-                  <div className="text-center text-gray-500">
-                    <div className="w-16 h-16 bg-gray-300 rounded-full mx-auto mb-2"></div>
-                    <div className="text-sm font-medium">Profile Photo</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+             </div>
           </div>
         </div>
       </section>
@@ -470,7 +415,7 @@ export default function HomePage() {
       {/* About Section */}
       <section
         id="about"
-        className="py-20 bg-gradient-to-br from-primary/10 via-accent/10 to-card/20 relative"
+        className="py-20 bg-gradient-to-br from-white via-accent/10 to-card/20 relative"
       >
         <div
           className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10"
@@ -484,20 +429,11 @@ export default function HomePage() {
             <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
               Meet <span className="text-primary">Rose</span>, Your Teacher
             </h2>
-            {loadingStates.bio ? (
-              <Skeleton className="h-6 w-96 mx-auto" />
-            ) : (
-              bioData?.heroSection?.description && (
-                <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
-                  {bioData.heroSection.description}
-                </p>
-              )
-            )}
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 items-stretch group">
             {loadingStates.bio ? (
               <>
-                <Card className="border-orange-200">
+                <Card className="border-primary">
                   <CardHeader>
                     <Skeleton className="h-12 w-12 mb-4" />
                     <Skeleton className="h-6 w-32" />
@@ -507,7 +443,7 @@ export default function HomePage() {
                     <Skeleton className="h-4 w-3/4" />
                   </CardContent>
                 </Card>
-                <Card className="border-orange-200">
+                <Card className="border-primary">
                   <CardHeader>
                     <Skeleton className="h-12 w-12 mb-4" />
                     <Skeleton className="h-6 w-32" />
@@ -517,7 +453,7 @@ export default function HomePage() {
                     <Skeleton className="h-4 w-3/4" />
                   </CardContent>
                 </Card>
-                <Card className="border-orange-200">
+                <Card className="border-primary">
                   <CardHeader>
                     <Skeleton className="h-12 w-12 mb-4" />
                     <Skeleton className="h-6 w-32" />
@@ -533,12 +469,12 @@ export default function HomePage() {
                 const icons = [Award, Users, BookOpen];
                 const IconComponent = icons[index % icons.length];
                 return (
-                  <Card key={index} className="border-orange-200">
+                  <Card key={index} className="border-primary h-full flex flex-col transform-gpu transition-all duration-300 group-hover:[&:not(:hover)]:blur-[1.5px] hover:blur-0 hover:scale-[1.03] hover:shadow-xl hover:z-10">
                     <CardHeader>
                       <IconComponent className="h-12 w-12 text-primary mb-4" />
                       <CardTitle>{item.title}</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="flex-1">
                       <p className="text-[hsl(var(--foreground))]">
                         {item.description}
                       </p>
@@ -600,83 +536,87 @@ export default function HomePage() {
       </section>
 
       {/* Resources Section */}
-      <section
-        id="resources"
-        className="py-20 bg-gradient-to-br from-primary/10 via-accent/10 to-card/20 relative"
-      >
-        <div
-          className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10"
-          style={{
-            background:
-              "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)",
-          }}
-        />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
-              Digital Resources
-            </h2>
-            <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
-              Complement your learning with our curated collection of PDFs,
-              audio guides, and reference materials for Palestinian and
-              Jordanian Arabic.
-            </p>
+      {(loadingStates.resources || resources.length > 0) && (
+        <section
+          id="resources"
+          className="py-20 bg-gradient-to-br from-white via-accent/10 to-card/20 relative"
+        >
+          <div
+            className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10"
+            style={{
+              background:
+                "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)",
+            }}
+          />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
+                Digital Resources
+              </h2>
+              <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
+                Complement your learning with our curated collection of PDFs,
+                audio guides, and reference materials for Palestinian and
+                Jordanian Arabic.
+              </p>
+            </div>
+            {loadingStates.resources ? (
+              <div className="grid md:grid-cols-3 gap-8">
+                <div className="h-32 bg-gray-200 rounded animate-pulse" />
+                <div className="h-32 bg-gray-200 rounded animate-pulse" />
+                <div className="h-32 bg-gray-200 rounded animate-pulse" />
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-3 gap-8">
+                {resources.map((resource, index) => (
+                  <DigitalResourceCard key={index} resource={resource} />
+                ))}
+              </div>
+            )}
           </div>
-          {loadingStates.resources ? (
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="h-32 bg-gray-200 rounded animate-pulse" />
-              <div className="h-32 bg-gray-200 rounded animate-pulse" />
-              <div className="h-32 bg-gray-200 rounded animate-pulse" />
-            </div>
-          ) : (
-            <div className="grid md:grid-cols-3 gap-8">
-              {resources.map((resource, index) => (
-                <DigitalResourceCard key={index} resource={resource} />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-gradient-to-br from-secondary/10 via-card/10 to-background/20 relative">
-        <div
-          className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10"
-          style={{
-            background:
-              "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)",
-          }}
-        />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
-              What Students Say
-            </h2>
-            <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
-              Hear from learners who have transformed their Arabic pronunciation
-              and cultural understanding.
-            </p>
+      {(loadingStates.reviews || reviews.length > 0) && (
+        <section className="py-20 bg-gradient-to-br from-secondary/10 via-card/10 to-background/20 relative">
+          <div
+            className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10"
+            style={{
+              background:
+                "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)",
+            }}
+          />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
+                What Students Say
+              </h2>
+              <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
+                Hear from learners who have transformed their Arabic pronunciation
+                and cultural understanding.
+              </p>
+            </div>
+            {loadingStates.reviews ? (
+              <div className="grid md:grid-cols-3 gap-8">
+                <div className="h-32 bg-gray-200 rounded animate-pulse" />
+                <div className="h-32 bg-gray-200 rounded animate-pulse" />
+                <div className="h-32 bg-gray-200 rounded animate-pulse" />
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-3 gap-8">
+                {reviews.map((review, index) => (
+                  <ReviewCard key={index} review={review} />
+                ))}
+              </div>
+            )}
           </div>
-          {loadingStates.reviews ? (
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="h-32 bg-gray-200 rounded animate-pulse" />
-              <div className="h-32 bg-gray-200 rounded animate-pulse" />
-              <div className="h-32 bg-gray-200 rounded animate-pulse" />
-            </div>
-          ) : (
-            <div className="grid md:grid-cols-3 gap-8">
-              {reviews.map((review, index) => (
-                <ReviewCard key={index} review={review} />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Contact Form */}
       <section
         id="contact"
-        className="py-20 bg-gradient-to-br from-primary/10 via-accent/10 to-card/20 relative"
+        className="py-20 bg-gradient-to-br from-white via-accent/10 to-card/20 relative"
       >
         <div
           className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10"
@@ -697,7 +637,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <Card id="contact-form" className="border-orange-200">
+          <Card id="contact-form" className="border-primary">
             <CardHeader>
               <div className="mb-6 text-center">
                 <div className="text-3xl mb-2">
