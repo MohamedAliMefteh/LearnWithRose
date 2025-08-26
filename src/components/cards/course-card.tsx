@@ -92,7 +92,7 @@ export function CourseCard({ course, onInquiry, showDetailsButton = true }: Cour
               course.accent === "palestinian" ? "default" : "secondary"
             }
           >
-            {course.accent === "palestinian" ? "Palestinian" : "Jordanian"}
+            {course.accent}
           </Badge>
           <div className="flex items-center">
             <Star className="h-4 w-4 text-secondary fill-current" />

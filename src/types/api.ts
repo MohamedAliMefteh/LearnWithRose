@@ -3,7 +3,7 @@ export interface Course {
   id: string | number;
   title: string;
   description: string;
-  accent: "palestinian" | "jordanian";
+  accent: string;
   level: "beginner" | "intermediate" | "advanced";
   duration: string;
   price: number;
@@ -150,6 +150,17 @@ export interface LegacyBioData {
     culturalAmbassador: boolean;
     personalizedApproach: boolean;
   };
+}
+
+// Blog types
+export interface BlogPost {
+  id?: string | number;
+  title: string;
+  content: string;
+  author: string;
+  createdDate?: string;
+  created?: string;
+  created_at?: string;
 }
 
 // API Response types

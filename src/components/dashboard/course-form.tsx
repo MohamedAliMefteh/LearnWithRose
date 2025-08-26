@@ -29,7 +29,7 @@ export function CourseForm({ course, onSave, onCancel }: CourseFormProps) {
   const [formData, setFormData] = useState({
     title: course?.title || "",
     description: course?.description || "",
-    accent: course?.accent || "palestinian",
+    accent: course?.accent || "",
     level: course?.level || "beginner",
     duration: course?.duration || "",
     price: course?.price || 0,
@@ -45,7 +45,7 @@ export function CourseForm({ course, onSave, onCancel }: CourseFormProps) {
       onSave({ ...course, ...formData });
     } else {
       // Adding new course
-      onSave(formData);
+      onSave({ ...formData, rating: 5 });
     }
   };
 
@@ -98,21 +98,17 @@ export function CourseForm({ course, onSave, onCancel }: CourseFormProps) {
 
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Accent *</label>
-              <Select
-                value={formData.accent}
-                onValueChange={(value: "palestinian" | "jordanian") =>
-                  setFormData({ ...formData, accent: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="palestinian">Palestinian</SelectItem>
-                  <SelectItem value="jordanian">Jordanian</SelectItem>
-                </SelectContent>
-              </Select>
+              <label className="text-sm font-medium">Dialect *</label>
+              <Input
+                required
+                list="dialect-options"
+                value={formData.accent || ""}
+                onChange={(e) => setFormData({ ...formData, accent: e.target.value })}
+                placeholder="e.g. Palestinian-Jordanian or type your own"
+              />
+              <datalist id="dialect-options">
+                <option value="Palestinian-Jordanian" />
+              </datalist>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Level *</label>
@@ -161,21 +157,23 @@ export function CourseForm({ course, onSave, onCancel }: CourseFormProps) {
                 placeholder="150"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Rating *</label>
-              <Input
-                type="number"
-                required
-                min="1"
-                max="5"
-                step="0.1"
-                value={formData.rating}
-                onChange={(e) =>
-                  setFormData({ ...formData, rating: parseFloat(e.target.value) || 5.0 })
-                }
-                placeholder="4.9"
-              />
-            </div>
+            {course && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Rating *</label>
+                <Input
+                  type="number"
+                  required
+                  min="1"
+                  max="5"
+                  step="0.1"
+                  value={formData.rating}
+                  onChange={(e) =>
+                    setFormData({ ...formData, rating: parseFloat(e.target.value) || 5.0 })
+                  }
+                  placeholder="4.9"
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex gap-4 pt-4">

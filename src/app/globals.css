@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 @layer base {
   /**
    * Tailwind CSS theme
@@ -103,4 +104,19 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* CKEditor sizing tweaks */
+/* Ensure the Decoupled Document Editor editable area is comfortably tall */
+.ck-editor__editable,
+.ck-editor__editable_inline {
+  min-height: 320px; /* increase if you want it even taller */
+}
+
+/* Make sure the editor fills the container width and has proper box sizing */
+.ck.ck-editor,
+.ck-editor__editable,
+.ck-editor__editable_inline {
+  width: 100%;
+  box-sizing: border-box;
 }

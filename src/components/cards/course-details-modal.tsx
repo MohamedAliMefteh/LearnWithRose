@@ -2,7 +2,7 @@ import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Users, Star, Play } from "lucide-react";
+import { Clock, Users, Play } from "lucide-react";
 import Link from "next/link";
 import { Course } from "@/types/api";
 import ReactMarkdown from "react-markdown";
@@ -33,12 +33,8 @@ export function CourseDetailsModal({ open, onClose, course }: CourseDetailsModal
                 {course.title}
               </h2>
               <div className="mt-3 flex flex-wrap items-center gap-2 sm:gap-3">
-                <Badge variant="secondary" className="capitalize">{course.accent} accent</Badge>
+                <Badge variant="secondary" className="capitalize">{course.accent} dialect</Badge>
                 <Badge className="capitalize">{course.level}</Badge>
-                <div className="flex items-center gap-1 rounded-md px-2 py-1 bg-primary/90 text-primary-foreground shadow-sm">
-                  <Star className="h-4 w-4 fill-current" />
-                  <span className="text-sm font-semibold">{course.rating}</span>
-                </div>
                 <div className="ml-auto hidden sm:flex items-center gap-4 text-sm text-foreground/80">
                   <div className="inline-flex items-center gap-2"><Clock className="h-4 w-4" />{course.duration}</div>
                   <div className="inline-flex items-center gap-2"><Users className="h-4 w-4" />{course.students} students</div>

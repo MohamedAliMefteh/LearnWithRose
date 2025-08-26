@@ -9,10 +9,11 @@ import { DigitalResourcesManagement } from "@/components/dashboard/digital-resou
 import { ReviewsManagement } from "@/components/dashboard/reviews-management";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, BookOpen, Download, Star, Palette } from "lucide-react";
+import { User, BookOpen, Download, Star, Palette, Newspaper } from "lucide-react";
 import { ColorManagement } from "@/components/dashboard/color-management";
+import { BlogManagement } from "@/components/dashboard/blog-management";
 
-type ActiveSection = "overview" | "bio" | "courses" | "resources" | "reviews";
+type ActiveSection = "overview" | "bio" | "courses" | "resources" | "reviews" | "blog";
 
 export default function DashboardPage() {
   const [activeSection, setActiveSection] = useState<ActiveSection>("overview");
@@ -27,6 +28,8 @@ export default function DashboardPage() {
         return <DigitalResourcesManagement />;
       case "reviews":
         return <ReviewsManagement />;
+      case "blog":
+        return <BlogManagement />;
       default:
         return (
           <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
@@ -90,6 +93,22 @@ export default function DashboardPage() {
                 <div className="text-2xl font-bold">Testimonials</div>
                 <p className="text-xs text-muted-foreground">
                   Manage student reviews
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => setActiveSection("blog")}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Blog</CardTitle>
+                <Newspaper className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">Manage</div>
+                <p className="text-xs text-muted-foreground">
+                  Create, edit and delete blog posts
                 </p>
               </CardContent>
             </Card>

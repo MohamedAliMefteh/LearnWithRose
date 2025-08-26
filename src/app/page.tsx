@@ -247,6 +247,12 @@ export default function HomePage() {
                 Contact
               </button>
               <Link
+                href="/blog"
+                className="text-gray-800 hover:text-primary transition-colors"
+              >
+                Blog
+              </Link>
+              <Link
                 href="/dashboard"
                 className="text-gray-800 hover:text-primary transition-colors"
               >
@@ -502,12 +508,11 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
-              Arabic Accent Courses
+              Arabic Dialect Courses
             </h2>
             <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
               Choose from our carefully crafted courses designed to help you
-              master authentic Palestinian and Jordanian Arabic pronunciation
-              and conversation.
+              master Palestinian-Jordanian Dialects.
             </p>
           </div>
           {loadingStates.courses ? (
