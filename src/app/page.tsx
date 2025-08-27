@@ -47,6 +47,8 @@ import { coursesAPI } from "@/lib/courses-api";
 import { getDigitalResources } from "@/lib/digital-resources-data";
 import { getReviews } from "@/lib/reviews-data";
 import { bioAPI } from "@/lib/bio-api";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export default function HomePage() {
   const [selectedCourse, setSelectedCourse] = useState<string>("");
@@ -217,8 +219,8 @@ export default function HomePage() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
               <Image src="/logo.png" alt="ROSE Logo" width={56} height={56} className="h-14 w-14" />
-              <span className="text-4xl font-bold text-primary">
-                ROSE
+              <span className="text-xl sm:text-2xl font-bold text-primary">
+                Learn Arabic with ROSE
               </span>
             </div>
             <div className="hidden md:flex items-center space-x-8">
@@ -289,9 +291,11 @@ export default function HomePage() {
                       {bioData?.heroSection?.title || "Loading..."}
                     </h1>
                     {bioData?.heroSection?.description && (
-                      <p className="text-base sm:text-lg md:text-xl text-[hsl(var(--foreground))] leading-relaxed text-center sm:text-left max-w-prose mx-auto sm:mx-0">
-                        {bioData.heroSection.description}
-                      </p>
+                      <div className="prose prose-sm sm:prose md:prose-lg max-w-prose mx-auto sm:mx-0 text-[hsl(var(--foreground))] text-center sm:text-left">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {bioData.heroSection.description}
+                        </ReactMarkdown>
+                      </div>
                     )}
                   </>
                 )}
@@ -481,9 +485,11 @@ export default function HomePage() {
                       <CardTitle>{item.title}</CardTitle>
                     </CardHeader>
                     <CardContent className="flex-1">
-                      <p className="text-[hsl(var(--foreground))]">
-                        {item.description}
-                      </p>
+                      <div className="prose prose-sm text-[hsl(var(--foreground))]">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {item.description}
+                        </ReactMarkdown>
+                      </div>
                     </CardContent>
                   </Card>
                 );
@@ -516,12 +522,12 @@ export default function HomePage() {
             </p>
           </div>
           {loadingStates.courses ? (
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
               <div className="h-48 bg-gray-200 rounded animate-pulse" />
               <div className="h-48 bg-gray-200 rounded animate-pulse" />
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
               {courses.map((course) => (
                 <CourseCard
                   key={course.id}
@@ -534,6 +540,19 @@ export default function HomePage() {
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
                 course={modalCourse}
+                onEnroll={(course) => {
+                  if (course) {
+                    setSelectedCourse(String(course.id));
+                  }
+                  setModalOpen(false);
+                  // Scroll after closing to ensure smooth UX
+                  setTimeout(() => {
+                    const el = document.getElementById("contact-form");
+                    if (el) {
+                      el.scrollIntoView({ behavior: "smooth" });
+                    }
+                  }, 100);
+                }}
               />
             </div>
           )}
@@ -617,6 +636,21 @@ export default function HomePage() {
           </div>
         </section>
       )}
+
+      {/* Add Review Section */}
+      <section className="py-16 bg-gradient-to-br from-white via-accent/5 to-card/10">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Card className="border-primary/30">
+            <CardHeader>
+              <CardTitle>Leave a Review</CardTitle>
+              <CardDescription>Share your experience and help others choose the right course.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AddReviewForm onSubmitted={(newReview) => setReviews((prev) => [newReview, ...prev])} />
+            </CardContent>
+          </Card>
+        </div>
+      </section>
 
       {/* Contact Form */}
       <section
@@ -993,7 +1027,7 @@ export default function HomePage() {
             <div>
               <h3 className="font-semibold mb-4">Connect</h3>
               <div className="flex space-x-4">
-                <Instagram className="h-6 w-6 text-gray-400 hover:text-primary cursor-pointer" />
+                <Instagram className="h-6 w-6 text-gray-400 hover:text-primary cursor-pointer"  />
                 <Youtube className="h-6 w-6 text-gray-400 hover:text-primary cursor-pointer" />
                 <Mail className="h-6 w-6 text-gray-400 hover:text-primary cursor-pointer" />
               </div>
@@ -1006,5 +1040,126 @@ export default function HomePage() {
         </div>
       </footer>
     </div>
+  );
+}
+
+
+// Lightweight inline form to add a testimonial under the reviews section
+function AddReviewForm({ onSubmitted }: { onSubmitted: (newReview: Review) => void }) {
+  const [form, setForm] = useState({
+    name: "",
+    accent: "",
+    courseName: "",
+    rating: 5 as number,
+    content: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+
+    if (!form.name.trim()) {
+      setError("Please enter your name.");
+      return;
+    }
+    if (!form.content.trim()) {
+      setError("Please write your review.");
+      return;
+    }
+    if (form.rating < 1 || form.rating > 5) {
+      setError("Rating must be between 1 and 5.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const payload = { id: 0, ...form } as any;
+      const res = await fetch("/api/testimonials", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to submit review");
+      }
+
+      let created: any = null;
+      try {
+        created = await res.json();
+      } catch {}
+
+      const newReview: Review = {
+        id: created?.id ?? Date.now(),
+        name: created?.name ?? form.name,
+        accent: created?.accent ?? form.accent,
+        content: created?.content ?? form.content,
+        rating: created?.rating ?? form.rating,
+        profileImage: created?.profileImage ?? "",
+        courseName: created?.courseName ?? form.courseName,
+      };
+
+      onSubmitted(newReview);
+      setSuccess("Thank you! Your review has been submitted.");
+      setForm({ name: "", accent: "", courseName: "", rating: 5, content: "" });
+    } catch (err: any) {
+      setError(err?.message || "Something went wrong. Please try again later.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Input
+          placeholder="Your Name"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+        />
+        <Input
+          placeholder="Accent (e.g., Palestinian, Jordanian)"
+          value={form.accent}
+          onChange={(e) => setForm({ ...form, accent: e.target.value })}
+        />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Input
+          placeholder="Course Name (optional)"
+          value={form.courseName}
+          onChange={(e) => setForm({ ...form, courseName: e.target.value })}
+        />
+        <div className="flex items-center gap-3">
+          <label className="text-sm text-muted-foreground">Rating</label>
+          <Input
+            type="number"
+            min={1}
+            max={5}
+            value={form.rating}
+            onChange={(e) => setForm({ ...form, rating: Number(e.target.value) })}
+            className="w-28"
+          />
+        </div>
+      </div>
+      <Textarea
+        placeholder="Write your review..."
+        value={form.content}
+        onChange={(e) => setForm({ ...form, content: e.target.value })}
+        className="min-h-28"
+      />
+
+      {error && <p className="text-sm text-red-600">{error}</p>}
+      {success && <p className="text-sm text-green-700">{success}</p>}
+
+      <div className="flex justify-end">
+        <Button type="submit" disabled={submitting} className="min-w-36">
+          {submitting ? "Submitting..." : "Submit Review"}
+        </Button>
+      </div>
+    </form>
   );
 }

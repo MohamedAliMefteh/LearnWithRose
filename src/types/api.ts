@@ -4,10 +4,10 @@ export interface Course {
   title: string;
   description: string;
   accent: string;
-  level: "beginner" | "intermediate" | "advanced";
+  level: string;
   duration: string;
-  price: number;
-  students: number;
+  price: string; // changed from number to string
+  students: string; // changed from number to string
   rating: number;
   image?: string;
 }

@@ -69,7 +69,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star, Play, Clock, Users } from "lucide-react";
+import { Clock, Users } from "lucide-react";
 import { Course } from "@/types/api";
 
 interface CourseCardProps {
@@ -81,11 +81,16 @@ interface CourseCardProps {
 // Removed duplicate declaration
 export function CourseCard({ course, onInquiry, showDetailsButton = true }: CourseCardProps) {
   return (
-  <Card className="border-[hsl(var(--secondary-yellow))] hover:shadow-lg transition-shadow w-full max-w-md mx-auto md:max-w-none">
-  <div className="aspect-video bg-gradient-to-br from-white to-secondary/10 rounded-t-lg flex items-center justify-center">
-        <Play className="h-12 w-12 sm:h-16 sm:w-16 text-primary" />
+    <Card className="border-[hsl(var(--secondary-yellow))] hover:shadow-lg transition-shadow w-full h-full flex flex-col">
+      <div className="aspect-video rounded-t-lg overflow-hidden">
+        <img
+          src="/placeholdercourse.jpg"
+          alt={course.title || "Course image"}
+          className="w-full h-full object-cover scale-150"
+          loading="lazy"
+        />
       </div>
-      <CardHeader>
+      <CardHeader className="flex-1 p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row justify-between items-start mb-2 gap-2">
           <Badge
             variant={
@@ -94,18 +99,14 @@ export function CourseCard({ course, onInquiry, showDetailsButton = true }: Cour
           >
             {course.accent}
           </Badge>
-          <div className="flex items-center">
-            <Star className="h-4 w-4 text-secondary fill-current" />
-            <span className="ml-1 text-sm font-medium text-secondary">{course.rating}</span>
-          </div>
         </div>
-        <CardTitle className="text-lg sm:text-xl">{course.title}</CardTitle>
-        <CardDescription className="text-sm sm:text-base">
-          {getPreview(course.description, 120)}
+        <CardTitle className="text-base sm:text-lg">{course.title}</CardTitle>
+        <CardDescription className="text-xs sm:text-sm">
+          {getPreview(course.description, 70)}
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+      <CardContent className="mt-auto p-3 sm:p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
           <div className="flex items-center text-xs sm:text-sm text-foreground">
             <Clock className="h-4 w-4 mr-2" />
             {course.duration}

@@ -248,7 +248,7 @@ export function CoursesManagement() {
             </div>
             <div className="text-center p-4 bg-amber-50 rounded-lg">
               <div className="text-2xl font-bold text-amber-600">
-                {courses.reduce((sum, course) => sum + course.students, 0)}
+                {courses.reduce((sum, course) => sum + (parseInt(String(course.students)) || 0), 0)}
               </div>
               <div className="text-sm text-gray-600">Total Students</div>
             </div>

@@ -65,7 +65,7 @@ export default function BlogPage() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
               <Image src="/logo.png" alt="ROSE Logo" width={56} height={56} className="h-14 w-14" />
-              <span className="text-4xl font-bold text-primary">ROSE</span>
+              <span className="text-xl sm:text-2xl font-bold text-primary">Learn Arabic with ROSE</span>
             </div>
             <div className="hidden md:flex items-center space-x-8">
               <Link href="/#about" className="text-gray-800 hover:text-primary transition-colors">About</Link>

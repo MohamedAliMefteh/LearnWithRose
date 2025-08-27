@@ -15,6 +15,8 @@ import { BioData } from "@/types/api";
 import { bioAPI } from "@/lib/bio-api";
 import { Edit2, Save, X, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export function BioManagement() {
   const [bioData, setBioData] = useState<BioData | null>(null);
@@ -247,15 +249,21 @@ export function BioManagement() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Description</label>
+                <label className="text-sm font-medium">Description (Markdown supported)</label>
                 <Textarea
                   value={formData.heroSection?.description || ""}
                   onChange={(e) =>
                     updateHeroSection("description", e.target.value)
                   }
-                  placeholder="Learn from a native speaker with 8+ years of teaching experience..."
-                  rows={3}
+                  placeholder="Learn from a native speaker with 8+ years of teaching experience... Use **bold**, *italics*, lists, and links."
+                  rows={5}
                 />
+                <div className="mt-2 text-sm text-gray-500">Preview:</div>
+                <div className="prose prose-sm p-3 border rounded-md bg-muted/30">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {formData.heroSection?.description || ""}
+                  </ReactMarkdown>
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -339,15 +347,21 @@ export function BioManagement() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Description</label>
+                    <label className="text-sm font-medium">Description (Markdown supported)</label>
                     <Textarea
                       value={item.description}
                       onChange={(e) =>
                         updateTeacherItem(index, "description", e.target.value)
                       }
-                      placeholder="Specialized training in dialect instruction..."
-                      rows={2}
+                      placeholder="Specialized training in dialect instruction... You can use Markdown."
+                      rows={4}
                     />
+                    <div className="mt-2 text-sm text-gray-500">Preview:</div>
+                    <div className="prose prose-sm p-3 border rounded-md bg-muted/30">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {item.description}
+                      </ReactMarkdown>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -390,9 +404,11 @@ export function BioManagement() {
                 </div>
                 <div>
                   <h4 className="font-medium text-gray-900">Description</h4>
-                  <p className="text-gray-600">
-                    {bioData.heroSection?.description || "Not set"}
-                  </p>
+                  <div className="prose prose-sm text-gray-700">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {bioData.heroSection?.description || "Not set"}
+                    </ReactMarkdown>
+                  </div>
                 </div>
                 <div>
                   <h4 className="font-medium text-gray-900">Tag</h4>
@@ -434,7 +450,7 @@ export function BioManagement() {
                     <h4 className="font-medium text-gray-900 mb-2">
                       {item.title}
                     </h4>
-                    <p className="text-gray-600">{item.description}</p>
+                    <div className="prose prose-sm text-gray-700"><ReactMarkdown remarkPlugins={[remarkGfm]}>{item.description}</ReactMarkdown></div>
                   </div>
                 )) || (
                   <p className="text-gray-500">

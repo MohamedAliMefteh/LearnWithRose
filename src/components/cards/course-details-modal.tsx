@@ -12,13 +12,14 @@ interface CourseDetailsModalProps {
   open: boolean;
   onClose: () => void;
   course: Course | null;
+  onEnroll?: (course: Course) => void;
 }
 
-export function CourseDetailsModal({ open, onClose, course }: CourseDetailsModalProps) {
+export function CourseDetailsModal({ open, onClose, course, onEnroll }: CourseDetailsModalProps) {
   if (!course) return null;
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="w-[96vw] max-w-4xl h-[92vh] max-h-[92vh] p-0 rounded-2xl bg-white/90 backdrop-blur-md shadow-2xl border border-primary/10 overflow-hidden">
+      <DialogContent className="w-[96vw] max-w-4xl max-h-[92vh] p-0 rounded-2xl bg-white/90 backdrop-blur-md shadow-2xl border border-primary/10 flex flex-col">
         {/* Hero + Title */}
         <div className="relative isolate p-6 sm:p-8 md:p-10 bg-gradient-to-br from-white via-accent/10 to-secondary/10">
           <div className="absolute -top-16 -right-16 size-40 sm:size-56 rounded-full bg-primary/10 blur-3xl" />
@@ -45,7 +46,7 @@ export function CourseDetailsModal({ open, onClose, course }: CourseDetailsModal
         </div>
 
         {/* Content */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-6 p-6 sm:p-8 h-[calc(92vh-180px)] md:h-[calc(92vh-196px)] overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-6 p-6 sm:p-8 flex-1 overflow-y-auto">
           {/* Description */}
           <div className="md:col-span-2 rounded-xl border border-primary/10 bg-white/70 backdrop-blur p-4 sm:p-6 overflow-y-auto">
             <DialogHeader className="mb-3">
@@ -81,6 +82,13 @@ export function CourseDetailsModal({ open, onClose, course }: CourseDetailsModal
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Footer actions */}
+        <div className="px-6 pb-6 flex justify-center">
+          <Button onClick={() => onEnroll?.(course)} className="bg-primary text-white hover:bg-primary/90 w-full sm:w-2/3 md:w-1/2 text-base py-6">
+            Enroll
+          </Button>
         </div>
 
       </DialogContent>
