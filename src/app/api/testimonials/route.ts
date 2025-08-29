@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const EXTERNAL_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/testimonials`, {
       method: 'GET',
@@ -42,10 +42,13 @@ export async function POST(request: NextRequest) {
       headers['Authorization'] = `Bearer ${authToken}`;
     }
 
+    // Enforce approved=false by default on creation
+    const payload = { ...body, approved: false };
+
     const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/testimonials`, {
       method: 'POST',
       headers,
-      body: JSON.stringify(body),
+      body: JSON.stringify(payload),
       credentials: 'include',
     });
 

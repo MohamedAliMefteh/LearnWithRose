@@ -5,16 +5,33 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Edit2, Trash2, Plus, Loader2 } from "lucide-react";
+import { Edit2, Trash2, Plus, Loader2, Save, X } from "lucide-react";
 import { blogsAPI } from "@/lib/blogs-api";
 import { BlogPost } from "@/types/api";
 
+function stripHtml(html: string) {
+  return html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getExcerpt(html?: string, maxLen: number = 200) {
+  if (!html) return "";
+  const text = stripHtml(html);
+  return text.length > maxLen ? text.slice(0, maxLen).trim() + "…" : text;
+}
+
+type ViewMode = "list" | "add" | "edit";
 
 export function BlogManagement() {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [adding, setAdding] = useState<boolean>(false);
   const [form, setForm] = useState<Partial<BlogPost>>({ title: "", content: "", author: "" });
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const [editingId, setEditingId] = useState<string | number | undefined>(undefined);
+  const [saving, setSaving] = useState<boolean>(false);
 
   // CKEditor dynamic modules (client-only)
   const [CKEditor, setCKEditor] = useState<any>(null);
@@ -55,27 +72,39 @@ export function BlogManagement() {
     }
   };
 
-  const handleAdd = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const isEditing = viewMode === "edit";
+
+  const handleSave = async () => {
     if (!form.title?.trim() || !form.content?.trim() || !form.author?.trim()) {
       toast.error("Please fill in title, content, and author");
       return;
     }
-    setAdding(true);
+    setSaving(true);
     try {
-      await blogsAPI.create({
-        title: form.title!,
-        content: form.content!,
-        author: form.author!,
-      });
-      toast.success("Blog added successfully");
+      if (isEditing && editingId != null) {
+        await blogsAPI.update(editingId, {
+          title: form.title!,
+          content: form.content!,
+          author: form.author!,
+        });
+        toast.success("Blog updated successfully");
+      } else {
+        await blogsAPI.create({
+          title: form.title!,
+          content: form.content!,
+          author: form.author!,
+        });
+        toast.success("Blog added successfully");
+      }
       setForm({ title: "", content: "", author: "" });
+      setEditingId(undefined);
+      setViewMode("list");
       await fetchBlogs();
     } catch (e: any) {
-      console.error("Failed to add blog", e);
-      toast.error(e?.message || "Failed to add blog. This action may not be available yet.");
+      console.error("Failed to save blog", e);
+      toast.error(e?.message || "Failed to save blog.");
     } finally {
-      setAdding(false);
+      setSaving(false);
     }
   };
 
@@ -91,125 +120,138 @@ export function BlogManagement() {
   };
 
   const handleEdit = (blog: BlogPost) => {
-    // For now, just notify; implementing a full edit flow can be done later
-    toast.info("Edit blog feature coming soon");
+    setEditingId(blog.id);
+    setForm({ title: blog.title, author: blog.author, content: blog.content });
+    setViewMode("edit");
+  };
+
+  const handleAdd = () => {
+    setForm({ title: "", content: "", author: "" });
+    setEditingId(undefined);
+    setViewMode("add");
+  };
+
+  const handleCancel = () => {
+    setViewMode("list");
+    setEditingId(undefined);
   };
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Manage Blog</CardTitle>
-          <CardDescription>
-            Create, edit, and delete blog posts.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleAdd} className="grid gap-4">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Title</label>
-                <Input
-                  placeholder="Enter blog title"
-                  value={form.title || ""}
-                  onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Author</label>
-                <Input
-                  placeholder="Author name"
-                  value={form.author || ""}
-                  onChange={(e) => setForm((f) => ({ ...f, author: e.target.value }))}
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Content</label>
-              <div className="bg-white border rounded-md">
-                {/* Toolbar container for Decoupled Editor */}
-                <div className="px-2 py-1 border-b" id="ckeditor-toolbar-container" ref={toolbarRef} />
-                <div className="p-2">
-                  {CKEditor && Editor ? (
-
-                    <CKEditor
-                      editor={Editor}
-                      data={form.content || ""}
-                      onReady={(editor: any) => {
-                        try {
-                          const toolbarContainer = toolbarRef.current || document.getElementById("ckeditor-toolbar-container");
-                          const toolbarElement = editor.ui.view.toolbar.element;
-                          if (toolbarContainer && toolbarElement) {
-                            // Ensure no duplicates: clear existing toolbar(s) before appending the current one
-                            while (toolbarContainer.firstChild) {
-                              toolbarContainer.removeChild(toolbarContainer.firstChild);
-                            }
-                            toolbarContainer.appendChild(toolbarElement);
-                          }
-                        } catch (err) {
-                          console.warn("Failed to mount CKEditor decoupled toolbar", err);
-                        }
-                      }}
-                      onChange={(_event: any, editor: any) => {
-                        const data = editor.getData();
-                        setForm((f) => ({ ...f, content: data }));
-                      }}
-                      config={{
-                        toolbar: [
-                          "heading",
-                          "|",
-                          "bold",
-                          "italic",
-                          "underline",
-                          "strikethrough",
-                          "removeFormat",
-                          "|",
-                          "alignment",
-                          "outdent",
-                          "indent",
-                          "|",
-                          "bulletedList",
-                          "numberedList",
-                          "blockQuote",
-                          "codeBlock",
-                          "horizontalLine",
-                          "|",
-                          "link",
-                          "uploadImage",
-                          "insertTable",
-                          "mediaEmbed",
-                          "|",
-                          "undo",
-                          "redo",
-                        ],
-                      }}
-                    />
-                  ) : (
-                    <div className="text-sm text-muted-foreground p-4">Loading editor…</div>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-end">
-              <Button type="submit" disabled={adding}>
-                {adding ? (
-                  <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Saving...</span>
-                ) : (
-                  <span className="inline-flex items-center gap-2"><Plus className="h-4 w-4" /> Add Blog</span>
-                )}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">Existing Blogs</h2>
-          <Button variant="outline" onClick={fetchBlogs} disabled={loading}>
-            {loading ? <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Refreshing</span> : "Refresh"}
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={handleAdd} className="inline-flex items-center gap-2">
+              <Plus className="h-4 w-4" /> Add Blog
+            </Button>
+            <Button variant="outline" onClick={fetchBlogs} disabled={loading}>
+              {loading ? <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Refreshing</span> : "Refresh"}
+            </Button>
+          </div>
         </div>
+
+        {viewMode !== "list" && (
+          <div className="mb-4">
+            <div className="space-y-4 p-4 border rounded-lg bg-white">
+              <h2 className="text-lg font-semibold mb-2">{isEditing ? "Edit Blog" : "Add Blog"}</h2>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Title</label>
+                  <Input
+                    placeholder="Enter blog title"
+                    value={form.title || ""}
+                    onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Author</label>
+                  <Input
+                    placeholder="Author name"
+                    value={form.author || ""}
+                    onChange={(e) => setForm((f) => ({ ...f, author: e.target.value }))}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Content</label>
+                <div className="bg-white border rounded-md">
+                  <div className="px-2 py-1 border-b" id="ckeditor-toolbar-container" ref={toolbarRef} />
+                  <div className="p-2">
+                    {CKEditor && Editor ? (
+                      <CKEditor
+                        editor={Editor}
+                        data={form.content || ""}
+                        onReady={(editor: any) => {
+                          try {
+                            const toolbarContainer = toolbarRef.current || document.getElementById("ckeditor-toolbar-container");
+                            const toolbarElement = editor.ui.view.toolbar.element;
+                            if (toolbarContainer && toolbarElement) {
+                              while (toolbarContainer.firstChild) {
+                                toolbarContainer.removeChild(toolbarContainer.firstChild);
+                              }
+                              toolbarContainer.appendChild(toolbarElement);
+                            }
+                          } catch (err) {
+                            console.warn("Failed to mount CKEditor decoupled toolbar", err);
+                          }
+                        }}
+                        onChange={(_event: any, editor: any) => {
+                          const data = editor.getData();
+                          setForm((f) => ({ ...f, content: data }));
+                        }}
+                        config={{
+                          toolbar: [
+                            "heading",
+                            "|",
+                            "bold",
+                            "italic",
+                            "underline",
+                            "strikethrough",
+                            "removeFormat",
+                            "|",
+                            "alignment",
+                            "outdent",
+                            "indent",
+                            "|",
+                            "bulletedList",
+                            "numberedList",
+                            "blockQuote",
+                            "codeBlock",
+                            "horizontalLine",
+                            "|",
+                            "link",
+                            "uploadImage",
+                            "insertTable",
+                            "mediaEmbed",
+                            "|",
+                            "undo",
+                            "redo",
+                          ],
+                        }}
+                      />
+                    ) : (
+                      <div className="text-sm text-muted-foreground p-4">Loading editor…</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-2 justify-end">
+                <Button onClick={handleSave} disabled={saving}>
+                  {saving ? (
+                    <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Saving...</span>
+                  ) : (
+                    <span className="inline-flex items-center gap-2"><Save className="h-4 w-4" /> {isEditing ? "Save Changes" : "Create Blog"}</span>
+                  )}
+                </Button>
+                <Button variant="outline" onClick={handleCancel} disabled={saving}>
+                  <X className="h-4 w-4 mr-2" /> Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <div className="text-gray-600">Loading blogs...</div>
         ) : blogs.length === 0 ? (
@@ -228,7 +270,7 @@ export function BlogManagement() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col">
-                  <p className="text-sm text-gray-700 whitespace-pre-wrap line-clamp-6">{blog.content}</p>
+                  <p className="text-sm text-gray-700 whitespace-pre-wrap line-clamp-6">{getExcerpt(blog.content)}</p>
                   <div className="mt-4 flex gap-2">
                     <Button variant="secondary" onClick={() => handleEdit(blog)} className="inline-flex items-center gap-2">
                       <Edit2 className="h-4 w-4" /> Edit

@@ -107,7 +107,8 @@ export default function HomePage() {
 
         if (reviewsResponse.status === "fulfilled") {
           const reviewsData = await reviewsResponse.value.json();
-          setReviews(Array.isArray(reviewsData) ? reviewsData : []);
+          const onlyApproved = Array.isArray(reviewsData) ? reviewsData.filter((r: any) => r?.approved === true) : [];
+          setReviews(onlyApproved);
         }
         setLoadingStates((prev) => ({ ...prev, reviews: false }));
 
@@ -217,12 +218,12 @@ export default function HomePage() {
       <nav className="bg-white/80 backdrop-blur-md border-b border-primary/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2">
               <Image src="/logo.png" alt="ROSE Logo" width={56} height={56} className="h-14 w-14" />
               <span className="text-xl sm:text-2xl font-bold text-primary">
                 Learn Arabic with ROSE
               </span>
-            </div>
+            </Link>
             <div className="hidden md:flex items-center space-x-8">
               <button
                 onClick={() => scrollToSection("about")}

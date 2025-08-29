@@ -12,26 +12,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, Feather, Home, ArrowLeft } from "lucide-react";
 
-const hardcodedPosts: BlogPost[] = [
-  {
-    id: "hc-1",
-    title:
-      "Mastering Everyday Levantine Arabic: Practical Phrases You’ll Actually Use",
-    content:
-      "Start speaking immediately with high‑impact phrases used daily across Palestinian and Jordanian contexts. We’ll focus on pronunciation, rhythm, and natural flow—so you sound confident and authentic from day one.",
-    author: "Rose",
-    createdDate: new Date().toISOString(),
-  },
-  {
-    id: "hc-2",
-    title:
-      "Cultural Nuance: How Context Shapes Meaning in Palestinian & Jordanian Arabic",
-    content:
-      "Language is culture. Learn how tone, context, and small word choices transform meaning—and how to navigate greetings, politeness, and humor the Levantine way.",
-    author: "Rose",
-    createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
-  },
-];
 
 export default function BlogDetailPage() {
   const params = useParams<{ id: string }>();
@@ -47,14 +27,11 @@ export default function BlogDetailPage() {
     setError(null);
     try {
       const data = await blogsAPI.getAll();
-      setPosts([
-        ...hardcodedPosts,
-        ...(Array.isArray(data) ? data : []),
-      ]);
+      setPosts(Array.isArray(data) ? data : []);
     } catch (e: any) {
       console.error("Blog fetch failed:", e);
       setError(e?.message || "Failed to load blog posts.");
-      setPosts([...hardcodedPosts]);
+      setPosts([]);
     } finally {
       setLoading(false);
     }
@@ -77,15 +54,16 @@ export default function BlogDetailPage() {
       <nav className="bg-white/80 backdrop-blur-md border-b border-primary/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2">
               <Image src="/logo.png" alt="ROSE Logo" width={56} height={56} className="h-14 w-14" />
               <span className="text-xl sm:text-2xl font-bold text-primary">Learn Arabic with ROSE</span>
-            </div>
+            </Link>
             <div className="hidden md:flex items-center space-x-8">
               <Link href="/#about" className="text-gray-800 hover:text-primary transition-colors">About</Link>
               <Link href="/#courses" className="text-gray-800 hover:text-primary transition-colors">Courses</Link>
               <Link href="/#resources" className="text-gray-800 hover:text-primary transition-colors">Resources</Link>
               <Link href="/#contact" className="text-gray-800 hover:text-primary transition-colors">Contact</Link>
+              <Link href="/blog" className="text-gray-800 hover:text-primary transition-colors">Blog</Link>
               <Link href="/dashboard" className="text-gray-800 hover:text-primary transition-colors">Dashboard</Link>
             </div>
           </div>
@@ -146,9 +124,14 @@ export default function BlogDetailPage() {
               <div className="h-2 w-full bg-gradient-to-r from-primary/40 via-accent/40 to-secondary/40" />
               <Card className="border-0 shadow-none">
                 <CardContent className="prose max-w-none p-6 sm:p-8 lg:p-10">
-                  <div className="text-[hsl(var(--foreground))] whitespace-pre-line leading-relaxed text-base sm:text-lg">
-                    {post.content || "No content available."}
-                  </div>
+                  {post.content ? (
+                    <div
+                      className="prose prose-neutral max-w-none text-[hsl(var(--foreground))] leading-relaxed text-base sm:text-lg"
+                      dangerouslySetInnerHTML={{ __html: post.content }}
+                    />
+                  ) : (
+                    <div className="text-[hsl(var(--foreground))] leading-relaxed text-base sm:text-lg">No content available.</div>
+                  )}
                 </CardContent>
               </Card>
             </article>

@@ -11,24 +11,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, Feather, RefreshCw, Home } from "lucide-react";
 
-const hardcodedPosts: BlogPost[] = [
-  {
-    id: "hc-1",
-    title: "Mastering Everyday Levantine Arabic: Practical Phrases You’ll Actually Use",
-    content:
-      "Start speaking immediately with high‑impact phrases used daily across Palestinian and Jordanian contexts. We’ll focus on pronunciation, rhythm, and natural flow—so you sound confident and authentic from day one.",
-    author: "Rose",
-    createdDate: new Date().toISOString(),
-  },
-  {
-    id: "hc-2",
-    title: "Cultural Nuance: How Context Shapes Meaning in Palestinian & Jordanian Arabic",
-    content:
-      "Language is culture. Learn how tone, context, and small word choices transform meaning—and how to navigate greetings, politeness, and humor the Levantine way.",
-    author: "Rose",
-    createdDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(), // one week ago
-  },
-];
 
 export default function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -40,14 +22,11 @@ export default function BlogPage() {
     setError(null);
     try {
       const data = await blogsAPI.getAll();
-      setPosts([
-        ...hardcodedPosts,
-        ...(Array.isArray(data) ? data : []),
-      ]);
+      setPosts(Array.isArray(data) ? data : []);
     } catch (e: any) {
       console.error("Blog fetch failed:", e);
       setError(e?.message || "Failed to load blog posts. Please try again later.");
-      setPosts([...hardcodedPosts]);
+      setPosts([]);
     } finally {
       setLoading(false);
     }
@@ -63,15 +42,16 @@ export default function BlogPage() {
       <nav className="bg-white/80 backdrop-blur-md border-b border-primary/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2">
               <Image src="/logo.png" alt="ROSE Logo" width={56} height={56} className="h-14 w-14" />
               <span className="text-xl sm:text-2xl font-bold text-primary">Learn Arabic with ROSE</span>
-            </div>
+            </Link>
             <div className="hidden md:flex items-center space-x-8">
               <Link href="/#about" className="text-gray-800 hover:text-primary transition-colors">About</Link>
               <Link href="/#courses" className="text-gray-800 hover:text-primary transition-colors">Courses</Link>
               <Link href="/#resources" className="text-gray-800 hover:text-primary transition-colors">Resources</Link>
               <Link href="/#contact" className="text-gray-800 hover:text-primary transition-colors">Contact</Link>
+              <Link href="/blog" className="text-gray-800 hover:text-primary transition-colors">Blog</Link>
               <Link href="/dashboard" className="text-gray-800 hover:text-primary transition-colors">Dashboard</Link>
             </div>
           </div>
@@ -167,7 +147,7 @@ export default function BlogPage() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <p className="text-sm text-muted-foreground line-clamp-3">
-                        {post.content || "No content available."}
+                        {getExcerpt(post.content) || "No content available."}
                       </p>
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <div className="inline-flex items-center gap-2">
@@ -200,6 +180,20 @@ export default function BlogPage() {
       </section>
     </div>
   );
+}
+
+function stripHtml(html: string) {
+  return html
+    .replace(/<[^>]*>/g, " ") // remove tags
+    .replace(/&nbsp;/g, " ") // common CKEditor entity
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getExcerpt(html?: string, maxLen: number = 160) {
+  if (!html) return "";
+  const text = stripHtml(html);
+  return text.length > maxLen ? text.slice(0, maxLen).trim() + "…" : text;
 }
 
 function formatDate(dateStr: string) {

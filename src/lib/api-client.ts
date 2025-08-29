@@ -54,7 +54,30 @@ class ApiClient {
         throw new Error(finalMsg);
       }
 
-      return await response.json();
+      // Successful response parsing
+      if (response.status === 204) {
+        // No Content
+        return undefined as unknown as T;
+      }
+
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        // Attempt to parse JSON; if empty body, return undefined
+        try {
+          return (await response.json()) as T;
+        } catch {
+          return undefined as unknown as T;
+        }
+      }
+
+      // For non-JSON responses, try text; if empty, return undefined
+      try {
+        const text = await response.text();
+        if (text) return text as unknown as T;
+        return undefined as unknown as T;
+      } catch {
+        return undefined as unknown as T;
+      }
     } catch (error) {
       console.error("API request failed:", error);
       throw error;

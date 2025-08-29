@@ -200,40 +200,84 @@ export function ReviewsManagement() {
             </div>
           </div>
         )}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {reviews.map((review) => (
-            <div key={review.id} className="relative group">
-              <ReviewCard review={review} />
-              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <div className="flex space-x-2">
-                  <Button variant="outline" size="icon" onClick={() => handleEditReview(review)}>
-                    <Edit2 className="h-4 w-4" />
-                  </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="outline" size="icon">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Testimonial</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to delete this testimonial?
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDeleteReview(String(review.id))}>
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+        {/* Approved Section */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold mb-3">Approved</h3>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {reviews.filter(r => r.approved === true).map((review) => (
+              <div key={review.id} className="relative group">
+                <ReviewCard review={review} />
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="icon" onClick={() => handleEditReview(review)}>
+                      <Edit2 className="h-4 w-4" />
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline" size="icon">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Testimonial</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete this testimonial?
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDeleteReview(String(review.id))}>
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        </div>
+
+        {/* Not Approved Section */}
+        <div>
+          <h3 className="text-lg font-semibold mb-3">Not Approved</h3>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {reviews.filter(r => r.approved !== true).map((review) => (
+              <div key={review.id} className="relative group">
+                <ReviewCard review={review} />
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="icon" onClick={() => handleEditReview(review)}>
+                      <Edit2 className="h-4 w-4" />
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline" size="icon">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Testimonial</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete this testimonial?
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDeleteReview(String(review.id))}>
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </CardContent>
     </Card>

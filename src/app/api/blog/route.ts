@@ -21,17 +21,25 @@ function getAuthToken(request: NextRequest): string | null {
 }
 
 async function fetchWithFallback(input: RequestInfo | URL, init?: RequestInit) {
-  // Try singular first, then plural endpoint on the external API for resilience
+  // Try new 'articles' endpoint first; on 404 or network error, try legacy 'blog' and 'blogs' endpoints for compatibility
   const url = input.toString();
   try {
     const res1 = await fetch(url, init);
     if (res1.ok || res1.status !== 404) return res1;
-  } catch {/* ignore try plural next */}
+  } catch {/* ignore and try legacy endpoints */}
 
+  // Try legacy singular /api/blog
   try {
-    const urlPlural = url.replace(/\/api\/blog(\b|$)/, '/api/blogs$1');
-    const res2 = await fetch(urlPlural, init);
-    return res2;
+    const legacySingular = url.replace(/\/api\/articles(\b|$)/, '/api/blog$1');
+    const res2 = await fetch(legacySingular, init);
+    if (res2.ok || res2.status !== 404) return res2;
+  } catch {/* ignore and try plural legacy */}
+
+  // Try legacy plural /api/blogs
+  try {
+    const legacyPlural = url.replace(/\/api\/articles(\b|$)/, '/api/blogs$1');
+    const res3 = await fetch(legacyPlural, init);
+    return res3;
   } catch (e) {
     throw e;
   }
@@ -44,7 +52,7 @@ export async function GET(request: Request) {
       return NextResponse.json([]);
     }
 
-    const apiUrl = `${EXTERNAL_API_BASE_URL}/api/blog`;
+    const apiUrl = `${EXTERNAL_API_BASE_URL}/api/articles`;
     const response = await fetchWithFallback(apiUrl, {
       method: 'GET',
       headers: {
@@ -130,7 +138,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const apiUrl = `${EXTERNAL_API_BASE_URL}/api/blog`;
+    const apiUrl = `${EXTERNAL_API_BASE_URL}/api/articles`;
     const response = await fetchWithFallback(apiUrl, {
       method: 'POST',
       headers: {

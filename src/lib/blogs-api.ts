@@ -42,6 +42,24 @@ export const blogsAPI = {
     }
   },
 
+  // Update a blog (auth required)
+  async update(id: string | number, payload: Partial<Pick<BlogPost, 'title' | 'content' | 'author'>>): Promise<BlogPost> {
+    try {
+      const updated = await apiClient.put<any>(`/api/blog/${id}`, payload, { requireAuth: true });
+      const normalized: BlogPost = {
+        id: updated.id ?? id,
+        title: updated.title ?? payload.title ?? '',
+        content: updated.content ?? payload.content ?? '',
+        author: updated.author ?? payload.author ?? '',
+        createdDate: updated.createdDate ?? updated.created ?? updated.created_at ?? updated['created date'],
+      };
+      return normalized;
+    } catch (error) {
+      console.error('Failed to update blog via API:', error);
+      throw error;
+    }
+  },
+
   // Delete a blog (auth required)
   async delete(id: string | number): Promise<void> {
     try {

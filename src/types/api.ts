@@ -41,6 +41,7 @@ export interface Testimonial {
   date?: string;
   createdAt?: string;
   updatedAt?: string;
+  approved?: boolean;
 }
 
 export interface CreateTestimonialRequest {
@@ -115,6 +116,7 @@ export interface Review {
   rating: number;
   profileImage: string;
   courseName: string;
+  approved?: boolean;
 }
 
 export interface BioData {
