@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Review } from "@/types/api";
 import { ReviewCard } from "@/components/cards/review-card";
-import { Plus, Edit2, Trash2, Save, X } from "lucide-react";
+import { Plus, Edit2, Trash2, Save, X, Check } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -126,6 +126,56 @@ export function ReviewsManagement() {
     }
   };
 
+  const handleApproveReview = async (review: Review) => {
+    try {
+      const mappedData = {
+        id: review.id,
+        name: review.name || "",
+        accent: review.accent || "",
+        content: review.content || "",
+        rating: review.rating || 5,
+        profileImage: review.profileImage || "",
+        courseName: review.courseName || "",
+        approved: true,
+      };
+      const response = await fetch(`/api/testimonials/${review.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(mappedData),
+      });
+      if (!response.ok) throw new Error("Failed to approve review");
+      toast.success("Testimonial approved");
+      fetchReviews();
+    } catch (error) {
+      toast.error("Failed to approve review");
+    }
+  };
+
+  const handleDisapproveReview = async (review: Review) => {
+    try {
+      const mappedData = {
+        id: review.id,
+        name: review.name || "",
+        accent: review.accent || "",
+        content: review.content || "",
+        rating: review.rating || 5,
+        profileImage: review.profileImage || "",
+        courseName: review.courseName || "",
+        approved: false,
+      };
+      const response = await fetch(`/api/testimonials/${review.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(mappedData),
+      });
+      if (!response.ok) throw new Error("Failed to disapprove review");
+      toast.success("Testimonial disapproved");
+      fetchReviews();
+    } catch (error) {
+      toast.error("Failed to disapprove review");
+    }
+  };
+
   const handleCancel = () => {
     setViewMode("list");
     setEditingReview(null);
@@ -209,6 +259,9 @@ export function ReviewsManagement() {
                 <ReviewCard review={review} />
                 <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <div className="flex space-x-2">
+                    <Button variant="default" onClick={() => handleDisapproveReview(review)}>
+                      <X className="h-4 w-4 mr-1" /> Disapprove
+                    </Button>
                     <Button variant="outline" size="icon" onClick={() => handleEditReview(review)}>
                       <Edit2 className="h-4 w-4" />
                     </Button>
@@ -249,6 +302,9 @@ export function ReviewsManagement() {
                 <ReviewCard review={review} />
                 <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <div className="flex space-x-2">
+                    <Button variant="default" onClick={() => handleApproveReview(review)}>
+                      <Check className="h-4 w-4 mr-1" /> Approve
+                    </Button>
                     <Button variant="outline" size="icon" onClick={() => handleEditReview(review)}>
                       <Edit2 className="h-4 w-4" />
                     </Button>

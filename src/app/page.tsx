@@ -638,21 +638,6 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* Add Review Section */}
-      <section className="py-16 bg-gradient-to-br from-white via-accent/5 to-card/10">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Card className="border-primary/30">
-            <CardHeader>
-              <CardTitle>Leave a Review</CardTitle>
-              <CardDescription>Share your experience and help others choose the right course.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <AddReviewForm onSubmitted={(newReview) => setReviews((prev) => [newReview, ...prev])} />
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
       {/* Contact Form */}
       <section
         id="contact"
@@ -986,6 +971,21 @@ export default function HomePage() {
                   Send Inquiry
                 </Button>
               </form>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* Add Review Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Card className="border-primary/30">
+            <CardHeader>
+              <CardTitle>Leave a Review</CardTitle>
+              <CardDescription>Share your experience and help others choose the right course.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AddReviewForm onSubmitted={(newReview) => setReviews((prev) => [newReview, ...prev])} />
             </CardContent>
           </Card>
         </div>
