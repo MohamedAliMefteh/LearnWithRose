@@ -31,9 +31,9 @@ export function DashboardNavbar() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-8">
             <Link href="/dashboard" className="flex items-center space-x-2">
-              <Image src="/logo.png" alt="ROSE Logo" width={56} height={56} className="h-14 w-14" />
+              <Image src="/altlogo.png" alt="ROSE Logo" width={56} height={56} className="h-14 w-14" />
               <span className="text-xl sm:text-2xl font-bold text-primary">
-                Learn Arabic with ROSE
+                Learn Arabic with Rose
               </span>
             </Link>
             <div className="hidden md:flex items-center space-x-6">
