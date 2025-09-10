@@ -9,7 +9,7 @@ export async function GET(
   try {
     const { level } = params;
 
-    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v1/courses/level/${level}`, {
+    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v2/courses/level/${level}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

@@ -9,7 +9,7 @@ export async function GET(
   try {
     const { accent } = params;
 
-    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v1/courses/accent/${accent}`, {
+    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v2/courses/accent/${accent}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

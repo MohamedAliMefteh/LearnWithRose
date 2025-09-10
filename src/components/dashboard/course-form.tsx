@@ -29,16 +29,27 @@ export function CourseForm({ course, onSave, onCancel }: CourseFormProps) {
     students: course?.students || "",
     rating: course?.rating || 5.0,
     image: course?.image || "/placeholder.svg",
+    thumbnail: course?.thumbnail || "",
+    order: (course?.order ?? 1).toString(),
   });
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const payload = {
+      ...formData,
+      order: parseInt(formData.order, 10) || 0,
+      rating: 5,
+      // pass the File if selected; the API layer will detect and send multipart
+      thumbnailFile: thumbnailFile || undefined,
+    } as any;
+
     if (course) {
       // Editing existing course
-      onSave({ ...course, ...formData, rating: 5 });
+      onSave({ ...course, ...payload });
     } else {
       // Adding new course
-      onSave({ ...formData, rating: 5 });
+      onSave(payload);
     }
   };
 
@@ -142,6 +153,38 @@ export function CourseForm({ course, onSave, onCancel }: CourseFormProps) {
                 }
                 placeholder="150"
               />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Thumbnail URL</label>
+              <Input
+                type="text"
+                value={formData.thumbnail}
+                onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
+                placeholder="/thumbnail.png (optional if you upload a file)"
+              />
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Order *</label>
+              <Input
+                type="number"
+                required
+                value={formData.order}
+                onChange={(e) => setFormData({ ...formData, order: e.target.value })}
+                placeholder="1"
+                min={0}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Thumbnail File *</label>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setThumbnailFile(e.target.files?.[0] || null)}
+              />
+              <p className="text-xs text-muted-foreground">Upload the image shown on the course card. If you provide a URL above, file upload will take precedence.</p>
             </div>
           </div>
 

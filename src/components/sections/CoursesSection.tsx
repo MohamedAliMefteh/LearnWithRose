@@ -57,9 +57,11 @@ export default function CoursesSection({
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-            {courses.map((course) => (
-              <CourseCard key={course.id} course={course} onInquiry={handleInquiry} />
-            ))}
+            {([...courses]
+              .sort((a, b) => (a?.order ?? 0) - (b?.order ?? 0))
+              .map((course) => (
+                <CourseCard key={course.id} course={course} onInquiry={handleInquiry} />
+              )))}
             {/* Course Details Modal */}
             <CourseDetailsModal
               open={modalOpen}

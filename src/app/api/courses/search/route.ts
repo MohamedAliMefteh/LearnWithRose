@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v1/courses/search?title=${encodeURIComponent(title)}`, {
+    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v2/courses/search?title=${encodeURIComponent(title)}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

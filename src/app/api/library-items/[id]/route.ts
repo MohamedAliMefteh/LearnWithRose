@@ -19,7 +19,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     if (authToken) {
       headers['Authorization'] = `Bearer ${authToken}`;
     }
-    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/library-items/${id}`, {
+    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v2/library-items/${id}`, {
       method: 'PUT',
       headers,
       body: JSON.stringify(body),
@@ -52,7 +52,7 @@ export async function GET(
   try {
     const { id } = params;
 
-    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/library-items/${id}`, {
+    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v2/library-items/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ export async function DELETE(
       headers['Authorization'] = `Bearer ${authToken}`;
     }
 
-    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/library-items/${id}`, {
+    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v2/library-items/${id}`, {
       method: 'DELETE',
       headers,
       credentials: 'include',

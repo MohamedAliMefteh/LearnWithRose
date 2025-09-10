@@ -80,13 +80,52 @@ interface CourseCardProps {
 
 // Removed duplicate declaration
 export function CourseCard({ course, onInquiry, showDetailsButton = true }: CourseCardProps) {
+  const resolveMediaUrl = (url?: string) => {
+    if (!url) return "/placeholdercourse.jpg";
+
+    // 0) Already a data URI
+    if (url.startsWith("data:")) return url;
+
+    // 1) Detect raw Base64 (common signatures + simple heuristic)
+    const trimmed = url.trim();
+    const looksBase64 = (
+      trimmed.startsWith("/9j/") ||     // JPEG
+      trimmed.startsWith("iVBORw0K") || // PNG
+      trimmed.startsWith("R0lGOD") ||   // GIF
+      (trimmed.length > 200 && /^[A-Za-z0-9+/=\n\r]+$/.test(trimmed))
+    );
+
+    if (looksBase64) {
+      // Guess MIME type by signature; default to JPEG
+      let mime = "image/jpeg";
+      if (trimmed.startsWith("iVBORw0K")) mime = "image/png";
+      else if (trimmed.startsWith("R0lGOD")) mime = "image/gif";
+
+      // Some backends include a leading slash (e.g., "/9j/") – strip it
+      const base64Payload = trimmed.replace(/^\/+/, "");
+      return `data:${mime};base64,${base64Payload}`;
+    }
+
+    // 2) If absolute URL, return as-is
+    if (/^https?:\/\//i.test(url)) return url;
+
+    // 3) Backend-relative paths
+    const base = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+    if (url.startsWith("/")) return `${base}${url}`;
+
+    // 4) Fallback
+    return url;
+  };
+
+  const imgSrc = resolveMediaUrl(course.thumbnail || course.image || "/placeholdercourse.jpg");
+
   return (
     <Card className="border-[hsl(var(--secondary-yellow))] hover:shadow-lg transition-shadow w-full h-full flex flex-col">
       <div className="aspect-video rounded-t-lg overflow-hidden">
         <img
-          src="/placeholdercourse.jpg"
+          src={imgSrc}
           alt={course.title || "Course image"}
-          className="w-full h-full object-cover scale-150"
+          className="w-full h-full object-cover"
           loading="lazy"
         />
       </div>

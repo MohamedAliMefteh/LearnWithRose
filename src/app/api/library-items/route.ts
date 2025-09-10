@@ -4,7 +4,7 @@ const EXTERNAL_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function GET() {
   try {
-    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/library-items`, {
+    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v2/library-items`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       headers['Authorization'] = `Bearer ${authToken}`;
     }
 
-    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/library-items`, {
+    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v2/library-items`, {
       method: 'POST',
       headers,
       body: JSON.stringify(body),

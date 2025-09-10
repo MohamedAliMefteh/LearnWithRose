@@ -6,10 +6,12 @@ export interface Course {
   accent: string;
   level: string;
   duration: string;
-  price: string; // changed from number to string
-  students: string; // changed from number to string
+  price: string; // string per backend
+  students: string; // string per backend
   rating: number;
-  image?: string;
+  image: string;
+  thumbnail: string;
+  order: number;
 }
 
 export interface CourseSearchParams {
@@ -106,6 +108,8 @@ export interface DigitalResource {
   externalUrl: string;
   accent: string;
   level: string;
+  thumbnail?: string | null; // new field from backend to use as card header background
+  price?: string; // optional price for display in cards
 }
 
 export interface Review {

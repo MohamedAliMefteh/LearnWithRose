@@ -41,14 +41,40 @@ export const coursesAPI = {
   },
 
   // Create a new course (requires authentication)
-  create: async (course: Omit<Course, 'id'>): Promise<Course> => {
+  create: async (course: Omit<Course, 'id'> & { thumbnailFile?: File }): Promise<Course> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/courses`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(course),
-        credentials: 'include', // Include cookies for authentication
-      });
+      const hasFile = (course as any)?.thumbnailFile instanceof File;
+
+      let response: Response;
+      if (hasFile) {
+        // Build multipart form for our Next API route
+        const fd = new FormData();
+        fd.set('title', String((course as any).title ?? ''));
+        fd.set('description', String((course as any).description ?? ''));
+        fd.set('accent', String((course as any).accent ?? ''));
+        fd.set('level', String((course as any).level ?? ''));
+        fd.set('duration', String((course as any).duration ?? ''));
+        fd.set('price', String((course as any).price ?? ''));
+        fd.set('students', String((course as any).students ?? ''));
+        fd.set('rating', String((course as any).rating ?? '5'));
+        fd.set('image', String((course as any).image ?? ''));
+        fd.set('order', String((course as any).order ?? '1'));
+        fd.set('thumbnail', String((course as any).thumbnail ?? ''));
+        fd.set('thumbnailFile', (course as any).thumbnailFile as File);
+
+        response = await fetch(`${API_BASE_URL}/courses`, {
+          method: 'POST',
+          body: fd,
+          credentials: 'include',
+        });
+      } else {
+        response = await fetch(`${API_BASE_URL}/courses`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(course),
+          credentials: 'include', // Include cookies for authentication
+        });
+      }
 
       if (!response.ok) {
         if (response.status === 401) {

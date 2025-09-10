@@ -9,7 +9,7 @@ export async function GET(
   try {
     const { id } = params;
 
-    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v1/courses/${id}`, {
+    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v2/courses/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ export async function PUT(
       headers['Authorization'] = `Bearer ${authToken}`;
     }
 
-    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v1/courses/${id}`, {
+    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v2/courses/${id}`, {
       method: 'PUT',
       headers,
       body: JSON.stringify(body),
@@ -123,7 +123,7 @@ export async function DELETE(
       headers['Authorization'] = `Bearer ${authToken}`;
     }
 
-    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v1/courses/${id}`, {
+    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v2/courses/${id}`, {
       method: 'DELETE',
       headers,
     });
