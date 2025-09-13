@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import { DigitalResource } from "@/types/api";
 import { DigitalResourceCard } from "@/components/cards/digital-resource-card";
 
@@ -10,6 +11,7 @@ export interface ResourcesSectionProps {
 }
 
 export default function ResourcesSection({ loading, resources }: ResourcesSectionProps) {
+  const router = useRouter();
   if (!loading && resources.length === 0) return null;
 
   return (
@@ -43,7 +45,19 @@ export default function ResourcesSection({ loading, resources }: ResourcesSectio
         ) : (
           <div className="grid md:grid-cols-3 gap-8">
             {resources.map((resource, index) => (
-              <DigitalResourceCard key={index} resource={resource} />
+              <DigitalResourceCard
+                key={index}
+                resource={resource}
+                onPurchase={() => {
+                  const params = new URLSearchParams({
+                    id: String(resource.id),
+                    min: resource.price ? resource.price.replace(/[^0-9.]/g, "") : "0.01",
+                    name: resource.title || "Digital Resource",
+                    type: resource.fileType || "document",
+                  });
+                  router.push(`/checkout?${params.toString()}`);
+                }}
+              />
             ))}
           </div>
         )}

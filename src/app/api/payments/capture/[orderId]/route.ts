@@ -1,0 +1,38 @@
+import { NextRequest, NextResponse } from "next/server";
+
+const EXTERNAL_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { orderId: string } }
+) {
+  try {
+    if (!EXTERNAL_API_BASE_URL) {
+      return NextResponse.json(
+        { error: "API base URL is not configured" },
+        { status: 500 }
+      );
+    }
+
+    const { orderId } = params;
+
+    const resp = await fetch(`${EXTERNAL_API_BASE_URL}/api/payments/capture/${orderId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const data = await resp.json().catch(() => ({}));
+
+    if (!resp.ok) {
+      return NextResponse.json(
+        { error: "Failed to capture order", status: resp.status, details: data },
+        { status: resp.status }
+      );
+    }
+
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("Error in capture-order proxy:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
