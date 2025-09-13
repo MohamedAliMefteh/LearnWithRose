@@ -4,12 +4,19 @@ const EXTERNAL_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function GET() {
   try {
+    // Add timeout and better error handling
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
     const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v2/library-items`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch library items: ${response.status} ${response.statusText}`);
@@ -19,6 +26,26 @@ export async function GET() {
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error fetching library items:', error);
+    
+    // Return fallback data if backend is unavailable
+    if (error instanceof Error && (error.name === 'AbortError' || error.message.includes('timeout'))) {
+      console.log('Backend timeout, returning fallback data');
+      return NextResponse.json([
+        {
+          id: 1,
+          title: "Sample Digital Resource",
+          description: "This is a sample resource while the backend is unavailable",
+          category: "Sample",
+          fileType: "PDF",
+          filePath: "/sample.pdf",
+          externalUrl: "",
+          accent: "Modern Standard Arabic",
+          level: "Beginner",
+          price: "Free"
+        }
+      ]);
+    }
+    
     return NextResponse.json(
       { error: 'Failed to fetch library items' },
       { status: 500 }
