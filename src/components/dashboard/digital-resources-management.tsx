@@ -115,7 +115,7 @@ export function DigitalResourcesManagement() {
       externalUrl: resource.externalUrl || "",
       accent: resource.accent || "",
       level: resource.level || "",
-      thumbnail: resource.thumbnail || "",
+      thumbnail: typeof resource.thumbnail === 'string' ? resource.thumbnail : "",
       amount: resource.amount || 0
     });
     setPdfFile(null);
@@ -394,7 +394,7 @@ export function DigitalResourcesManagement() {
                     value={formData.fileType}
                     onChange={e => setFormData({ ...formData, fileType: e.target.value })}
                     placeholder="e.g. PDF, DOCX, PPTX"
-                    disabled={viewMode === "add" && pdfFile} // Auto-filled for new uploads
+                    disabled={viewMode === "add" && !!pdfFile} // Auto-filled for new uploads
                   />
                 </div>
                 {viewMode === "edit" && (

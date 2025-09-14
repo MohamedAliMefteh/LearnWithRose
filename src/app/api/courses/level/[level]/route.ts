@@ -4,10 +4,10 @@ const EXTERNAL_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { level: string } }
+  context: { params: Promise<{ level: string }> }
 ) {
   try {
-    const { level } = params;
+    const { level } = await context.params;
 
     const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v2/courses/level/${level}`, {
       method: 'GET',

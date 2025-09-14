@@ -82,7 +82,7 @@ export function convertByteDataToImageUrl(
 export async function validateImageUrl(imageUrl: string): Promise<boolean> {
   try {
     const response = await fetch(imageUrl, { method: 'HEAD' });
-    return response.ok && response.headers.get('content-type')?.startsWith('image/');
+    return response.ok && (response.headers.get('content-type')?.startsWith('image/') ?? false);
   } catch {
     return false;
   }

@@ -4,7 +4,7 @@ const EXTERNAL_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { orderId: string } }
+  context: { params: Promise<{ orderId: string }> }
 ) {
   try {
     if (!EXTERNAL_API_BASE_URL) {
@@ -14,7 +14,7 @@ export async function GET(
       );
     }
 
-    const { orderId } = params;
+    const { orderId } = await context.params;
 
     const resp = await fetch(`${EXTERNAL_API_BASE_URL}/api/payments/order/${orderId}`, {
       method: "GET",

@@ -17,9 +17,12 @@ function getAuthToken(request: NextRequest): string | null {
   return null;
 }
 
-export async function DELETE(request: NextRequest, context: { params: { id: string } }) {
+export async function DELETE(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = context.params;
+    const { id } = await context.params;
 
     if (!EXTERNAL_API_BASE_URL) {
       return NextResponse.json(
@@ -114,9 +117,12 @@ export async function DELETE(request: NextRequest, context: { params: { id: stri
   }
 }
 
-export async function PUT(request: NextRequest, context: { params: { id: string } }) {
+export async function PUT(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = context.params;
+    const { id } = await context.params;
 
     if (!EXTERNAL_API_BASE_URL) {
       return NextResponse.json(

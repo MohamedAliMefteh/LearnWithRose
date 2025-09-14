@@ -61,8 +61,11 @@ export const blogsAPI = {
       const normalized: BlogPost = {
         id: created.id,
         title: created.title ?? payload.title,
+        description: created.description ?? payload.description ?? '',
         content: created.content ?? payload.content,
         author: created.author ?? payload.author,
+        image: created.image ?? payload.image ?? null,
+        thumbnail: created.thumbnail ?? payload.thumbnail ?? null,
         createdDate: created.createdDate ?? created.created ?? created.created_at ?? created['created date'],
       };
       return normalized;
@@ -73,14 +76,17 @@ export const blogsAPI = {
   },
 
   // Update a blog (auth required)
-  async update(id: string | number, payload: Partial<Pick<BlogPost, 'title' | 'content' | 'author'>>): Promise<BlogPost> {
+  async update(id: string | number, payload: Partial<Pick<BlogPost, 'title' | 'content' | 'author' | 'featuredImage' | 'excerpt' | 'published'>>): Promise<BlogPost> {
     try {
       const updated = await apiClient.put<any>(`/api/blog/${id}`, payload, { requireAuth: true });
       const normalized: BlogPost = {
         id: updated.id ?? id,
         title: updated.title ?? payload.title ?? '',
+        description: updated.description ?? payload.excerpt ?? '',
         content: updated.content ?? payload.content ?? '',
         author: updated.author ?? payload.author ?? '',
+        image: updated.image ?? payload.featuredImage ?? null,
+        thumbnail: updated.thumbnail ?? null,
         createdDate: updated.createdDate ?? updated.created ?? updated.created_at ?? updated['created date'],
       };
       return normalized;

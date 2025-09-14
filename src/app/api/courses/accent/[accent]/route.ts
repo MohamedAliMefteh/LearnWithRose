@@ -4,10 +4,10 @@ const EXTERNAL_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { accent: string } }
+  context: { params: Promise<{ accent: string }> }
 ) {
   try {
-    const { accent } = params;
+    const { accent } = await context.params;
 
     const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v2/courses/accent/${accent}`, {
       method: 'GET',

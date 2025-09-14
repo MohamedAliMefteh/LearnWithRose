@@ -29,7 +29,7 @@ export function CourseForm({ course, onSave, onCancel }: CourseFormProps) {
     students: course?.students || "",
     rating: course?.rating || 5.0,
     image: course?.image || "/placeholder.svg",
-    thumbnail: course?.thumbnail || "",
+    thumbnail: typeof course?.thumbnail === 'string' ? course.thumbnail : "",
     order: (course?.order ?? 1).toString(),
   });
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);

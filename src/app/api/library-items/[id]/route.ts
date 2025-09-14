@@ -1,6 +1,6 @@
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
     const body = await request.json();
 
     // Get the auth token from the httpOnly cookie or Authorization header
@@ -47,10 +47,10 @@ const EXTERNAL_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
 
     const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v2/library-items/${id}`, {
       method: 'GET',
@@ -76,10 +76,10 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
 
     // Get the auth token from the httpOnly cookie or Authorization header
     let authToken = request.cookies.get('auth_token')?.value;
