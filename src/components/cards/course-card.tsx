@@ -183,16 +183,6 @@ export function CourseCard({ course, onInquiry, showDetailsButton = true }: Cour
             </div>
           </div>
           
-          {/* Progress indicator */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-slate-500">Popularity</span>
-              <TrendingUp className="w-4 h-4 text-green-500" />
-            </div>
-            <div className="w-full bg-slate-100 rounded-full h-2">
-              <div className="bg-gradient-to-r from-primary to-accent h-2 rounded-full" style={{width: '78%'}} />
-            </div>
-          </div>
           
           {/* Action button */}
           {showDetailsButton && onInquiry && (

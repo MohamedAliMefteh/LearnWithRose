@@ -86,6 +86,9 @@ export default function CheckoutPage() {
   const min = useMemo(() => {
     // Use amount from session storage or fallback to API data
     const amount = checkoutItem?.amount || item?.amount || 0;
+    // If amount is 0, item is free - don't force minimum
+    if (amount === 0) return 0;
+    // For paid items, ensure minimum of 0.01
     return Number.isFinite(amount) && amount > 0 ? Math.max(0.01, Math.round(amount * 100) / 100) : 0.01;
   }, [checkoutItem, item]);
   
@@ -203,7 +206,11 @@ export default function CheckoutPage() {
     }
     const n = Number(amount);
     if (!Number.isFinite(n) || n < min) {
-      setError(`Amount must be at least $${min.toFixed(2)}`);
+      if (min === 0) {
+        setError("Invalid amount for free item");
+      } else {
+        setError(`Amount must be at least $${min.toFixed(2)}`);
+      }
       return false;
     }
     return true;
@@ -477,11 +484,16 @@ export default function CheckoutPage() {
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
                       className="h-12 pl-8 rounded-xl border-slate-200 focus:border-accent focus:ring-accent/20 bg-white/50 backdrop-blur-sm font-semibold"
+                      disabled={min === 0}
                     />
                   </div>
-                  <div className="bg-blue-50 rounded-xl p-3">
-                    <p className="text-xs text-blue-700 font-medium">
-                      💡 Minimum: ${min.toFixed(2)} — You can pay more to support our work!
+                  <div className={`rounded-xl p-3 ${min === 0 ? 'bg-green-50' : 'bg-blue-50'}`}>
+                    <p className={`text-xs font-medium ${min === 0 ? 'text-green-700' : 'text-blue-700'}`}>
+                      {min === 0 ? (
+                        <>🎉 This item is FREE! You can still pay to support our work.</>
+                      ) : (
+                        <>💡 Minimum: ${min.toFixed(2)} — You can pay more to support our work!</>
+                      )}
                     </p>
                   </div>
                 </div>
