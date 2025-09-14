@@ -14,11 +14,35 @@ function loadPayPal(clientId: string): Promise<void> {
   return new Promise((resolve, reject) => {
     if (typeof window === "undefined") return reject(new Error("Window not available"));
     if ((window as any).paypal) return resolve();
+    
+    // Validate client ID format
+    if (!clientId || clientId === "your-paypal-client-id-here") {
+      return reject(new Error("Invalid PayPal Client ID. Please configure NEXT_PUBLIC_PAYPAL_CLIENT_ID in your .env.local file"));
+    }
+    
     const script = document.createElement("script");
-    script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(clientId)}&currency=USD`; // live mode uses same URL
+    script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(clientId)}&currency=USD`;
     script.async = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Failed to load PayPal SDK"));
+    
+    // Add timeout for network issues
+    const timeout = setTimeout(() => {
+      reject(new Error("PayPal SDK loading timed out. Please check your internet connection."));
+    }, 30000); // 30 second timeout
+    
+    script.onload = () => {
+      clearTimeout(timeout);
+      console.log("PayPal SDK loaded successfully");
+      resolve();
+    };
+    
+    script.onerror = (error) => {
+      clearTimeout(timeout);
+      console.error("PayPal SDK failed to load:", error);
+      console.error("Script URL:", script.src);
+      console.error("Client ID used:", clientId);
+      reject(new Error(`Failed to load PayPal SDK. Please check your internet connection and PayPal Client ID configuration.`));
+    };
+    
     document.body.appendChild(script);
   });
 }
@@ -246,12 +270,26 @@ export default function CheckoutPage() {
         </div>
 
         {!clientId && (
-          <div className="mb-6 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700">
-            <div className="flex items-center gap-2">
+          <div className="mb-6 p-6 rounded-2xl bg-red-50 border border-red-200 text-red-700">
+            <div className="flex items-center gap-2 mb-3">
               <div className="w-2 h-2 bg-red-500 rounded-full" />
-              <span className="font-medium">Configuration Required</span>
+              <span className="font-medium text-lg">PayPal Configuration Required</span>
             </div>
-            <p className="mt-1 text-sm">PayPal Client ID is not configured. Please set NEXT_PUBLIC_PAYPAL_CLIENT_ID.</p>
+            <div className="space-y-3 text-sm">
+              <p className="font-medium">To enable PayPal payments, please follow these steps:</p>
+              <ol className="list-decimal list-inside space-y-2 ml-4">
+                <li>Go to <a href="https://developer.paypal.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">https://developer.paypal.com/</a></li>
+                <li>Create a PayPal Developer account or log in</li>
+                <li>Create a new app to get your Client ID</li>
+                <li>Copy <code className="bg-red-100 px-1 rounded">.env.example</code> to <code className="bg-red-100 px-1 rounded">.env.local</code></li>
+                <li>Set <code className="bg-red-100 px-1 rounded">NEXT_PUBLIC_PAYPAL_CLIENT_ID=your-actual-client-id</code></li>
+                <li>Restart your development server</li>
+              </ol>
+              <div className="mt-4 p-3 bg-red-100 rounded-xl">
+                <p className="font-medium">⚠️ Current Status:</p>
+                <p>NEXT_PUBLIC_PAYPAL_CLIENT_ID is not configured</p>
+              </div>
+            </div>
           </div>
         )}
 

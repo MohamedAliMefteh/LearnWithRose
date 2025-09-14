@@ -182,7 +182,13 @@ export default function BlogDetailPage() {
           <div 
             className="absolute inset-0 bg-cover bg-center transition-all duration-700"
             style={{
-              backgroundImage: post ? `url(${post.thumbnail ? convertByteDataToImageUrl(post.thumbnail, getFallbackImage('blog')) : constructImageUrl(post.featuredImage || post.image, getFallbackImage('blog'))})` : `url(${getFallbackImage('blog')})`
+              backgroundImage: post ? `url(${post.thumbnail ? convertByteDataToImageUrl(post.thumbnail, getFallbackImage('blog')) : (() => {
+                const imageUrl = post.featuredImage || post.image;
+                return constructImageUrl(
+                  typeof imageUrl === 'string' ? imageUrl : null, 
+                  getFallbackImage('blog')
+                );
+              })()})` : `url(${getFallbackImage('blog')})`
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
