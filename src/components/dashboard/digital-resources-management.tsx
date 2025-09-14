@@ -151,52 +151,60 @@ export function DigitalResourcesManagement() {
   const handleSaveResource = () => {
     const save = async () => {
       try {
+        // Create FormData for both add and edit operations (v2 API)
+        const formDataUpload = new FormData();
+        
+        // Add metadata to FormData
+        formDataUpload.append('title', formData.title);
+        formDataUpload.append('description', formData.description);
+        formDataUpload.append('category', formData.category);
+        formDataUpload.append('fileType', formData.fileType);
+        formDataUpload.append('accent', formData.accent);
+        formDataUpload.append('level', formData.level);
+        formDataUpload.append('amount', formData.amount.toString());
+
+        // Add files if provided
+        if (pdfFile) {
+          formDataUpload.append('pdfFile', pdfFile);
+        }
+        if (thumbnailFile) {
+          formDataUpload.append('thumbnailFile', thumbnailFile);
+        }
+
+        const token = getAuthToken();
+        const headers: HeadersInit = {
+          'accept': 'application/json'
+        };
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        let response: Response;
+        
         if (viewMode === "edit" && editingResource) {
-          // For editing, use the old API for now (can be updated later)
-          const response = await fetch(`/api/library-items/${editingResource.id}`, {
+          // Use v2 API for editing with multipart form data
+          response = await fetch(`/api/library-items/${editingResource.id}`, {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
+            headers,
+            body: formDataUpload,
           });
-          if (!response.ok) throw new Error("Resource not found");
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Failed to update resource: ${errorText}`);
+          }
           toast.success("Resource updated successfully");
         } else {
-          // For new resources, use v2 API with file uploads
+          // For new resources, require PDF file
           if (!pdfFile) {
             toast.error("Please select a PDF file to upload");
             return;
           }
 
-          const formDataUpload = new FormData();
-          formDataUpload.append('pdfFile', pdfFile);
-          if (thumbnailFile) {
-            formDataUpload.append('thumbnailFile', thumbnailFile);
-          }
-
-          // Build query parameters for v2 API
-          const queryParams = new URLSearchParams({
-            title: formData.title,
-            description: formData.description,
-            category: formData.category,
-            fileType: formData.fileType,
-            accent: formData.accent,
-            level: formData.level,
-            amount: formData.amount.toString()
-          });
-
-          const token = getAuthToken();
-          const headers: HeadersInit = {
-            'accept': 'application/json'
-          };
-          if (token) {
-            headers['Authorization'] = `Bearer ${token}`;
-          }
-
-          const response = await fetch(`/api/v2/library-items/upload?${queryParams}`, {
+          // Use v2 API for creating new resources
+          response = await fetch(`/api/v2/library-items/upload`, {
             method: "POST",
             headers,
             body: formDataUpload,
-            // Note: Don't set Content-Type header for FormData, browser will set it with boundary
           });
           
           if (!response.ok) {
@@ -205,6 +213,7 @@ export function DigitalResourcesManagement() {
           }
           toast.success("Resource created successfully with file upload");
         }
+        
         fetchResources();
         setViewMode("list");
         setEditingResource(null);
@@ -303,15 +312,17 @@ export function DigitalResourcesManagement() {
               </div>
 
               {/* File Upload Section for v2 API */}
-              {viewMode === "add" && (
-                <div className="space-y-6 p-4 bg-muted/30 rounded-lg border-2 border-dashed border-primary/20">
-                  <h3 className="text-lg font-semibold text-primary">File Uploads (v2 API)</h3>
+              <div className="space-y-6 p-4 bg-muted/30 rounded-lg border-2 border-dashed border-primary/20">
+                <h3 className="text-lg font-semibold text-primary">
+                  File Uploads (v2 API) 
+                  {viewMode === "edit" && <span className="text-sm font-normal text-muted-foreground ml-2">(Optional - leave empty to keep existing files)</span>}
+                </h3>
                   
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-sm font-medium flex items-center gap-2">
                         <FileText className="w-4 h-4" />
-                        PDF/Document File *
+                        PDF/Document File {viewMode === "add" ? "*" : "(Optional)"}
                       </label>
                       <div className="relative">
                         <Input
@@ -362,7 +373,6 @@ export function DigitalResourcesManagement() {
                     </div>
                   )}
                 </div>
-              )}
 
               {/* Legacy fields for editing existing resources */}
               {viewMode === "edit" && (
