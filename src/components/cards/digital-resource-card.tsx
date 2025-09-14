@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Headphones, Video, File, Star, Download, ExternalLink } from "lucide-react";
+import { FileText, Headphones, Video, File, Download, ExternalLink } from "lucide-react";
 import { DigitalResource } from "@/types/api";
 import { convertByteDataToImageUrl, getFallbackImage } from "@/lib/image-utils";
 
@@ -98,15 +98,11 @@ export function DigitalResourceCard({ resource, onPurchase }: DigitalResourceCar
 
         {/* Modern content section */}
         <div className="p-6">
-          {/* Title and rating */}
-          <div className="flex items-start justify-between mb-3">
-            <h3 className="text-xl font-bold text-slate-900 leading-tight flex-1 mr-3">
+          {/* Title */}
+          <div className="mb-3">
+            <h3 className="text-xl font-bold text-slate-900 leading-tight">
               {resource.title}
             </h3>
-            <div className="flex items-center gap-1 text-amber-400">
-              <Star className="w-4 h-4 fill-current" />
-              <span className="text-sm font-medium text-slate-600">4.8</span>
-            </div>
           </div>
           
           {/* Description */}

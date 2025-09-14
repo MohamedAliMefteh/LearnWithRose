@@ -69,7 +69,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Users, Star, BookOpen, Award, TrendingUp } from "lucide-react";
+import { Clock, Users, BookOpen, Award, TrendingUp } from "lucide-react";
 import { Course } from "@/types/api";
 import { convertByteDataToImageUrl, getFallbackImage } from "@/lib/image-utils";
 import { useState } from "react";
@@ -89,7 +89,6 @@ export function CourseCard({ course, onInquiry, showDetailsButton = true }: Cour
   );
   
   const [isHovered, setIsHovered] = useState(false);
-  const rating = 4.7; // Mock rating - replace with actual data
   const enrolledCount = parseInt(course.students) || 0;
 
   return (

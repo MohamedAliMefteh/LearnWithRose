@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { convertByteDataToImageUrl, getFallbackImage } from "@/lib/image-utils";
-import { ArrowLeft, Shield, CreditCard, Lock, CheckCircle, FileText, Headphones, Video, File, Star } from "lucide-react";
+import { ArrowLeft, Shield, CreditCard, Lock, CheckCircle, FileText, Headphones, Video, File } from "lucide-react";
 
 function loadPayPal(clientId: string): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -371,11 +371,6 @@ function CheckoutContent() {
                       <h2 className="text-3xl font-bold text-slate-900 leading-tight mb-2">{itemName}</h2>
                       <div className="flex items-center gap-3 text-slate-600">
                         <span className="capitalize text-sm font-medium">{itemType}</span>
-                        <div className="w-1 h-1 bg-slate-400 rounded-full" />
-                        <div className="flex items-center gap-1">
-                          <Star className="w-4 h-4 text-amber-400 fill-current" />
-                          <span className="text-sm font-medium">4.8 (124 reviews)</span>
-                        </div>
                       </div>
                     </div>
                   </div>

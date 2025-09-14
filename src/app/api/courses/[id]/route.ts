@@ -36,8 +36,24 @@ export async function PUT(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const body = await request.json();
     const { id } = await context.params;
+    
+    // Parse multipart form data
+    const formData = await request.formData();
+    
+    // Extract metadata from form data
+    const title = formData.get('title') as string;
+    const description = formData.get('description') as string;
+    const accent = formData.get('accent') as string;
+    const level = formData.get('level') as string;
+    const duration = formData.get('duration') as string;
+    const price = formData.get('price') as string;
+    const students = formData.get('students') as string;
+    const order = formData.get('order') as string;
+    const rating = formData.get('rating') as string;
+    
+    // Extract thumbnail file
+    const thumbnailFile = formData.get('thumbnailFile') as File | null;
 
     // Get the auth token from the httpOnly cookie or Authorization header
     let authToken = request.cookies.get('auth_token')?.value;
@@ -55,19 +71,37 @@ export async function PUT(
     console.log('- Auth token from header:', !!request.headers.get('Authorization'));
     console.log('- Final auth token present:', !!authToken);
 
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
+    // Build query parameters for metadata
+    const queryParams = new URLSearchParams();
+    if (title) queryParams.append('title', title);
+    if (description) queryParams.append('description', description);
+    if (accent) queryParams.append('accent', accent);
+    if (level) queryParams.append('level', level);
+    if (duration) queryParams.append('duration', duration);
+    if (price) queryParams.append('price', price);
+    if (students) queryParams.append('students', students);
+    if (order) queryParams.append('order', order);
+    if (rating) queryParams.append('rating', rating);
 
-    // Forward the Authorization header if we have a token
+    // Create new FormData for the backend request
+    const backendFormData = new FormData();
+    if (thumbnailFile) {
+      backendFormData.append('thumbnailFile', thumbnailFile);
+    }
+
+    const headers: Record<string, string> = {};
     if (authToken) {
       headers['Authorization'] = `Bearer ${authToken}`;
     }
+    // Note: Don't set Content-Type for FormData, let the browser set it with boundary
 
-    const response = await fetch(`${EXTERNAL_API_BASE_URL}/api/v2/courses/${id}`, {
+    const url = `${EXTERNAL_API_BASE_URL}/api/v2/courses/${id}/upload?${queryParams.toString()}`;
+    
+    const response = await fetch(url, {
       method: 'PUT',
       headers,
-      body: JSON.stringify(body),
+      body: backendFormData,
+      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -77,6 +111,8 @@ export async function PUT(
           { status: 401 }
         );
       }
+      const errorText = await response.text();
+      console.error('Backend error:', errorText);
       throw new Error(`Failed to update course: ${response.status} ${response.statusText}`);
     }
 
