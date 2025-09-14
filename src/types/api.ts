@@ -9,8 +9,8 @@ export interface Course {
   price: string; // string per backend
   students: string; // string per backend
   rating: number;
-  image: string;
-  thumbnail: string;
+  image: string | number[] | null; // image as byte data, base64 string, or URL from backend
+  thumbnail: string | number[] | null; // thumbnail as byte data, base64 string, or URL from backend
   order: number;
 }
 
@@ -97,7 +97,7 @@ export interface CreateInquiryRequest {
   experience?: string;
 }
 
-// Legacy types for backward compatibility
+// Updated DigitalResource interface to match backend API structure
 export interface DigitalResource {
   id: number;
   title: string;
@@ -108,8 +108,9 @@ export interface DigitalResource {
   externalUrl: string;
   accent: string;
   level: string;
-  thumbnail?: string | null; // new field from backend to use as card header background
-  price?: string; // optional price for display in cards
+  thumbnail: string | number[] | null; // thumbnail as byte data, base64 string, or URL from backend
+  amount: number; // price amount from backend
+  price?: string; // optional formatted price for display in cards (derived from amount)
 }
 
 export interface Review {
@@ -158,15 +159,23 @@ export interface LegacyBioData {
   };
 }
 
-// Blog types
+// Blog types - Updated to match v2 API response structure
 export interface BlogPost {
-  id?: string | number;
+  id: number;
   title: string;
+  description: string; // v2 API uses 'description' instead of 'excerpt'
   content: string;
   author: string;
+  image: string | number[] | null; // v2 API image field as byte data, base64, or URL
+  thumbnail: string | number[] | null; // v2 API thumbnail field as byte data, base64, or URL
+  // Legacy fields for backward compatibility
   createdDate?: string;
   created?: string;
   created_at?: string;
+  featuredImage?: string; // Legacy field, will map to 'image' or 'thumbnail'
+  excerpt?: string; // Legacy field, will map to 'description'
+  tags?: string[]; // Legacy field
+  published?: boolean; // Legacy field
 }
 
 // API Response types

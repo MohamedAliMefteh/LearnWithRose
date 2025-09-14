@@ -41,7 +41,8 @@ export async function GET() {
           externalUrl: "",
           accent: "Modern Standard Arabic",
           level: "Beginner",
-          price: "Free"
+          thumbnail: "/placeholdercourse.jpg",
+          amount: 0
         }
       ]);
     }

@@ -49,13 +49,25 @@ export default function ResourcesSection({ loading, resources }: ResourcesSectio
                 key={index}
                 resource={resource}
                 onPurchase={() => {
-                  const params = new URLSearchParams({
-                    id: String(resource.id),
-                    min: resource.price ? resource.price.replace(/[^0-9.]/g, "") : "0.01",
-                    name: resource.title || "Digital Resource",
-                    type: resource.fileType || "document",
-                  });
-                  router.push(`/checkout?${params.toString()}`);
+                  // Store item data securely in session storage
+                  const checkoutData = {
+                    id: resource.id,
+                    title: resource.title,
+                    description: resource.description,
+                    fileType: resource.fileType,
+                    category: resource.category,
+                    level: resource.level,
+                    amount: resource.amount || 0,
+                    price: resource.price,
+                    thumbnail: resource.thumbnail,
+                    timestamp: Date.now() // For security - expire old data
+                  };
+                  
+                  // Store in session storage (more secure than URL)
+                  sessionStorage.setItem('checkout-item', JSON.stringify(checkoutData));
+                  
+                  // Navigate to checkout with just the item ID
+                  router.push(`/checkout?id=${resource.id}`);
                 }}
               />
             ))}

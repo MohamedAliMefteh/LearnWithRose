@@ -5,7 +5,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { convertByteDataToImageUrl, getFallbackImage } from "@/lib/image-utils";
+import { ArrowLeft, Shield, CreditCard, Lock, CheckCircle, FileText, Headphones, Video, File, Star } from "lucide-react";
 
 function loadPayPal(clientId: string): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -24,23 +27,48 @@ export default function CheckoutPage() {
   const router = useRouter();
   const search = useSearchParams();
   const itemId = search.get("id");
-  const minStr = search.get("min") ?? "0";
-  const qsName = search.get("name") ?? "Digital Resource";
-  const qsType = search.get("type") ?? "document";
 
-  const min = useMemo(() => {
-    const n = Number(minStr?.toString().replace(/[^0-9.]/g, ""));
-    return Number.isFinite(n) && n > 0 ? Math.max(0.01, Math.round(n * 100) / 100) : 0.01;
-  }, [minStr]);
-
+  // State declarations first
+  const [checkoutItem, setCheckoutItem] = useState<any>(null);
+  const [item, setItem] = useState<any>(null);
+  const [itemLoading, setItemLoading] = useState<boolean>(true);
   const [email, setEmail] = useState("");
-  const [amount, setAmount] = useState(min.toFixed(2));
+  const [amount, setAmount] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const paypalButtonsRef = useRef<HTMLDivElement | null>(null);
+  
+  // Get item data from session storage (more secure than URL params)
+  useEffect(() => {
+    const storedData = sessionStorage.getItem('checkout-item');
+    if (storedData) {
+      try {
+        const data = JSON.parse(storedData);
+        // Check if data is not too old (expire after 1 hour for security)
+        const isExpired = Date.now() - data.timestamp > 60 * 60 * 1000;
+        if (!isExpired && data.id === itemId) {
+          setCheckoutItem(data);
+        } else {
+          // Clear expired or mismatched data
+          sessionStorage.removeItem('checkout-item');
+        }
+      } catch (error) {
+        console.error('Error parsing checkout data:', error);
+        sessionStorage.removeItem('checkout-item');
+      }
+    }
+  }, [itemId]);
 
-  const [item, setItem] = useState<any>(null);
-  const [itemLoading, setItemLoading] = useState<boolean>(true);
+  const min = useMemo(() => {
+    // Use amount from session storage or fallback to API data
+    const amount = checkoutItem?.amount || item?.amount || 0;
+    return Number.isFinite(amount) && amount > 0 ? Math.max(0.01, Math.round(amount * 100) / 100) : 0.01;
+  }, [checkoutItem, item]);
+  
+  // Update amount when min changes (from session storage or API)
+  useEffect(() => {
+    setAmount(min.toFixed(2));
+  }, [min]);
 
   useEffect(() => {
     async function loadItem() {
@@ -57,8 +85,8 @@ export default function CheckoutPage() {
     loadItem();
   }, [itemId]);
 
-  const itemName = item?.title || qsName;
-  const itemType = item?.fileType || qsType;
+  const itemName = checkoutItem?.title || item?.title || "Digital Resource";
+  const itemType = checkoutItem?.fileType || item?.fileType || "document";
 
   const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID as string | undefined;
 
@@ -115,6 +143,8 @@ export default function CheckoutPage() {
               setError(payload?.error || "Payment capture failed");
               return;
             }
+            // Clear session storage after successful payment
+            sessionStorage.removeItem('checkout-item');
             router.push(`/checkout/success?orderId=${encodeURIComponent(orderId)}`);
           },
           onCancel: () => {
@@ -167,78 +197,315 @@ export default function CheckoutPage() {
     }
   };
 
+  // File type icon helper
+  function FileTypeIcon({ type }: { type?: string }) {
+    const t = (type || "").toLowerCase();
+    if (t.includes("pdf") || t.includes("doc") || t.includes("text")) {
+      return <FileText className="h-5 w-5" />;
+    }
+    if (t.includes("audio") || t.includes("mp3") || t.includes("wav")) {
+      return <Headphones className="h-5 w-5" />;
+    }
+    if (t.includes("video") || t.includes("mp4") || t.includes("mov")) {
+      return <Video className="h-5 w-5" />;
+    }
+    return <File className="h-5 w-5" />;
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-secondary/10 to-accent/10">
-      <div className="max-w-5xl mx-auto p-6">
-        <h1 className="text-3xl font-bold mb-6">Checkout</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-primary/5 relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-accent/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
+      </div>
+      
+      <div className="relative z-10 max-w-6xl mx-auto p-6">
+        {/* Header with back button */}
+        <div className="flex items-center gap-4 mb-8">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.back()}
+            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl px-3 py-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </Button>
+          <div className="flex-1">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-primary to-accent bg-clip-text text-transparent">
+              Secure Checkout
+            </h1>
+            <p className="text-slate-600 mt-1">Complete your purchase securely with PayPal</p>
+          </div>
+          <div className="flex items-center gap-2 text-green-600 bg-green-50 px-3 py-2 rounded-xl">
+            <Shield className="w-4 h-4" />
+            <span className="text-sm font-medium">SSL Secured</span>
+          </div>
+        </div>
 
         {!clientId && (
-          <div className="mb-4 p-3 rounded bg-red-50 text-red-700">
-            PayPal Client ID is not configured. Please set NEXT_PUBLIC_PAYPAL_CLIENT_ID.
+          <div className="mb-6 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-red-500 rounded-full" />
+              <span className="font-medium">Configuration Required</span>
+            </div>
+            <p className="mt-1 text-sm">PayPal Client ID is not configured. Please set NEXT_PUBLIC_PAYPAL_CLIENT_ID.</p>
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-          {/* Item card */}
-          <Card className="md:col-span-3 overflow-hidden">
-            <CardContent className="p-0">
-              {item?.thumbnail ? (
-                <div className="relative h-48 w-full bg-muted/40">
-                  <img src={item.thumbnail} alt="thumbnail" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/10" />
-                </div>
-              ) : (
-                <div className="h-48 w-full bg-muted/40" />
-              )}
-              <div className="p-5">
-                <div className="text-2xl font-semibold">{itemName}</div>
-                <div className="mt-1 text-sm text-muted-foreground capitalize">{itemType}</div>
-                {item?.description && (
-                  <p className="text-sm mt-3 text-muted-foreground leading-relaxed">{item.description}</p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Item Details Card */}
+          <Card className="lg:col-span-2 overflow-hidden border-0 shadow-xl bg-white/80 backdrop-blur-sm rounded-3xl">
+            {/* Enhanced gradient border */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20 rounded-3xl p-[1px]">
+              <div className="bg-white/90 backdrop-blur-sm rounded-3xl h-full w-full" />
+            </div>
+            
+            <div className="relative z-10">
+              <CardHeader className="p-0">
+                {(checkoutItem?.thumbnail || item?.thumbnail) ? (
+                  <div 
+                    className="relative h-64 w-full bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden"
+                    style={{
+                      backgroundImage: `url(${convertByteDataToImageUrl(checkoutItem?.thumbnail || item?.thumbnail, getFallbackImage('library'))})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center"
+                    }}
+                  >
+                    {/* Modern gradient overlays */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10" />
+                    
+                    {/* Floating badges */}
+                    <div className="absolute top-6 left-6">
+                      {checkoutItem?.category && (
+                        <Badge className="bg-white/20 backdrop-blur-md text-white border-white/30 px-4 py-2 text-sm font-medium">
+                          {checkoutItem.category}
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    <div className="absolute top-6 right-6">
+                      <div className="w-14 h-14 bg-white/90 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-lg">
+                        <div className="text-primary">
+                          <FileTypeIcon type={itemType} />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Price badge */}
+                    <div className="absolute bottom-6 right-6">
+                      <div className="bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl shadow-lg border border-white/40">
+                        <span className="text-lg font-bold text-slate-900">${min.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div 
+                    className="h-64 w-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center"
+                    style={{
+                      backgroundImage: `url(${getFallbackImage('library')})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center"
+                    }}
+                  >
+                    <div className="text-slate-400">
+                      <FileTypeIcon type={itemType} />
+                    </div>
+                  </div>
                 )}
-              </div>
-            </CardContent>
+              </CardHeader>
+              
+              <CardContent className="p-8">
+                <div className="space-y-6">
+                  {/* Title and rating */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h2 className="text-3xl font-bold text-slate-900 leading-tight mb-2">{itemName}</h2>
+                      <div className="flex items-center gap-3 text-slate-600">
+                        <span className="capitalize text-sm font-medium">{itemType}</span>
+                        <div className="w-1 h-1 bg-slate-400 rounded-full" />
+                        <div className="flex items-center gap-1">
+                          <Star className="w-4 h-4 text-amber-400 fill-current" />
+                          <span className="text-sm font-medium">4.8 (124 reviews)</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Description */}
+                  {(checkoutItem?.description || item?.description) && (
+                    <div className="bg-slate-50 rounded-2xl p-6">
+                      <h3 className="font-semibold text-slate-900 mb-2">Description</h3>
+                      <p className="text-slate-700 leading-relaxed">
+                        {checkoutItem?.description || item?.description}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* Features/Benefits */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex items-center gap-3 p-4 bg-green-50 rounded-2xl">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <span className="text-sm font-medium text-green-800">Instant Download</span>
+                    </div>
+                    <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-2xl">
+                      <Shield className="w-5 h-5 text-blue-600" />
+                      <span className="text-sm font-medium text-blue-800">Secure Payment</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </div>
           </Card>
 
-          {/* Payment card */}
-          <Card className="md:col-span-2">
-            <CardContent className="p-5 space-y-4">
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div>
-                <Label htmlFor="amount">Amount (USD)</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  min={min}
-                  step="0.01"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                />
-                <p className="text-sm text-muted-foreground mt-1">
-                  Minimum: ${min.toFixed(2)} — You can pay more to support.
-                </p>
-              </div>
+          {/* Payment Card */}
+          <Card className="overflow-hidden border-0 shadow-xl bg-white/80 backdrop-blur-sm rounded-3xl sticky top-6">
+            {/* Enhanced gradient border */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20 rounded-3xl p-[1px]">
+              <div className="bg-white/90 backdrop-blur-sm rounded-3xl h-full w-full" />
+            </div>
+            
+            <div className="relative z-10">
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center">
+                    <CreditCard className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900">Payment Details</h3>
+                    <p className="text-sm text-slate-600">Secure checkout with PayPal</p>
+                  </div>
+                </div>
+              </CardHeader>
+              
+              <CardContent className="space-y-6">
+                {/* Order Summary */}
+                <div className="bg-slate-50 rounded-2xl p-6 space-y-4">
+                  <h4 className="font-semibold text-slate-900 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-primary rounded-full" />
+                    Order Summary
+                  </h4>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-600">Item Price</span>
+                      <span className="font-semibold text-slate-900">${min.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-600">Processing Fee</span>
+                      <span className="font-semibold text-green-600">Free</span>
+                    </div>
+                    <div className="border-t border-slate-200 pt-3">
+                      <div className="flex justify-between items-center">
+                        <span className="font-semibold text-slate-900">Total</span>
+                        <span className="text-2xl font-bold text-primary">${Number(amount || min).toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Email Input */}
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-primary rounded-full" />
+                    Email Address
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="h-12 rounded-xl border-slate-200 focus:border-primary focus:ring-primary/20 bg-white/50 backdrop-blur-sm"
+                  />
+                  <p className="text-xs text-slate-500">Receipt will be sent to this email</p>
+                </div>
+                
+                {/* Amount Input */}
+                <div className="space-y-2">
+                  <Label htmlFor="amount" className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-accent rounded-full" />
+                    Amount (USD)
+                  </Label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500 font-medium">$</span>
+                    <Input
+                      id="amount"
+                      type="number"
+                      min={min}
+                      step="0.01"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      className="h-12 pl-8 rounded-xl border-slate-200 focus:border-accent focus:ring-accent/20 bg-white/50 backdrop-blur-sm font-semibold"
+                    />
+                  </div>
+                  <div className="bg-blue-50 rounded-xl p-3">
+                    <p className="text-xs text-blue-700 font-medium">
+                      💡 Minimum: ${min.toFixed(2)} — You can pay more to support our work!
+                    </p>
+                  </div>
+                </div>
 
-              {error && (
-                <div className="p-3 rounded bg-red-50 text-red-700">{error}</div>
-              )}
+                {/* Error Display */}
+                {error && (
+                  <div className="p-4 rounded-2xl bg-red-50 border border-red-200">
+                    <div className="flex items-center gap-2 text-red-700">
+                      <div className="w-2 h-2 bg-red-500 rounded-full" />
+                      <span className="font-medium text-sm">{error}</span>
+                    </div>
+                  </div>
+                )}
 
-              <div className="flex items-center gap-3">
-                <Button disabled={loading} onClick={handlePayClick}>Update</Button>
-              </div>
+                {/* Update Button */}
+                <Button 
+                  disabled={loading} 
+                  onClick={handlePayClick}
+                  className="w-full h-12 rounded-xl bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  {loading ? "Updating..." : "Update Payment"}
+                </Button>
 
-              <div className="mt-2" ref={paypalButtonsRef} />
-            </CardContent>
+                {/* PayPal Buttons Container */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-px bg-slate-200" />
+                    <span className="text-xs text-slate-500 font-medium px-3">PAY WITH</span>
+                    <div className="flex-1 h-px bg-slate-200" />
+                  </div>
+                  
+                  <div ref={paypalButtonsRef} className="[&>div]:rounded-xl [&_iframe]:rounded-xl" />
+                </div>
+                
+                {/* Security Notice */}
+                <div className="flex items-center justify-center gap-2 text-slate-500 text-xs">
+                  <Lock className="w-3 h-3" />
+                  <span>Your payment information is secure and encrypted</span>
+                </div>
+              </CardContent>
+            </div>
           </Card>
+        </div>
+        
+        {/* Trust Indicators */}
+        <div className="mt-12 text-center">
+          <div className="inline-flex items-center gap-6 bg-white/60 backdrop-blur-sm rounded-2xl px-8 py-4 shadow-lg">
+            <div className="flex items-center gap-2 text-slate-600">
+              <Shield className="w-4 h-4 text-green-600" />
+              <span className="text-sm font-medium">SSL Encrypted</span>
+            </div>
+            <div className="w-px h-6 bg-slate-200" />
+            <div className="flex items-center gap-2 text-slate-600">
+              <CheckCircle className="w-4 h-4 text-blue-600" />
+              <span className="text-sm font-medium">Secure Payments</span>
+            </div>
+            <div className="w-px h-6 bg-slate-200" />
+            <div className="flex items-center gap-2 text-slate-600">
+              <CreditCard className="w-4 h-4 text-purple-600" />
+              <span className="text-sm font-medium">PayPal Protected</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

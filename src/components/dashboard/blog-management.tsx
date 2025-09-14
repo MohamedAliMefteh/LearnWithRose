@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useAuth } from "@/components/providers/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Edit2, Trash2, Plus, Loader2, Save, X } from "lucide-react";
+import { Edit2, Trash2, Plus, Loader2, Save, X, Image as ImageIcon } from "lucide-react";
 import { blogsAPI } from "@/lib/blogs-api";
 import { BlogPost } from "@/types/api";
+import { constructImageUrl, getFallbackImage } from "@/lib/image-utils";
 
 function stripHtml(html: string) {
   return html
@@ -26,9 +29,19 @@ function getExcerpt(html?: string, maxLen: number = 200) {
 type ViewMode = "list" | "add" | "edit";
 
 export function BlogManagement() {
+  const { getAuthToken } = useAuth();
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [form, setForm] = useState<Partial<BlogPost>>({ title: "", content: "", author: "" });
+  const [form, setForm] = useState<Partial<BlogPost>>({ 
+    title: "", 
+    content: "", 
+    author: "", 
+    featuredImage: "", 
+    excerpt: "", 
+    published: true 
+  });
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [editingId, setEditingId] = useState<string | number | undefined>(undefined);
   const [saving, setSaving] = useState<boolean>(false);
@@ -82,21 +95,62 @@ export function BlogManagement() {
     setSaving(true);
     try {
       if (isEditing && editingId != null) {
+        // For editing, use the legacy API for now (can be updated later)
         await blogsAPI.update(editingId, {
           title: form.title!,
           content: form.content!,
           author: form.author!,
+          featuredImage: form.featuredImage,
+          excerpt: form.excerpt,
+          published: form.published,
         });
         toast.success("Blog updated successfully");
       } else {
-        await blogsAPI.create({
+        // For new blogs, use v2 API with file upload
+        const token = getAuthToken();
+        const headers: HeadersInit = {
+          'accept': '*/*'
+        };
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const formDataUpload = new FormData();
+        if (thumbnailFile) {
+          formDataUpload.append('thumbnailFile', thumbnailFile);
+        }
+
+        // Build query parameters for v2 API
+        const queryParams = new URLSearchParams({
           title: form.title!,
+          description: form.excerpt || form.title!, // Use excerpt as description, fallback to title
           content: form.content!,
-          author: form.author!,
+          author: form.author!
         });
-        toast.success("Blog added successfully");
+
+        const response = await fetch(`/api/v2/articles/upload?${queryParams}`, {
+          method: "POST",
+          headers,
+          body: formDataUpload,
+          // Note: Don't set Content-Type header for FormData, browser will set it with boundary
+        });
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Failed to create blog: ${errorText}`);
+        }
+        toast.success("Blog created successfully with v2 API");
       }
-      setForm({ title: "", content: "", author: "" });
+      setForm({ 
+        title: "", 
+        content: "", 
+        author: "", 
+        featuredImage: "", 
+        excerpt: "", 
+        published: true 
+      });
+      setThumbnailFile(null);
+      setThumbnailPreview("");
       setEditingId(undefined);
       setViewMode("list");
       await fetchBlogs();
@@ -121,12 +175,28 @@ export function BlogManagement() {
 
   const handleEdit = (blog: BlogPost) => {
     setEditingId(blog.id);
-    setForm({ title: blog.title, author: blog.author, content: blog.content });
+    setForm({ 
+      title: blog.title, 
+      author: blog.author, 
+      content: blog.content,
+      featuredImage: blog.featuredImage || "",
+      excerpt: blog.excerpt || "",
+      published: blog.published ?? true
+    });
     setViewMode("edit");
   };
 
   const handleAdd = () => {
-    setForm({ title: "", content: "", author: "" });
+    setForm({ 
+      title: "", 
+      content: "", 
+      author: "", 
+      featuredImage: "", 
+      excerpt: "", 
+      published: true 
+    });
+    setThumbnailFile(null);
+    setThumbnailPreview("");
     setEditingId(undefined);
     setViewMode("add");
   };
@@ -134,6 +204,21 @@ export function BlogManagement() {
   const handleCancel = () => {
     setViewMode("list");
     setEditingId(undefined);
+    setThumbnailFile(null);
+    setThumbnailPreview("");
+  };
+
+  const handleThumbnailFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setThumbnailFile(file);
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setThumbnailPreview(e.target?.result as string || "");
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -157,7 +242,7 @@ export function BlogManagement() {
               <h2 className="text-lg font-semibold mb-2">{isEditing ? "Edit Blog" : "Add Blog"}</h2>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Title</label>
+                  <label className="text-sm font-medium">Title *</label>
                   <Input
                     placeholder="Enter blog title"
                     value={form.title || ""}
@@ -165,13 +250,141 @@ export function BlogManagement() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Author</label>
+                  <label className="text-sm font-medium">Author *</label>
                   <Input
                     placeholder="Author name"
                     value={form.author || ""}
                     onChange={(e) => setForm((f) => ({ ...f, author: e.target.value }))}
                   />
                 </div>
+              </div>
+
+              {/* Thumbnail Upload Section for v2 API */}
+              {viewMode === "add" && (
+                <div className="space-y-4 p-4 bg-muted/30 rounded-lg border-2 border-dashed border-primary/20">
+                  <h3 className="text-lg font-semibold text-primary">Thumbnail Upload (v2 API)</h3>
+                  
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium flex items-center gap-2">
+                      <ImageIcon className="w-4 h-4" />
+                      Featured Image/Thumbnail (Optional)
+                    </label>
+                    <div className="relative">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleThumbnailFileChange}
+                        className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90"
+                      />
+                      {thumbnailFile && (
+                        <div className="mt-2 p-2 bg-green-50 rounded border border-green-200">
+                          <div className="text-xs text-green-700 font-medium">Selected: {thumbnailFile.name}</div>
+                          <div className="text-xs text-green-600">Size: {(thumbnailFile.size / 1024).toFixed(0)} KB</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Thumbnail Preview */}
+                  {thumbnailPreview && (
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Thumbnail Preview:</label>
+                      <div 
+                        className="w-full h-32 bg-cover bg-center rounded-lg border-2 border-primary/20"
+                        style={{ backgroundImage: `url(${thumbnailPreview})` }}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Legacy Featured Image URL for editing existing blogs */}
+              {viewMode === "edit" && (
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Featured Image URL</label>
+                    <Input
+                      placeholder="/images/blog-featured.jpg or https://..."
+                      value={form.featuredImage || ""}
+                      onChange={(e) => setForm((f) => ({ ...f, featuredImage: e.target.value }))}
+                    />
+                    {form.featuredImage && (
+                      <div className="mt-2">
+                        <div className="text-xs text-muted-foreground mb-1">Preview:</div>
+                        <div 
+                          className="w-full h-20 bg-cover bg-center rounded border"
+                          style={{
+                            backgroundImage: `url(${constructImageUrl(form.featuredImage, getFallbackImage('blog'))})`
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Publication Status</label>
+                    <div className="flex items-center space-x-4 pt-2">
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          name="published"
+                          checked={form.published === true}
+                          onChange={() => setForm((f) => ({ ...f, published: true }))}
+                          className="text-primary"
+                        />
+                        <span className="text-sm">Published</span>
+                      </label>
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          name="published"
+                          checked={form.published === false}
+                          onChange={() => setForm((f) => ({ ...f, published: false }))}
+                          className="text-primary"
+                        />
+                        <span className="text-sm">Draft</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Publication Status for new blogs */}
+              {viewMode === "add" && (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Publication Status</label>
+                  <div className="flex items-center space-x-4 pt-2">
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        name="published"
+                        checked={form.published === true}
+                        onChange={() => setForm((f) => ({ ...f, published: true }))}
+                        className="text-primary"
+                      />
+                      <span className="text-sm">Published</span>
+                    </label>
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        name="published"
+                        checked={form.published === false}
+                        onChange={() => setForm((f) => ({ ...f, published: false }))}
+                        className="text-primary"
+                      />
+                      <span className="text-sm">Draft</span>
+                    </label>
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Excerpt</label>
+                <Textarea
+                  placeholder="Brief description or summary of the blog post..."
+                  value={form.excerpt || ""}
+                  onChange={(e) => setForm((f) => ({ ...f, excerpt: e.target.value }))}
+                  rows={3}
+                />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Content</label>
@@ -221,13 +434,36 @@ export function BlogManagement() {
                             "horizontalLine",
                             "|",
                             "link",
-                            "uploadImage",
+                            "imageInsert",
+                            "imageUpload",
                             "insertTable",
                             "mediaEmbed",
                             "|",
                             "undo",
                             "redo",
                           ],
+                          image: {
+                            toolbar: [
+                              'imageTextAlternative',
+                              'imageStyle:inline',
+                              'imageStyle:block',
+                              'imageStyle:side',
+                              'linkImage'
+                            ],
+                            styles: [
+                              'full',
+                              'side',
+                              'alignLeft',
+                              'alignCenter',
+                              'alignRight'
+                            ]
+                          },
+                          simpleUpload: {
+                            uploadUrl: `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}/api/upload/image`,
+                            headers: {
+                              'X-CSRF-TOKEN': 'CSRF-Token',
+                            }
+                          }
                         }}
                       />
                     ) : (
@@ -259,9 +495,24 @@ export function BlogManagement() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {blogs.map((blog) => (
-              <Card key={String(blog.id ?? blog.title)} className="flex flex-col">
+              <Card key={String(blog.id ?? blog.title)} className="flex flex-col overflow-hidden">
+                {/* Featured Image Header */}
+                <div 
+                  className="h-32 w-full bg-cover bg-center relative"
+                  style={{
+                    backgroundImage: `url(${constructImageUrl(blog.featuredImage, getFallbackImage('blog'))})`
+                  }}
+                >
+                  <div className="absolute inset-0 bg-black/20" />
+                  <div className="absolute top-2 right-2">
+                    {blog.published === false && (
+                      <span className="px-2 py-1 bg-yellow-500 text-white text-xs rounded">Draft</span>
+                    )}
+                  </div>
+                </div>
+                
                 <CardHeader>
-                  <CardTitle className="line-clamp-1">{blog.title}</CardTitle>
+                  <CardTitle className="line-clamp-2">{blog.title}</CardTitle>
                   <CardDescription>
                     <span className="mr-2">By {blog.author || "Unknown"}</span>
                     {getCreatedDate(blog) && (
@@ -270,7 +521,9 @@ export function BlogManagement() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col">
-                  <p className="text-sm text-gray-700 whitespace-pre-wrap line-clamp-6">{getExcerpt(blog.content)}</p>
+                  <p className="text-sm text-gray-700 whitespace-pre-wrap line-clamp-4">
+                    {blog.excerpt || getExcerpt(blog.content)}
+                  </p>
                   <div className="mt-4 flex gap-2">
                     <Button variant="secondary" onClick={() => handleEdit(blog)} className="inline-flex items-center gap-2">
                       <Edit2 className="h-4 w-4" /> Edit

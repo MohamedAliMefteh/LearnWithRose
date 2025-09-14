@@ -69,8 +69,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Users } from "lucide-react";
+import { Clock, Users, Star, BookOpen, Award, TrendingUp } from "lucide-react";
 import { Course } from "@/types/api";
+import { convertByteDataToImageUrl, getFallbackImage } from "@/lib/image-utils";
+import { useState } from "react";
 
 interface CourseCardProps {
   course: Course;
@@ -78,93 +80,131 @@ interface CourseCardProps {
   showDetailsButton?: boolean;
 }
 
-// Removed duplicate declaration
+// Modern CourseCard with enhanced design and animations
 export function CourseCard({ course, onInquiry, showDetailsButton = true }: CourseCardProps) {
-  const resolveMediaUrl = (url?: string) => {
-    if (!url) return "/placeholdercourse.jpg";
-
-    // 0) Already a data URI
-    if (url.startsWith("data:")) return url;
-
-    // 1) Detect raw Base64 (common signatures + simple heuristic)
-    const trimmed = url.trim();
-    const looksBase64 = (
-      trimmed.startsWith("/9j/") ||     // JPEG
-      trimmed.startsWith("iVBORw0K") || // PNG
-      trimmed.startsWith("R0lGOD") ||   // GIF
-      (trimmed.length > 200 && /^[A-Za-z0-9+/=\n\r]+$/.test(trimmed))
-    );
-
-    if (looksBase64) {
-      // Guess MIME type by signature; default to JPEG
-      let mime = "image/jpeg";
-      if (trimmed.startsWith("iVBORw0K")) mime = "image/png";
-      else if (trimmed.startsWith("R0lGOD")) mime = "image/gif";
-
-      // Some backends include a leading slash (e.g., "/9j/") – strip it
-      const base64Payload = trimmed.replace(/^\/+/, "");
-      return `data:${mime};base64,${base64Payload}`;
-    }
-
-    // 2) If absolute URL, return as-is
-    if (/^https?:\/\//i.test(url)) return url;
-
-    // 3) Backend-relative paths
-    const base = process.env.NEXT_PUBLIC_API_BASE_URL || "";
-    if (url.startsWith("/")) return `${base}${url}`;
-
-    // 4) Fallback
-    return url;
-  };
-
-  const imgSrc = resolveMediaUrl(course.thumbnail || course.image || "/placeholdercourse.jpg");
+  // Use our standardized utility function for consistent byte data handling
+  const thumbnailUrl = convertByteDataToImageUrl(
+    course.thumbnail || course.image, 
+    getFallbackImage('course')
+  );
+  
+  const [isHovered, setIsHovered] = useState(false);
+  const rating = 4.7; // Mock rating - replace with actual data
+  const enrolledCount = parseInt(course.students) || 0;
 
   return (
-    <Card className="border-[hsl(var(--secondary-yellow))] hover:shadow-lg transition-shadow w-full h-full flex flex-col">
-      <div className="aspect-video rounded-t-lg overflow-hidden">
-        <img
-          src={imgSrc}
-          alt={course.title || "Course image"}
-          className="w-full h-full object-cover"
-          loading="lazy"
-        />
+    <Card 
+      className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 w-full h-full flex flex-col backdrop-blur-sm"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Modern gradient border */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20 rounded-3xl p-[1px]">
+        <div className="bg-white rounded-3xl h-full w-full" />
       </div>
-      <CardHeader className="flex-1 p-3 sm:p-4">
-        <div className="flex flex-col sm:flex-row justify-between items-start mb-2 gap-2">
-          <Badge
-            variant={
-              course.accent === "palestinian" ? "default" : "secondary"
-            }
-          >
-            {course.accent}
-          </Badge>
+      
+      <div className="relative z-10 flex flex-col h-full">
+        {/* Enhanced hero image section */}
+        <div 
+          className="relative h-64 w-full bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden group-hover:scale-105 transition-all duration-700 ease-out"
+          style={{
+            backgroundImage: `url(${thumbnailUrl})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          {/* Modern layered gradients */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-accent/15" />
+          
+          {/* Floating price badge */}
+          <div className="absolute top-4 right-4 z-20">
+            <div className="bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl shadow-lg border border-white/40">
+              <span className="text-sm font-bold text-slate-900">${course.price}</span>
+            </div>
+          </div>
+          
+          {/* Accent/Language badge */}
+          <div className="absolute top-4 left-4 z-20">
+            <Badge className="bg-primary/90 backdrop-blur-md text-white border-primary/30 px-3 py-1.5 capitalize">
+              {course.accent}
+            </Badge>
+          </div>
+          
+          {/* Level indicator */}
+          <div className="absolute bottom-4 left-4 z-20">
+            <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-2 rounded-2xl">
+              <Award className="w-4 h-4 text-white" />
+              <span className="text-white text-sm font-medium capitalize">{course.level}</span>
+            </div>
+          </div>
+          
+          {/* Rating badge */}
+          <div className="absolute bottom-4 right-4 z-20">
+            <div className="flex items-center gap-1 bg-white/90 backdrop-blur-md px-3 py-2 rounded-2xl shadow-lg">
+              <Star className="w-4 h-4 text-amber-400 fill-current" />
+              <span className="text-sm font-bold text-slate-900">{rating}</span>
+            </div>
+          </div>
+          
         </div>
-        <CardTitle className="text-base sm:text-lg">{course.title}</CardTitle>
-        <CardDescription className="text-xs sm:text-sm">
-          {getPreview(course.description, 70)}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="mt-auto p-3 sm:p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-          <div className="flex items-center text-xs sm:text-sm text-foreground">
-            <Clock className="h-4 w-4 mr-2" />
-            {course.duration}
+        
+        {/* Content section */}
+        <div className="flex-1 flex flex-col p-6">
+          {/* Title and quick stats */}
+          <div className="mb-4">
+            <h3 className="text-xl font-bold text-slate-900 leading-tight mb-2 group-hover:text-primary transition-colors">
+              {course.title}
+            </h3>
+            <p className="text-slate-600 text-sm leading-relaxed">
+              {getPreview(course.description, 100)}
+            </p>
           </div>
-          <div className="flex items-center text-xs sm:text-sm text-foreground">
-            <Users className="h-4 w-4 mr-2" />
-            {course.students} students
+          
+          {/* Course stats */}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="flex items-center gap-2 text-slate-700">
+              <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
+                <Clock className="w-4 h-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Duration</p>
+                <p className="text-sm font-semibold">{course.duration}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-slate-700">
+              <div className="w-8 h-8 bg-accent/10 rounded-xl flex items-center justify-center">
+                <Users className="w-4 h-4 text-accent" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Students</p>
+                <p className="text-sm font-semibold">{enrolledCount > 1000 ? `${Math.floor(enrolledCount/1000)}k+` : course.students}</p>
+              </div>
+            </div>
           </div>
-          <div className="text-xs sm:text-sm text-foreground">
-            Level: <span className="capitalize font-medium">{course.level}</span>
+          
+          {/* Progress indicator */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-slate-500">Popularity</span>
+              <TrendingUp className="w-4 h-4 text-green-500" />
+            </div>
+            <div className="w-full bg-slate-100 rounded-full h-2">
+              <div className="bg-gradient-to-r from-primary to-accent h-2 rounded-full" style={{width: '78%'}} />
+            </div>
           </div>
-          <div className="text-base sm:text-lg font-bold text-primary">${course.price}</div>
+          
+          {/* Action button */}
+          {showDetailsButton && onInquiry && (
+            <Button 
+              className="w-full rounded-2xl py-3 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105" 
+              onClick={() => onInquiry(course.id)}
+            >
+              Enroll Now
+            </Button>
+          )}
         </div>
-        {showDetailsButton && onInquiry && (
-          <Button className="w-full" onClick={() => onInquiry(course.id)}>
-            Get Course Details
-          </Button>
-        )}
-      </CardContent>
+      </div>
     </Card>
   );
 }

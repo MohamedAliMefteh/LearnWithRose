@@ -3,22 +3,52 @@ import { BlogPost } from '@/types/api';
 
 // Blogs API client following the same pattern as other APIs
 export const blogsAPI = {
-  // Fetch all blogs (public)
+  // Fetch all blogs from v2 API (public)
   async getAll(): Promise<BlogPost[]> {
     try {
-      const data = await apiClient.get<any[]>('/api/blog', { requireAuth: false });
+      const data = await apiClient.get<any[]>('/api/v2/articles', { requireAuth: false });
       const normalized: BlogPost[] = Array.isArray(data)
         ? data.map((d: any, idx: number) => ({
             id: d.id ?? idx,
             title: d.title ?? '',
+            description: d.description ?? '', // v2 API field
             content: d.content ?? '',
             author: d.author ?? '',
+            image: d.image ?? null, // v2 API field
+            thumbnail: d.thumbnail ?? null, // v2 API field
+            // Legacy compatibility
             createdDate: d.createdDate ?? d.created ?? d.created_at ?? d['created date'],
+            featuredImage: d.image ?? d.thumbnail, // Map v2 fields to legacy
+            excerpt: d.description, // Map v2 description to legacy excerpt
           }))
         : [];
       return normalized;
     } catch (error) {
-      console.error('Failed to fetch blogs from API:', error);
+      console.error('Failed to fetch blogs from v2 API:', error);
+      throw error;
+    }
+  },
+
+  // Fetch a single blog by ID from v2 API (public)
+  async getById(id: string | number): Promise<BlogPost> {
+    try {
+      const data = await apiClient.get<any>(`/api/v2/articles/${id}`, { requireAuth: false });
+      const normalized: BlogPost = {
+        id: data.id ?? id,
+        title: data.title ?? '',
+        description: data.description ?? '', // v2 API field
+        content: data.content ?? '',
+        author: data.author ?? '',
+        image: data.image ?? null, // v2 API field
+        thumbnail: data.thumbnail ?? null, // v2 API field (base64 encoded)
+        // Legacy compatibility
+        createdDate: data.createdDate ?? data.created ?? data.created_at ?? data['created date'],
+        featuredImage: data.image ?? data.thumbnail, // Map v2 fields to legacy
+        excerpt: data.description, // Map v2 description to legacy excerpt
+      };
+      return normalized;
+    } catch (error) {
+      console.error(`Failed to fetch blog ${id} from v2 API:`, error);
       throw error;
     }
   },

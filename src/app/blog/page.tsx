@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, Feather, RefreshCw, Home } from "lucide-react";
+import { convertByteDataToImageUrl, getFallbackImage } from "@/lib/image-utils";
 
 
 export default function BlogPage() {
@@ -132,41 +133,68 @@ export default function BlogPage() {
             </div>
           )}
 
-          {/* Posts grid */}
+          {/* Posts grid with consistent heights */}
           {!loading && posts.length > 0 && (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
               {posts.map((post, idx) => (
-                <article key={(post.id ?? idx).toString()} className="group">
-                  <Card className="overflow-hidden h-full border-primary/20 hover:shadow-lg transition-all duration-300">
-                    {/* Banner/cover placeholder */}
-                    <div className="h-40 w-full bg-gradient-to-br from-primary/10 via-accent/10 to-secondary/10 group-hover:from-primary/20 group-hover:to-secondary/20 transition-colors" />
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-xl group-hover:text-primary transition-colors line-clamp-2">
+                <article key={(post.id ?? idx).toString()} className="group h-full">
+                  <Card className="group relative overflow-hidden rounded-2xl border border-primary/20 bg-white shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full flex flex-col">
+                    {/* Enhanced Featured Image with larger size */}
+                    <div 
+                      className="relative h-56 w-full bg-gradient-to-br from-muted/20 to-muted/40 overflow-hidden group-hover:scale-105 transition-transform duration-300"
+                      style={{
+                        backgroundImage: `url(${convertByteDataToImageUrl(post.thumbnail || post.image, getFallbackImage('blog'))})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }}
+                    >
+                      {/* Enhanced overlay with gradient */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
+                      
+                      {/* Author badge in top-left corner */}
+                      <div className="absolute top-3 left-3 z-20">
+                        <Badge className="bg-white/90 backdrop-blur-sm text-primary">
+                          <Feather className="w-3 h-3 mr-1" />
+                          {post.author || "Rose"}
+                        </Badge>
+                      </div>
+                      
+                      {post.published === false && (
+                        <div className="absolute top-3 right-3 z-20">
+                          <Badge className="bg-yellow-500/90 backdrop-blur-sm text-white">Draft</Badge>
+                        </div>
+                      )}
+                    </div>
+                    <CardHeader className="pb-3 p-5">
+                      <CardTitle className="text-xl sm:text-2xl font-semibold leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2">
                         {post.title || "Untitled"}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                      <p className="text-sm text-muted-foreground line-clamp-3">
-                        {getExcerpt(post.content) || "No content available."}
-                      </p>
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <div className="inline-flex items-center gap-2">
-                          <Feather className="w-4 h-4" />
-                          <span>{post.author || "Rose"}</span>
-                        </div>
-                        <div className="inline-flex items-center gap-2">
-                          <CalendarDays className="w-4 h-4" />
-                          <span>
-                            {formatDate(
-                              post.createdDate || post.created || post.created_at || new Date().toISOString(),
-                            )}
-                          </span>
+                    <CardContent className="flex flex-col flex-grow p-5 pt-0">
+                      <div className="flex-grow space-y-4">
+                        <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+                          {post.description || post.excerpt || getExcerpt(post.content) || "No content available."}
+                        </p>
+                        
+                        <div className="flex items-center justify-between text-xs text-muted-foreground pt-2">
+                          <div className="inline-flex items-center gap-2">
+                            <CalendarDays className="w-4 h-4 text-primary" />
+                            <span className="font-medium">
+                              {formatDate(
+                                post.createdDate || post.created || post.created_at || new Date().toISOString(),
+                              )}
+                            </span>
+                          </div>
+                          <Badge variant="outline" className="rounded-full px-2 py-1">
+                            Article
+                          </Badge>
                         </div>
                       </div>
-                      <div className="pt-2">
+                      
+                      <div className="pt-4 mt-auto">
                         <Link href={`/blog/${encodeURIComponent((post.id ?? idx).toString())}`} className="block">
-                          <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-white">
-                            Read more
+                          <Button className="w-full rounded-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all duration-200">
+                            Read Article
                           </Button>
                         </Link>
                       </div>

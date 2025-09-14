@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useAuth } from "@/components/providers/auth-provider";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,9 +12,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { DigitalResource } from "@/types/api";
-import { getDigitalResources, addDigitalResource, updateDigitalResource, deleteDigitalResource } from "@/lib/digital-resources-data";
 import { DigitalResourceCard } from "@/components/cards/digital-resource-card";
-import { Plus, Edit2, Trash2, ArrowLeft, Save, X } from "lucide-react";
+import { Plus, Edit2, Trash2, ArrowLeft, Save, X, Upload, FileText, Image } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,6 +30,7 @@ import { toast } from "sonner";
 type ViewMode = "list" | "add" | "edit";
 
 export function DigitalResourcesManagement() {
+  const { getAuthToken } = useAuth();
   const [resources, setResources] = useState<DigitalResource[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [editingResource, setEditingResource] = useState<DigitalResource | null>(null);
@@ -41,27 +42,45 @@ export function DigitalResourcesManagement() {
     filePath: "",
     externalUrl: "",
     accent: "",
-    level: ""
+    level: "",
+    thumbnail: "",
+    amount: 0
   });
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
   fetchResources();
   }, []);
 
-  const fetchResources = () => {
+  const fetchResources = async () => {
     setIsLoading(true);
-  fetch("/api/library-items")
-      .then(res => {
-        if (!res.ok) throw new Error("Failed to fetch resources");
-        return res.json();
-      })
-      .then(data => setResources(Array.isArray(data) ? data : []))
-      .catch(() => {
-        toast.error("Failed to load digital resources");
-        setResources([]);
-      })
-      .finally(() => setIsLoading(false));
+    try {
+      const token = getAuthToken();
+      const headers: HeadersInit = {
+        'accept': 'application/json'
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch("/api/v2/library-items", {
+        headers
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to fetch resources: ${response.status}`);
+      }
+      const data = await response.json();
+      setResources(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Error fetching resources:", error);
+      toast.error("Failed to load digital resources");
+      setResources([]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleAddResource = () => {
@@ -75,8 +94,13 @@ export function DigitalResourcesManagement() {
       filePath: "",
       externalUrl: "",
       accent: "",
-      level: ""
+      level: "",
+      thumbnail: "",
+      amount: 0
     });
+    setPdfFile(null);
+    setThumbnailFile(null);
+    setThumbnailPreview("");
   };
 
   const handleEditResource = (resource: DigitalResource) => {
@@ -90,16 +114,46 @@ export function DigitalResourcesManagement() {
       filePath: resource.filePath || "",
       externalUrl: resource.externalUrl || "",
       accent: resource.accent || "",
-      level: resource.level || ""
+      level: resource.level || "",
+      thumbnail: resource.thumbnail || "",
+      amount: resource.amount || 0
     });
+    setPdfFile(null);
+    setThumbnailFile(null);
+    setThumbnailPreview("");
+  };
+
+  const handlePdfFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setPdfFile(file);
+      // Auto-fill file type based on file extension
+      const extension = file.name.split('.').pop()?.toUpperCase();
+      if (extension) {
+        setFormData(prev => ({ ...prev, fileType: extension }));
+      }
+    }
+  };
+
+  const handleThumbnailFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setThumbnailFile(file);
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setThumbnailPreview(e.target?.result as string || "");
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSaveResource = () => {
     const save = async () => {
       try {
-        let response;
         if (viewMode === "edit" && editingResource) {
-          response = await fetch(`/api/library-items/${editingResource.id}`, {
+          // For editing, use the old API for now (can be updated later)
+          const response = await fetch(`/api/library-items/${editingResource.id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formData),
@@ -107,19 +161,56 @@ export function DigitalResourcesManagement() {
           if (!response.ok) throw new Error("Resource not found");
           toast.success("Resource updated successfully");
         } else {
-          response = await fetch("/api/library-items", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
+          // For new resources, use v2 API with file uploads
+          if (!pdfFile) {
+            toast.error("Please select a PDF file to upload");
+            return;
+          }
+
+          const formDataUpload = new FormData();
+          formDataUpload.append('pdfFile', pdfFile);
+          if (thumbnailFile) {
+            formDataUpload.append('thumbnailFile', thumbnailFile);
+          }
+
+          // Build query parameters for v2 API
+          const queryParams = new URLSearchParams({
+            title: formData.title,
+            description: formData.description,
+            category: formData.category,
+            fileType: formData.fileType,
+            accent: formData.accent,
+            level: formData.level,
+            amount: formData.amount.toString()
           });
-          if (!response.ok) throw new Error("Failed to create resource");
-          toast.success("Resource created successfully");
+
+          const token = getAuthToken();
+          const headers: HeadersInit = {
+            'accept': 'application/json'
+          };
+          if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+          }
+
+          const response = await fetch(`/api/v2/library-items/upload?${queryParams}`, {
+            method: "POST",
+            headers,
+            body: formDataUpload,
+            // Note: Don't set Content-Type header for FormData, browser will set it with boundary
+          });
+          
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Failed to create resource: ${errorText}`);
+          }
+          toast.success("Resource created successfully with file upload");
         }
         fetchResources();
         setViewMode("list");
         setEditingResource(null);
       } catch (error) {
-        toast.error("Failed to save resource");
+        console.error('Save error:', error);
+        toast.error(`Failed to save resource: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     };
     save();
@@ -128,8 +219,17 @@ export function DigitalResourcesManagement() {
   const handleDeleteResource = (resourceId: string) => {
     const del = async () => {
       try {
-        const response = await fetch(`/api/library-items/${resourceId}`, {
+        const token = getAuthToken();
+        const headers: HeadersInit = {
+          'accept': 'application/json'
+        };
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const response = await fetch(`/api/v2/library-items/${resourceId}`, {
           method: "DELETE",
+          headers
         });
         if (!response.ok) throw new Error("Resource not found");
         fetchResources();
@@ -144,6 +244,9 @@ export function DigitalResourcesManagement() {
   const handleCancel = () => {
     setViewMode("list");
     setEditingResource(null);
+    setPdfFile(null);
+    setThumbnailFile(null);
+    setThumbnailPreview("");
   };
 
   if (isLoading) {
@@ -199,36 +302,127 @@ export function DigitalResourcesManagement() {
                 />
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">File Type *</label>
-                  <Input
-                    required
-                    value={formData.fileType}
-                    onChange={e => setFormData({ ...formData, fileType: e.target.value })}
-                    placeholder="e.g. PDF, Audio, etc."
-                  />
+              {/* File Upload Section for v2 API */}
+              {viewMode === "add" && (
+                <div className="space-y-6 p-4 bg-muted/30 rounded-lg border-2 border-dashed border-primary/20">
+                  <h3 className="text-lg font-semibold text-primary">File Uploads (v2 API)</h3>
+                  
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium flex items-center gap-2">
+                        <FileText className="w-4 h-4" />
+                        PDF/Document File *
+                      </label>
+                      <div className="relative">
+                        <Input
+                          type="file"
+                          accept=".pdf,.doc,.docx,.ppt,.pptx,.txt"
+                          onChange={handlePdfFileChange}
+                          className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90"
+                        />
+                        {pdfFile && (
+                          <div className="mt-2 p-2 bg-green-50 rounded border border-green-200">
+                            <div className="text-xs text-green-700 font-medium">Selected: {pdfFile.name}</div>
+                            <div className="text-xs text-green-600">Size: {(pdfFile.size / 1024 / 1024).toFixed(2)} MB</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium flex items-center gap-2">
+                        <Image className="w-4 h-4" />
+                        Thumbnail Image (Optional)
+                      </label>
+                      <div className="relative">
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleThumbnailFileChange}
+                          className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-secondary file:text-secondary-foreground hover:file:bg-secondary/90"
+                        />
+                        {thumbnailFile && (
+                          <div className="mt-2 p-2 bg-blue-50 rounded border border-blue-200">
+                            <div className="text-xs text-blue-700 font-medium">Selected: {thumbnailFile.name}</div>
+                            <div className="text-xs text-blue-600">Size: {(thumbnailFile.size / 1024).toFixed(0)} KB</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Thumbnail Preview */}
+                  {thumbnailPreview && (
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Thumbnail Preview:</label>
+                      <div 
+                        className="w-full h-32 bg-cover bg-center rounded-lg border-2 border-primary/20"
+                        style={{ backgroundImage: `url(${thumbnailPreview})` }}
+                      />
+                    </div>
+                  )}
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">File Path *</label>
-                  <Input
-                    required
-                    value={formData.filePath}
-                    onChange={e => setFormData({ ...formData, filePath: e.target.value })}
-                    placeholder="/files/resource.pdf"
-                  />
+              )}
+
+              {/* Legacy fields for editing existing resources */}
+              {viewMode === "edit" && (
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">File Path</label>
+                    <Input
+                      value={formData.filePath}
+                      onChange={e => setFormData({ ...formData, filePath: e.target.value })}
+                      placeholder="/files/resource.pdf"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">External URL</label>
+                    <Input
+                      value={formData.externalUrl}
+                      onChange={e => setFormData({ ...formData, externalUrl: e.target.value })}
+                      placeholder="https://example.com/resource"
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">External URL</label>
+                  <label className="text-sm font-medium">File Type {viewMode === "add" ? "(Auto-filled)" : "*"}</label>
                   <Input
-                    value={formData.externalUrl}
-                    onChange={e => setFormData({ ...formData, externalUrl: e.target.value })}
-                    placeholder="https://example.com/resource"
+                    required={viewMode === "edit"}
+                    value={formData.fileType}
+                    onChange={e => setFormData({ ...formData, fileType: e.target.value })}
+                    placeholder="e.g. PDF, DOCX, PPTX"
+                    disabled={viewMode === "add" && pdfFile} // Auto-filled for new uploads
                   />
                 </div>
+                {viewMode === "edit" && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Thumbnail URL</label>
+                    <Input
+                      value={formData.thumbnail}
+                      onChange={e => setFormData({ ...formData, thumbnail: e.target.value })}
+                      placeholder="/images/thumbnail.jpg"
+                    />
+                    {formData.thumbnail && (
+                      <div className="mt-2">
+                        <div className="text-xs text-muted-foreground mb-1">Preview:</div>
+                        <div 
+                          className="w-full h-20 bg-cover bg-center rounded border"
+                          style={{
+                            backgroundImage: `url(${formData.thumbnail.startsWith('http') 
+                              ? formData.thumbnail 
+                              : `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'}${formData.thumbnail}`})`
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Accent</label>
                   <Input
@@ -243,6 +437,17 @@ export function DigitalResourcesManagement() {
                     value={formData.level}
                     onChange={e => setFormData({ ...formData, level: e.target.value })}
                     placeholder="Level value"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Price Amount</label>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.amount}
+                    onChange={e => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
+                    placeholder="0.00"
                   />
                 </div>
               </div>
