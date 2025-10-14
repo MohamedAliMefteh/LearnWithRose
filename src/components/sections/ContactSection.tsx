@@ -18,7 +18,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Mail } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Mail, Loader2, CheckCircle, AlertCircle, Clock } from "lucide-react";
 import { Course } from "@/types/api";
 
 export type ContactFormData = {
@@ -57,6 +58,10 @@ export default function ContactSection({
   });
 
   const [localSelectedCourse, setLocalSelectedCourse] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitMessage, setSubmitMessage] = useState('');
+  const [cooldownTime, setCooldownTime] = useState(0);
 
   // Keep local selection in sync with an optionally provided external selection
   useEffect(() => {
@@ -65,8 +70,36 @@ export default function ContactSection({
     }
   }, [selectedCourse]);
 
+  // Cooldown timer effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (cooldownTime > 0) {
+      interval = setInterval(() => {
+        setCooldownTime((prev) => {
+          if (prev <= 1) {
+            setSubmitStatus('idle');
+            setSubmitMessage('');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [cooldownTime]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Prevent submission if already submitting or in cooldown
+    if (isSubmitting || cooldownTime > 0) return;
+    
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+    setSubmitMessage('');
+    
     try {
       const selectedCourseTitle = (() => {
         if (localSelectedCourse) {
@@ -98,7 +131,11 @@ export default function ContactSection({
       });
 
       if (response.ok) {
-        alert("Thank you for your inquiry! I will contact you within 24 hours.");
+        setSubmitStatus('success');
+        setSubmitMessage("🎉 Thank you for your inquiry! I will personally contact you within 24 hours to discuss your Arabic learning journey.");
+        setCooldownTime(20); // 20 second cooldown
+        
+        // Reset form data
         setFormData({
           fullName: "",
           email: "",
@@ -117,7 +154,11 @@ export default function ContactSection({
       }
     } catch (error) {
       console.error("Error submitting inquiry:", error);
-      alert("Sorry, there was an error submitting your inquiry. Please try again.");
+      setSubmitStatus('error');
+      setSubmitMessage("❌ Sorry, there was an error submitting your inquiry. Please try again later or contact us directly.");
+      setCooldownTime(20); // 20 second cooldown even on error to prevent spam
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -162,6 +203,32 @@ export default function ContactSection({
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Status Message */}
+            {submitStatus !== 'idle' && (
+              <Alert className={`mb-6 ${
+                submitStatus === 'success' 
+                  ? 'border-green-200 bg-green-50 text-green-800' 
+                  : 'border-red-200 bg-red-50 text-red-800'
+              }`}>
+                <div className="flex items-center gap-2">
+                  {submitStatus === 'success' ? (
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                  ) : (
+                    <AlertCircle className="h-5 w-5 text-red-600" />
+                  )}
+                  <AlertDescription className="text-sm font-medium">
+                    {submitMessage}
+                  </AlertDescription>
+                </div>
+                {cooldownTime > 0 && (
+                  <div className="flex items-center gap-2 mt-2 text-xs opacity-75">
+                    <Clock className="h-4 w-4" />
+                    <span>You can submit another inquiry in {cooldownTime} seconds</span>
+                  </div>
+                )}
+              </Alert>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Personal Information */}
               <div className="grid md:grid-cols-2 gap-6">
@@ -338,9 +405,28 @@ export default function ContactSection({
                 />
               </div>
 
-              <Button type="submit" size="lg" className="w-full">
-                <Mail className="mr-2 h-5 w-5" />
-                Send Inquiry
+              <Button 
+                type="submit" 
+                size="lg" 
+                className="w-full" 
+                disabled={isSubmitting || cooldownTime > 0}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Sending Inquiry...
+                  </>
+                ) : cooldownTime > 0 ? (
+                  <>
+                    <Clock className="mr-2 h-5 w-5" />
+                    Wait {cooldownTime}s
+                  </>
+                ) : (
+                  <>
+                    <Mail className="mr-2 h-5 w-5" />
+                    Send Inquiry
+                  </>
+                )}
               </Button>
             </form>
           </CardContent>

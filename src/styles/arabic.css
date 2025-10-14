@@ -1,0 +1,135 @@
+/* Arabic Font Support */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+/* Global Arabic text support */
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="ltr"] {
+  text-align: left;
+}
+
+/* Auto direction detection for mixed content */
+[dir="auto"] {
+  text-align: start;
+}
+
+/* Arabic-specific typography improvements */
+.arabic-text {
+  font-family: 'Noto Sans Arabic', 'Arabic UI Text', system-ui, sans-serif;
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+}
+
+/* Improve Arabic list styling */
+[dir="rtl"] ul,
+[dir="rtl"] ol {
+  padding-right: 1.5rem;
+  padding-left: 0;
+}
+
+[dir="rtl"] blockquote {
+  border-right: 4px solid;
+  border-left: none;
+  padding-right: 1.5rem;
+  padding-left: 0;
+}
+
+/* Arabic number support */
+.arabic-numerals {
+  font-feature-settings: "lnum" 1;
+}
+
+/* Mixed content handling */
+.mixed-content {
+  unicode-bidi: plaintext;
+}
+
+/* Code blocks should always be LTR */
+pre, code {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+/* Ensure proper spacing for Arabic text */
+.prose-arabic h1,
+.prose-arabic h2,
+.prose-arabic h3,
+.prose-arabic h4,
+.prose-arabic h5,
+.prose-arabic h6 {
+  font-family: 'Noto Sans Arabic', 'Arabic UI Text', system-ui, sans-serif;
+  line-height: 1.4;
+}
+
+.prose-arabic p,
+.prose-arabic li,
+.prose-arabic blockquote {
+  font-family: 'Noto Sans Arabic', 'Arabic UI Text', system-ui, sans-serif;
+  line-height: 1.8;
+}
+
+/* Reading mode enhancements for Arabic */
+.reading-mode-arabic {
+  line-height: 2.2;
+  word-spacing: 0.1em;
+}
+
+/* Markdown editor enhancements */
+.markdown-editor-arabic {
+  font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Noto Sans Arabic', monospace;
+  direction: auto;
+  text-align: start;
+}
+
+/* Responsive Arabic typography */
+@media (max-width: 640px) {
+  .arabic-text {
+    font-size: 0.95em;
+    line-height: 1.9;
+  }
+  
+  /* Better mobile spacing for Arabic */
+  [dir="rtl"] h1,
+  [dir="rtl"] h2,
+  [dir="rtl"] h3 {
+    margin-bottom: 1rem;
+    line-height: 1.3;
+  }
+  
+  [dir="rtl"] p {
+    margin-bottom: 1rem;
+    line-height: 1.8;
+  }
+  
+  /* Mobile-optimized list spacing */
+  [dir="rtl"] ul,
+  [dir="rtl"] ol {
+    padding-right: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  /* Tablet optimizations */
+  .arabic-text {
+    font-size: 1em;
+    line-height: 1.85;
+  }
+  
+  [dir="rtl"] h1 {
+    font-size: 1.75rem;
+  }
+  
+  [dir="rtl"] h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* High contrast mode for better Arabic readability */
+@media (prefers-contrast: high) {
+  .arabic-text {
+    font-weight: 500;
+  }
+}

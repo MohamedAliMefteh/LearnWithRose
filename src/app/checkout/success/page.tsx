@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Download, ArrowLeft, Mail, CreditCard, Calendar, User, ExternalLink } from "lucide-react";
+import { CheckCircle, ArrowLeft, Mail, CreditCard, Calendar, User, Send, Clock } from "lucide-react";
 
 function CheckoutSuccessContent() {
   const search = useSearchParams();
@@ -39,9 +39,6 @@ function CheckoutSuccessContent() {
     router.push('/');
   };
 
-  const handleViewLibrary = () => {
-    router.push('/dashboard');
-  };
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'N/A';
@@ -193,10 +190,36 @@ function CheckoutSuccessContent() {
                 <div className="flex items-start gap-3">
                   <CheckCircle className="w-6 h-6 text-green-500 mt-0.5" />
                   <div>
-                    <h4 className="font-semibold text-green-900 mb-1">Payment Confirmed</h4>
-                    <p className="text-green-700 text-sm leading-relaxed">
-                      Your payment has been successfully processed and a confirmation email has been sent to your registered email address. 
-                      You can now access your purchased content in your dashboard.
+                    <h4 className="font-semibold text-green-900 mb-2">Payment Confirmed</h4>
+                    <p className="text-green-700 text-sm leading-relaxed mb-3">
+                      Your payment has been successfully processed! A confirmation email has been sent to your registered email address.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Resource Delivery Information */}
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                <div className="flex items-start gap-3">
+                  <Send className="w-6 h-6 text-blue-500 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                      Resource Delivery
+                      <Clock className="w-4 h-4 text-blue-600" />
+                    </h4>
+                    <p className="text-blue-700 text-sm leading-relaxed mb-2">
+                      Your purchased digital resource will be sent directly to the email address you provided during checkout:
+                    </p>
+                    {data?.payer?.email_address && (
+                      <div className="bg-white/60 border border-blue-200 rounded-lg p-3 mb-3">
+                        <div className="flex items-center gap-2">
+                          <Mail className="w-4 h-4 text-blue-600" />
+                          <span className="font-medium text-blue-900">{data.payer.email_address}</span>
+                        </div>
+                      </div>
+                    )}
+                    <p className="text-blue-700 text-sm leading-relaxed">
+                      <strong>Delivery Time:</strong> You should receive your resource within the next 24 hours. Please check your inbox and spam folder.
                     </p>
                   </div>
                 </div>
@@ -205,25 +228,24 @@ function CheckoutSuccessContent() {
           </Card>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              onClick={handleViewLibrary}
-              size="lg"
-              className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              <Download className="w-5 h-5 mr-2" />
-              Access Your Content
-            </Button>
-            
+          <div className="flex justify-center">
             <Button 
               onClick={handleBackToHome}
-              variant="outline"
               size="lg"
-              className="border-slate-300 hover:bg-slate-50 transition-all duration-300"
+              className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <ArrowLeft className="w-5 h-5 mr-2" />
               Back to Home
             </Button>
+          </div>
+
+          {/* Additional Support Information */}
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 text-center">
+            <h4 className="font-semibold text-slate-900 mb-2">Need Help?</h4>
+            <p className="text-slate-600 text-sm leading-relaxed">
+              If you don't receive your resource within 24 hours or have any questions about your purchase, 
+              please contact our support team. We're here to help!
+            </p>
           </div>
         </div>
       )}

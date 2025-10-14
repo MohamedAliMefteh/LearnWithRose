@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import Arabic font and styling support */
+@import '../styles/arabic.css';
+
+/* Import responsive utilities */
+@import '../styles/responsive.css';
+
 
 @layer base {
   /**

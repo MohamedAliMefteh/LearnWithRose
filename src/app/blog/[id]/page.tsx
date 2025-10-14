@@ -12,6 +12,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, Feather, Home, ArrowLeft, Clock, Eye, BookOpen, Menu, X } from "lucide-react";
 import { constructImageUrl, getFallbackImage, convertByteDataToImageUrl } from "@/lib/image-utils";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 
 export default function BlogDetailPage() {
@@ -178,7 +180,7 @@ export default function BlogDetailPage() {
       {/* Modern Hero Section */}
       <section className="relative overflow-hidden">
         {/* Hero Background */}
-        <div className="relative h-[60vh] min-h-[400px] max-h-[600px]">
+        <div className="relative h-[50vh] sm:h-[60vh] min-h-[300px] sm:min-h-[400px] max-h-[600px]">
           <div 
             className="absolute inset-0 bg-cover bg-center transition-all duration-700"
             style={{
@@ -230,19 +232,19 @@ export default function BlogDetailPage() {
                   </div>
                   
                   {/* Title */}
-                  <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 leading-tight tracking-tight">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 leading-tight tracking-tight">
                     {post.title || "Untitled"}
                   </h1>
                   
                   {/* Excerpt */}
                   {post.excerpt && (
-                    <p className="text-lg sm:text-xl text-white/90 mb-6 leading-relaxed max-w-3xl">
+                    <p className="text-base sm:text-lg md:text-xl text-white/90 mb-6 leading-relaxed max-w-3xl">
                       {post.excerpt}
                     </p>
                   )}
                   
                   {/* Meta Information */}
-                  <div className="flex flex-wrap items-center gap-6 text-white/80">
+                  <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm text-white/80">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
                         <Feather className="w-4 h-4" />
@@ -277,7 +279,7 @@ export default function BlogDetailPage() {
       </section>
 
       {/* Modern Content Area */}
-      <section className="relative -mt-20 z-10">
+      <section className="relative -mt-16 sm:-mt-20 z-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {loading ? (
             <div className="bg-white rounded-3xl shadow-xl border border-slate-200/60 p-8 lg:p-12">
@@ -298,8 +300,8 @@ export default function BlogDetailPage() {
                 <div className="h-1 w-full bg-gradient-to-r from-primary via-accent to-secondary" />
                 
                 {/* Article Actions Bar */}
-                <div className="border-b border-slate-100 px-6 lg:px-8 py-4">
-                  <div className="flex items-center justify-between">
+                <div className="border-b border-slate-100 px-4 sm:px-6 lg:px-8 py-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div className="flex items-center gap-4">
                       <Button
                         variant="ghost"
@@ -320,7 +322,8 @@ export default function BlogDetailPage() {
                     {readingMode && (
                       <div className="flex items-center gap-2 text-xs text-slate-500">
                         <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                        <span>Focus Mode Active</span>
+                        <span className="hidden sm:inline">Focus Mode Active</span>
+                        <span className="sm:hidden">Focus Mode</span>
                       </div>
                     )}
                   </div>
@@ -328,28 +331,160 @@ export default function BlogDetailPage() {
                 
                 {/* Article Content */}
                 <div className={`transition-all duration-300 ${
-                  readingMode ? 'p-8 lg:p-16 bg-slate-50/50' : 'p-6 lg:p-12'
+                  readingMode ? 'p-4 sm:p-8 lg:p-16 bg-slate-50/50' : 'p-4 sm:p-6 lg:p-12'
                 }`}>
                   {post.content ? (
                     <div className={`prose prose-slate max-w-none transition-all duration-300 ${
                       readingMode 
-                        ? 'prose-xl prose-slate prose-headings:text-slate-900 prose-p:text-slate-800 prose-p:leading-loose prose-headings:font-bold' 
-                        : 'prose-lg'
+                        ? 'prose-xl prose-slate prose-headings:text-slate-900 prose-p:text-slate-800 prose-p:leading-loose prose-headings:font-bold prose-a:text-primary prose-strong:text-slate-900 prose-code:text-primary prose-pre:bg-slate-100' 
+                        : 'prose-lg prose-a:text-primary prose-strong:text-slate-800 prose-code:text-primary prose-pre:bg-slate-50'
                     }`}>
-                      <div
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
                         className={`transition-all duration-300 ${
                           readingMode 
-                            ? 'leading-loose text-slate-800 text-xl' 
+                            ? 'leading-loose text-slate-800' 
                             : 'leading-relaxed text-slate-700'
                         }`}
+                        components={{
+                          // Custom styling for different elements with Arabic support
+                          h1: ({ children }) => (
+                            <h1 
+                              className={`font-bold ${readingMode ? 'text-3xl mb-6 mt-8' : 'text-2xl mb-4 mt-6'} text-slate-900`}
+                              dir="auto"
+                              style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}
+                            >
+                              {children}
+                            </h1>
+                          ),
+                          h2: ({ children }) => (
+                            <h2 
+                              className={`font-semibold ${readingMode ? 'text-2xl mb-5 mt-7' : 'text-xl mb-3 mt-5'} text-slate-800`}
+                              dir="auto"
+                              style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}
+                            >
+                              {children}
+                            </h2>
+                          ),
+                          h3: ({ children }) => (
+                            <h3 
+                              className={`font-medium ${readingMode ? 'text-xl mb-4 mt-6' : 'text-lg mb-2 mt-4'} text-slate-800`}
+                              dir="auto"
+                              style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}
+                            >
+                              {children}
+                            </h3>
+                          ),
+                          p: ({ children }) => (
+                            <p 
+                              className={`${readingMode ? 'text-xl leading-loose mb-6' : 'text-lg leading-relaxed mb-4'} text-slate-700`}
+                              dir="auto"
+                              style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}
+                            >
+                              {children}
+                            </p>
+                          ),
+                          a: ({ href, children }) => (
+                            <a 
+                              href={href} 
+                              className="text-primary hover:text-primary/80 underline decoration-primary/30 hover:decoration-primary/60 transition-colors"
+                              target={href?.startsWith('http') ? '_blank' : undefined}
+                              rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+                            >
+                              {children}
+                            </a>
+                          ),
+                          code: ({ children, className }) => {
+                            const isInline = !className;
+                            return isInline ? (
+                              <code className="bg-slate-100 text-primary px-1.5 py-0.5 rounded text-sm font-mono">
+                                {children}
+                              </code>
+                            ) : (
+                              <code className={className}>{children}</code>
+                            );
+                          },
+                          pre: ({ children }) => (
+                            <pre className={`bg-slate-100 border border-slate-200 rounded-lg p-4 overflow-x-auto ${readingMode ? 'text-base' : 'text-sm'} font-mono`}>
+                              {children}
+                            </pre>
+                          ),
+                          blockquote: ({ children }) => (
+                            <blockquote 
+                              className="border-l-4 border-primary/30 pl-6 py-2 my-6 bg-slate-50/50 rounded-r-lg"
+                              dir="auto"
+                              style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}
+                            >
+                              <div className="text-slate-600 italic">
+                                {children}
+                              </div>
+                            </blockquote>
+                          ),
+                          ul: ({ children }) => (
+                            <ul 
+                              className={`list-disc pl-6 ${readingMode ? 'space-y-3 mb-6' : 'space-y-2 mb-4'}`}
+                              dir="auto"
+                              style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}
+                            >
+                              {children}
+                            </ul>
+                          ),
+                          ol: ({ children }) => (
+                            <ol 
+                              className={`list-decimal pl-6 ${readingMode ? 'space-y-3 mb-6' : 'space-y-2 mb-4'}`}
+                              dir="auto"
+                              style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}
+                            >
+                              {children}
+                            </ol>
+                          ),
+                          li: ({ children }) => (
+                            <li 
+                              className={`${readingMode ? 'text-lg leading-loose' : 'text-base leading-relaxed'} text-slate-700`}
+                              dir="auto"
+                              style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}
+                            >
+                              {children}
+                            </li>
+                          ),
+                          img: ({ src, alt }) => (
+                            <div className="my-8">
+                              <img 
+                                src={src} 
+                                alt={alt || ''} 
+                                className="rounded-lg shadow-md max-w-full h-auto mx-auto"
+                                loading="lazy"
+                              />
+                              {alt && (
+                                <p className="text-center text-sm text-slate-500 mt-2 italic">{alt}</p>
+                              )}
+                            </div>
+                          ),
+                          table: ({ children }) => (
+                            <div className="overflow-x-auto my-6">
+                              <table className="min-w-full border border-slate-200 rounded-lg">
+                                {children}
+                              </table>
+                            </div>
+                          ),
+                          th: ({ children }) => (
+                            <th className="border border-slate-200 bg-slate-50 px-4 py-2 text-left font-semibold text-slate-800">
+                              {children}
+                            </th>
+                          ),
+                          td: ({ children }) => (
+                            <td className="border border-slate-200 px-4 py-2 text-slate-700">
+                              {children}
+                            </td>
+                          ),
+                        }}
                         style={{
-                          fontSize: readingMode ? '1.25rem' : '1.125rem',
-                          lineHeight: readingMode ? '2' : '1.8',
                           maxWidth: readingMode ? '65ch' : 'none',
                           margin: readingMode ? '0 auto' : '0',
                         }}
-                        dangerouslySetInnerHTML={{ __html: post.content }}
-                      />
+                      >
+                        {post.content || ''}
+                      </ReactMarkdown>
                     </div>
                   ) : (
                     <div className="text-center py-12">

@@ -17,6 +17,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        'arabic': ['"Noto Sans Arabic"', '"Arabic UI Text"', 'system-ui', 'sans-serif'],
+        'sans': ['system-ui', '"Noto Sans Arabic"', '"Arabic UI Text"', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { CalendarDays, Feather, RefreshCw, Home } from "lucide-react";
+import { CalendarDays, Feather, RefreshCw, Home, Menu, X } from "lucide-react";
 import { convertByteDataToImageUrl, getFallbackImage } from "@/lib/image-utils";
 
 
@@ -17,6 +17,7 @@ export default function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -39,23 +40,88 @@ export default function BlogPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-secondary/10 to-accent/10">
-      {/* Navbar (same style as homepage) */}
+      {/* Enhanced Navbar with Mobile Menu */}
       <nav className="bg-white/80 backdrop-blur-md border-b border-primary/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
+            {/* Logo */}
             <Link href="/" className="flex items-center space-x-2">
-              <Image src="/altlogo.png" alt="ROSE Logo" width={56} height={56} className="h-14 w-14" />
-              <span className="text-xl sm:text-2xl font-bold text-primary">Learn Arabic with Rose</span>
+              <Image src="/altlogo.png" alt="ROSE Logo" width={56} height={56} className="h-12 w-12 sm:h-14 sm:w-14" />
+              <span className="text-lg sm:text-xl md:text-2xl font-bold text-primary truncate">Learn Arabic with Rose</span>
             </Link>
-            <div className="hidden md:flex items-center space-x-8">
-              <Link href="/#about" className="text-gray-800 hover:text-primary transition-colors">About</Link>
-              <Link href="/#courses" className="text-gray-800 hover:text-primary transition-colors">Courses</Link>
-              <Link href="/#resources" className="text-gray-800 hover:text-primary transition-colors">Resources</Link>
-              <Link href="/#contact" className="text-gray-800 hover:text-primary transition-colors">Contact</Link>
-              <Link href="/blog" className="text-gray-800 hover:text-primary transition-colors">Blog</Link>
-              <Link href="/dashboard" className="text-gray-800 hover:text-primary transition-colors">Dashboard</Link>
+            
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
+              <Link href="/#about" className="text-gray-800 hover:text-primary transition-colors font-medium">About</Link>
+              <Link href="/#courses" className="text-gray-800 hover:text-primary transition-colors font-medium">Courses</Link>
+              <Link href="/#resources" className="text-gray-800 hover:text-primary transition-colors font-medium">Resources</Link>
+              <Link href="/#contact" className="text-gray-800 hover:text-primary transition-colors font-medium">Contact</Link>
+              <Link href="/blog" className="text-primary font-semibold border-b-2 border-primary">Blog</Link>
+              <Link href="/dashboard" className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors font-medium">Dashboard</Link>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 text-gray-800 hover:text-primary hover:bg-gray-100 rounded-lg transition-all duration-200"
+              >
+                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </Button>
             </div>
           </div>
+
+          {/* Mobile Navigation Menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden border-t border-gray-200/60 mt-2 pt-4 pb-6 space-y-2 animate-in slide-in-from-top-2 duration-200">
+              <Link 
+                href="/#about" 
+                className="block px-4 py-3 text-gray-800 hover:text-primary hover:bg-gray-50 rounded-lg transition-all duration-200 font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                About
+              </Link>
+              <Link 
+                href="/#courses" 
+                className="block px-4 py-3 text-gray-800 hover:text-primary hover:bg-gray-50 rounded-lg transition-all duration-200 font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Courses
+              </Link>
+              <Link 
+                href="/#resources" 
+                className="block px-4 py-3 text-gray-800 hover:text-primary hover:bg-gray-50 rounded-lg transition-all duration-200 font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Resources
+              </Link>
+              <Link 
+                href="/#contact" 
+                className="block px-4 py-3 text-gray-800 hover:text-primary hover:bg-gray-50 rounded-lg transition-all duration-200 font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Contact
+              </Link>
+              <Link 
+                href="/blog" 
+                className="block px-4 py-3 bg-primary/10 text-primary rounded-lg font-semibold border-l-4 border-primary"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Blog
+              </Link>
+              <div className="pt-2 mt-4 border-t border-gray-200/60">
+                <Link 
+                  href="/dashboard" 
+                  className="block px-4 py-3 bg-primary text-white rounded-lg font-semibold text-center shadow-md"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
