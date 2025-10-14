@@ -15,7 +15,7 @@ const turndownService = new TurndownService({
 
 // Add custom rules for better conversion
 turndownService.addRule('strikethrough', {
-  filter: ['del', 's', 'strike'],
+  filter: ['del', 's', 'strike'] as any,
   replacement: function (content) {
     return '~~' + content + '~~';
   }
@@ -31,7 +31,7 @@ turndownService.addRule('lineBreak', {
 
 // Handle non-breaking spaces
 turndownService.addRule('nonBreakingSpace', {
-  filter: function (node) {
+  filter: function (node: any) {
     return node.nodeType === 3 && node.textContent === '\u00A0';
   },
   replacement: function () {
@@ -41,12 +41,12 @@ turndownService.addRule('nonBreakingSpace', {
 
 // Handle nested lists better
 turndownService.addRule('nestedList', {
-  filter: function (node) {
+  filter: function (node: any) {
     return (node.nodeName === 'UL' || node.nodeName === 'OL') && 
            node.parentNode && 
            (node.parentNode.nodeName === 'LI');
   },
-  replacement: function (content, node) {
+  replacement: function (content: string, node: any) {
     const type = node.nodeName === 'OL' ? '1.' : '-';
     return '\n' + content.replace(/^/gm, '  '); // Indent nested lists
   }

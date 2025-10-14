@@ -339,14 +339,20 @@ export default function BlogDetailPage() {
                         ? 'prose-xl prose-slate prose-headings:text-slate-900 prose-p:text-slate-800 prose-p:leading-loose prose-headings:font-bold prose-a:text-primary prose-strong:text-slate-900 prose-code:text-primary prose-pre:bg-slate-100' 
                         : 'prose-lg prose-a:text-primary prose-strong:text-slate-800 prose-code:text-primary prose-pre:bg-slate-50'
                     }`}>
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        className={`transition-all duration-300 ${
-                          readingMode 
-                            ? 'leading-loose text-slate-800' 
-                            : 'leading-relaxed text-slate-700'
-                        }`}
-                        components={{
+                      <div
+                        style={{
+                          maxWidth: readingMode ? '65ch' : 'none',
+                          margin: readingMode ? '0 auto' : '0',
+                        }}
+                      >
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          className={`transition-all duration-300 ${
+                            readingMode 
+                              ? 'leading-loose text-slate-800' 
+                              : 'leading-relaxed text-slate-700'
+                          }`}
+                          components={{
                           // Custom styling for different elements with Arabic support
                           h1: ({ children }) => (
                             <h1 
@@ -478,13 +484,10 @@ export default function BlogDetailPage() {
                             </td>
                           ),
                         }}
-                        style={{
-                          maxWidth: readingMode ? '65ch' : 'none',
-                          margin: readingMode ? '0 auto' : '0',
-                        }}
                       >
                         {post.content || ''}
                       </ReactMarkdown>
+                      </div>
                     </div>
                   ) : (
                     <div className="text-center py-12">
