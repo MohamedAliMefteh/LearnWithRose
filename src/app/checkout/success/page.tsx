@@ -208,18 +208,10 @@ function CheckoutSuccessContent() {
                       <Clock className="w-4 h-4 text-blue-600" />
                     </h4>
                     <p className="text-blue-700 text-sm leading-relaxed mb-2">
-                      Your purchased digital resource will be sent directly to the email address you provided during checkout:
+                      Your purchased digital resource will be sent directly to the email address you provided during checkout !
                     </p>
-                    {data?.payer?.email_address && (
-                      <div className="bg-white/60 border border-blue-200 rounded-lg p-3 mb-3">
-                        <div className="flex items-center gap-2">
-                          <Mail className="w-4 h-4 text-blue-600" />
-                          <span className="font-medium text-blue-900">{data.payer.email_address}</span>
-                        </div>
-                      </div>
-                    )}
                     <p className="text-blue-700 text-sm leading-relaxed">
-                      <strong>Delivery Time:</strong> You should receive your resource within the next 24 hours. Please check your inbox and spam folder.
+                      <strong>Delivery Time:</strong> You should receive your resource within the next 5 minutes. Please check your inbox and spam folder.
                     </p>
                   </div>
                 </div>

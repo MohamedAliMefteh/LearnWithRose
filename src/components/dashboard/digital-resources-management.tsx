@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { DigitalResource } from "@/types/api";
 import { DigitalResourceCard } from "@/components/cards/digital-resource-card";
-import { Plus, Edit2, Trash2, ArrowLeft, Save, X, Upload, FileText, Image } from "lucide-react";
+import { Plus, Edit2, Trash2, ArrowLeft, Save, X, Upload, FileText, Image, Loader2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -50,6 +50,12 @@ export function DigitalResourcesManagement() {
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Debug log for isSaving state changes
+  useEffect(() => {
+    console.log('isSaving state changed:', isSaving);
+  }, [isSaving]);
 
   useEffect(() => {
   fetchResources();
@@ -148,9 +154,34 @@ export function DigitalResourcesManagement() {
     }
   };
 
-  const handleSaveResource = () => {
-    const save = async () => {
-      try {
+  const handleSaveResource = async () => {
+    // Prevent multiple submissions
+    if (isSaving) return;
+    
+    // Basic validation
+    if (!formData.title.trim()) {
+      toast.error("Please enter a title");
+      return;
+    }
+    if (!formData.description.trim()) {
+      toast.error("Please enter a description");
+      return;
+    }
+    if (!formData.category.trim()) {
+      toast.error("Please enter a category");
+      return;
+    }
+    
+    // For new resources, require PDF file
+    if (viewMode === "add" && !pdfFile) {
+      toast.error("Please select a PDF file to upload");
+      return;
+    }
+    
+    setIsSaving(true);
+    console.log('Starting upload, isSaving set to true');
+    
+    try {
         // Create FormData for both add and edit operations (v2 API)
         const formDataUpload = new FormData();
         
@@ -194,12 +225,6 @@ export function DigitalResourcesManagement() {
           }
           toast.success("Resource updated successfully");
         } else {
-          // For new resources, require PDF file
-          if (!pdfFile) {
-            toast.error("Please select a PDF file to upload");
-            return;
-          }
-
           // Use v2 API for creating new resources
           response = await fetch(`/api/v2/library-items/upload`, {
             method: "POST",
@@ -220,9 +245,10 @@ export function DigitalResourcesManagement() {
       } catch (error) {
         console.error('Save error:', error);
         toast.error(`Failed to save resource: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      } finally {
+        setIsSaving(false);
+        console.log('Upload finished, isSaving set to false');
       }
-    };
-    save();
   };
 
   const handleDeleteResource = (resourceId: string) => {
@@ -271,13 +297,36 @@ export function DigitalResourcesManagement() {
             Back to Resources
           </Button>
         </div>
-        <Card>
+        <Card className={`${isSaving ? 'opacity-75 pointer-events-none' : ''}`}>
           <CardHeader>
-            <CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              {isSaving && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
               {viewMode === "edit" ? "Edit Resource" : "Add New Resource"}
+              {isSaving && (
+                <span className="text-sm font-normal text-muted-foreground">
+                  - {viewMode === "edit" ? "Updating..." : "Uploading..."}
+                </span>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {/* Loading Banner */}
+            {isSaving && (
+              <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+                  <div>
+                    <div className="font-medium text-blue-900">
+                      {viewMode === "edit" ? "Updating Resource..." : "Uploading Files..."}
+                    </div>
+                    <div className="text-sm text-blue-700">
+                      Please wait while we process your request. Do not close this page.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <div className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
@@ -287,6 +336,7 @@ export function DigitalResourcesManagement() {
                     value={formData.title}
                     onChange={e => setFormData({ ...formData, title: e.target.value })}
                     placeholder="Resource title"
+                    disabled={isSaving}
                   />
                 </div>
                 <div className="space-y-2">
@@ -296,6 +346,7 @@ export function DigitalResourcesManagement() {
                     value={formData.category}
                     onChange={e => setFormData({ ...formData, category: e.target.value })}
                     placeholder="Resource category"
+                    disabled={isSaving}
                   />
                 </div>
               </div>
@@ -308,11 +359,22 @@ export function DigitalResourcesManagement() {
                   onChange={e => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Resource description"
                   rows={3}
+                  disabled={isSaving}
                 />
               </div>
 
               {/* File Upload Section for v2 API */}
-              <div className="space-y-6 p-4 bg-muted/30 rounded-lg border-2 border-dashed border-primary/20">
+              <div className={`space-y-6 p-4 bg-muted/30 rounded-lg border-2 border-dashed border-primary/20 relative ${isSaving ? 'opacity-50' : ''}`}>
+                {isSaving && (
+                  <div className="absolute inset-0 bg-white/80 rounded-lg flex items-center justify-center z-10">
+                    <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-lg shadow-lg border">
+                      <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                      <span className="text-sm font-medium text-slate-700">
+                        {viewMode === "edit" ? "Updating resource..." : "Uploading files..."}
+                      </span>
+                    </div>
+                  </div>
+                )}
                 <h3 className="text-lg font-semibold text-primary">
                   File Uploads (v2 API) 
                   {viewMode === "edit" && <span className="text-sm font-normal text-muted-foreground ml-2">(Optional - leave empty to keep existing files)</span>}
@@ -330,6 +392,7 @@ export function DigitalResourcesManagement() {
                           accept=".pdf,.doc,.docx,.ppt,.pptx,.txt"
                           onChange={handlePdfFileChange}
                           className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90"
+                          disabled={isSaving}
                         />
                         {pdfFile && (
                           <div className="mt-2 p-2 bg-green-50 rounded border border-green-200">
@@ -351,6 +414,7 @@ export function DigitalResourcesManagement() {
                           accept="image/*"
                           onChange={handleThumbnailFileChange}
                           className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-secondary file:text-secondary-foreground hover:file:bg-secondary/90"
+                          disabled={isSaving}
                         />
                         {thumbnailFile && (
                           <div className="mt-2 p-2 bg-blue-50 rounded border border-blue-200">
@@ -463,11 +527,28 @@ export function DigitalResourcesManagement() {
               </div>
 
               <div className="flex gap-4 pt-4">
-                <Button onClick={handleSaveResource}>
-                  <Save className="h-4 w-4 mr-2" />
-                  {viewMode === "edit" ? "Update Resource" : "Add Resource"}
+                <Button 
+                  onClick={handleSaveResource} 
+                  disabled={isSaving}
+                  className="min-w-[140px]"
+                >
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      {viewMode === "edit" ? "Updating Resource..." : "Uploading Files..."}
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      {viewMode === "edit" ? "Update Resource" : "Upload & Add Resource"}
+                    </>
+                  )}
                 </Button>
-                <Button variant="outline" onClick={handleCancel}>
+                <Button 
+                  variant="outline" 
+                  onClick={handleCancel}
+                  disabled={isSaving}
+                >
                   <X className="h-4 w-4 mr-2" />
                   Cancel
                 </Button>
