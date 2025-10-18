@@ -503,12 +503,10 @@ export default function BlogDetailPage() {
               {/* Author Section */}
               <div className="mt-8 bg-white rounded-2xl shadow-lg border border-slate-200/60 p-6 lg:p-8">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
-                    <Feather className="w-6 h-6 text-white" />
-                  </div>
+               <img src="/altlogo.png" alt="ROSE Logo" width={40} height={40} className="h-10 w-10 transition-transform group-hover:scale-110 duration-300" />
                   <div>
                     <h3 className="font-semibold text-slate-900">Written by {post.author || "Rose"}</h3>
-                    <p className="text-slate-600 text-sm">Arabic Language Educator</p>
+                    <p className="text-slate-600 text-sm">Pal-Jor Dialect and Culture Teacher</p>
                   </div>
                 </div>
               </div>

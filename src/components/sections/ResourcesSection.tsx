@@ -29,11 +29,10 @@ export default function ResourcesSection({ loading, resources }: ResourcesSectio
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
-            Digital Resources
+           Resources
           </h2>
           <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
-            Complement your learning with our curated collection of PDFs, audio guides, and
-            reference materials for Palestinian and Jordanian Arabic.
+            Your #1 resource of Palestinian Jordanian Arabic. Complement your learning journey with our curated ebooks, booklets, short stories and flashcards.
           </p>
         </div>
         {loading ? (
