@@ -22,7 +22,7 @@ export default function AboutSection({ bioData, loading }: AboutSectionProps) {
   return (
     <section
       id="about"
-      className="py-20 bg-gradient-to-br from-white via-accent/10 to-card/20 relative"
+      className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-white via-accent/10 to-card/20 relative"
     >
       <div
         className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10"
@@ -32,12 +32,12 @@ export default function AboutSection({ bioData, loading }: AboutSectionProps) {
         }}
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
+        <div className="text-center mb-10 sm:mb-12 lg:mb-16">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[hsl(var(--foreground))] mb-3 sm:mb-4">
             Meet <span className="text-primary">Rose</span>, Your Teacher
           </h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 items-stretch group">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 items-stretch group">
           {loading ? (
             <>
               <Card className="border-primary">

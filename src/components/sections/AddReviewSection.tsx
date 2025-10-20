@@ -14,12 +14,12 @@ import { Textarea } from "@/components/ui/textarea";
 
 export default function AddReviewSection() {
   return (
-    <section className="py-16 bg-white">
+    <section className="py-12 sm:py-14 lg:py-16 bg-white">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <Card className="border-primary/30">
           <CardHeader>
-            <CardTitle>Leave a Review</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-xl sm:text-2xl">Leave a Review</CardTitle>
+            <CardDescription className="text-sm sm:text-base">
               Share your experience and help others choose the right course.
             </CardDescription>
           </CardHeader>
@@ -90,8 +90,8 @@ function AddReviewForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <Input
           placeholder="Your Name"
           value={form.name}
@@ -103,7 +103,7 @@ function AddReviewForm() {
           onChange={(e) => setForm({ ...form, accent: e.target.value })}
         />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <Input
           placeholder="Course Name (optional)"
           value={form.courseName}
@@ -132,7 +132,7 @@ function AddReviewForm() {
       {success && <p className="text-sm text-green-700">{success}</p>}
 
       <div className="flex justify-end">
-        <Button type="submit" disabled={submitting} className="min-w-36">
+        <Button type="submit" disabled={submitting} className="min-w-[120px] sm:min-w-36 w-full sm:w-auto">
           {submitting ? "Submitting..." : "Submit Review"}
         </Button>
       </div>

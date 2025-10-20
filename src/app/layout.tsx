@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -7,7 +7,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ReactQueryProvider } from "@/components/providers/react-query-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
 
-const inter = Inter({ subsets: ["latin"] });
+const plusJakartaSans = Plus_Jakarta_Sans({ 
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-plus-jakarta",
+});
 
 export const metadata: Metadata = {
   title: "Learn Arabic with Rose - Master Palestinian & Jordanian Accents",
@@ -33,7 +37,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={plusJakartaSans.className}>
         <AuthProvider>
           <ReactQueryProvider>
             <TooltipProvider>

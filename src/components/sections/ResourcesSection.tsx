@@ -17,7 +17,7 @@ export default function ResourcesSection({ loading, resources }: ResourcesSectio
   return (
     <section
       id="resources"
-      className="py-20 bg-gradient-to-br from-white via-accent/10 to-card/20 relative"
+      className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-white via-accent/10 to-card/20 relative"
     >
       <div
         className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10"
@@ -27,22 +27,22 @@ export default function ResourcesSection({ loading, resources }: ResourcesSectio
         }}
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
+        <div className="text-center mb-10 sm:mb-12 lg:mb-16">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[hsl(var(--foreground))] mb-3 sm:mb-4">
            Resources
           </h2>
-          <p className="text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-[hsl(var(--foreground))] max-w-3xl mx-auto px-4">
             Your #1 resource of Palestinian Jordanian Arabic. Complement your learning journey with our curated ebooks, booklets, short stories and flashcards.
           </p>
         </div>
         {loading ? (
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             <div className="h-32 bg-gray-200 rounded animate-pulse" />
             <div className="h-32 bg-gray-200 rounded animate-pulse" />
             <div className="h-32 bg-gray-200 rounded animate-pulse" />
           </div>
         ) : (
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {resources.map((resource, index) => (
               <DigitalResourceCard
                 key={index}

@@ -105,7 +105,7 @@ export function CourseCard({ course, onInquiry, showDetailsButton = true }: Cour
       <div className="relative z-10 flex flex-col h-full">
         {/* Enhanced hero image section */}
         <div 
-          className="relative h-64 w-full bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden group-hover:scale-105 transition-all duration-700 ease-out"
+          className="relative h-48 sm:h-56 md:h-64 w-full bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden group-hover:scale-105 transition-all duration-700 ease-out"
           style={{
             backgroundImage: `url(${thumbnailUrl})`,
             backgroundSize: "cover",
@@ -117,24 +117,24 @@ export function CourseCard({ course, onInquiry, showDetailsButton = true }: Cour
           <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-accent/15" />
           
           {/* Floating price badge */}
-          <div className="absolute top-4 right-4 z-20">
-            <div className="bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl shadow-lg border border-white/40">
-              <span className="text-sm font-bold text-slate-900">${course.price}</span>
+          <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-20">
+            <div className="bg-white/95 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl shadow-lg border border-white/40">
+              <span className="text-xs sm:text-sm font-bold text-slate-900">${course.price}</span>
             </div>
           </div>
           
           {/* Accent/Language badge */}
-          <div className="absolute top-4 left-4 z-20">
-            <Badge className="bg-primary/90 backdrop-blur-md text-white border-primary/30 px-3 py-1.5 capitalize">
+          <div className="absolute top-3 sm:top-4 left-3 sm:left-4 z-20">
+            <Badge className="bg-primary/90 backdrop-blur-md text-white border-primary/30 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm capitalize">
               {course.accent}
             </Badge>
           </div>
           
           {/* Level indicator */}
-          <div className="absolute bottom-4 left-4 z-20">
-            <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-2 rounded-2xl">
-              <Award className="w-4 h-4 text-white" />
-              <span className="text-white text-sm font-medium capitalize">{course.level}</span>
+          <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 z-20">
+            <div className="flex items-center gap-1.5 sm:gap-2 bg-white/20 backdrop-blur-md px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl">
+              <Award className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+              <span className="text-white text-xs sm:text-sm font-medium capitalize">{course.level}</span>
             </div>
           </div>
           
@@ -142,35 +142,35 @@ export function CourseCard({ course, onInquiry, showDetailsButton = true }: Cour
         </div>
         
         {/* Content section */}
-        <div className="flex-1 flex flex-col p-6">
+        <div className="flex-1 flex flex-col p-4 sm:p-5 md:p-6">
           {/* Title and quick stats */}
-          <div className="mb-4">
-            <h3 className="text-xl font-bold text-slate-900 leading-tight mb-2 group-hover:text-primary transition-colors">
+          <div className="mb-3 sm:mb-4">
+            <h3 className="text-lg sm:text-xl font-bold text-slate-900 leading-tight mb-2 group-hover:text-primary transition-colors">
               {course.title}
             </h3>
-            <p className="text-slate-600 text-sm leading-relaxed">
+            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
               {getPreview(course.description, 100)}
             </p>
           </div>
           
           {/* Course stats */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="flex items-center gap-2 text-slate-700">
-              <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
-                <Clock className="w-4 h-4 text-primary" />
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div className="flex items-center gap-1.5 sm:gap-2 text-slate-700">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-primary/10 rounded-lg sm:rounded-xl flex items-center justify-center">
+                <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
               </div>
               <div>
-                <p className="text-xs text-slate-500 font-medium">Duration</p>
-                <p className="text-sm font-semibold">{course.duration}</p>
+                <p className="text-[10px] sm:text-xs text-slate-500 font-medium">Duration</p>
+                <p className="text-xs sm:text-sm font-semibold">{course.duration}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2 text-slate-700">
-              <div className="w-8 h-8 bg-accent/10 rounded-xl flex items-center justify-center">
-                <Users className="w-4 h-4 text-accent" />
+            <div className="flex items-center gap-1.5 sm:gap-2 text-slate-700">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-accent/10 rounded-lg sm:rounded-xl flex items-center justify-center">
+                <Users className="w-3 h-3 sm:w-4 sm:h-4 text-accent" />
               </div>
               <div>
-                <p className="text-xs text-slate-500 font-medium">Students</p>
-                <p className="text-sm font-semibold">{enrolledCount > 1000 ? `${Math.floor(enrolledCount/1000)}k+` : course.students}</p>
+                <p className="text-[10px] sm:text-xs text-slate-500 font-medium">Students</p>
+                <p className="text-xs sm:text-sm font-semibold">{enrolledCount > 1000 ? `${Math.floor(enrolledCount/1000)}k+` : course.students}</p>
               </div>
             </div>
           </div>
@@ -179,7 +179,7 @@ export function CourseCard({ course, onInquiry, showDetailsButton = true }: Cour
           {/* Action button */}
           {showDetailsButton && onInquiry && (
             <Button 
-              className="w-full rounded-2xl py-3 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105" 
+              className="w-full rounded-xl sm:rounded-2xl py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105" 
               onClick={() => onInquiry(course.id)}
             >
               Enroll Now

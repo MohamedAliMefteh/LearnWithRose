@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import CoursesSection from "@/components/sections/CoursesSection";
 import ResourcesSection from "@/components/sections/ResourcesSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
-import ContactSection from "@/components/sections/ContactSection";
+import EnrollModal from "@/components/modals/EnrollModal";
 import { Course, DigitalResource, Review, BioData } from "@/types/api";
 import { coursesAPI } from "@/lib/courses-api";
 import { bioAPI } from "@/lib/bio-api";
@@ -16,6 +16,7 @@ import AddReviewSection from "@/components/sections/AddReviewSection";
 
 export default function HomePage() {
   const [selectedCourse, setSelectedCourse] = useState<string>("");
+  const [enrollModalOpen, setEnrollModalOpen] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
   const [resources, setResources] = useState<DigitalResource[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -88,13 +89,11 @@ export default function HomePage() {
     if (course) {
       setSelectedCourse(String(course.id));
     }
-    // Scroll after closing to ensure smooth UX
-    setTimeout(() => {
-      const el = document.getElementById("contact-form");
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
-      }
-    }, 100);
+    setEnrollModalOpen(true);
+  };
+
+  const handleCloseEnrollModal = () => {
+    setEnrollModalOpen(false);
   };
 
 
@@ -128,17 +127,19 @@ export default function HomePage() {
       {/* Testimonials Section */}
       <TestimonialsSection loading={loadingStates.reviews} reviews={reviews} />
 
-      {/* Contact Form */}
-      <ContactSection
-        courses={courses}
-        selectedCourse={selectedCourse}
-      />
-
       {/* Add Review Section */}
       <AddReviewSection />
 
       {/* Footer */}
       <Footer />
+
+      {/* Enroll Modal */}
+      <EnrollModal
+        open={enrollModalOpen}
+        onClose={handleCloseEnrollModal}
+        courses={courses}
+        selectedCourse={selectedCourse}
+      />
     </div>
   );
 }

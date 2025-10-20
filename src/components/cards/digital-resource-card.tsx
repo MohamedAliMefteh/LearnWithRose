@@ -42,7 +42,7 @@ export function DigitalResourceCard({ resource, onPurchase }: DigitalResourceCar
 
   return (
     <Card
-      className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 backdrop-blur-sm"
+      className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 backdrop-blur-sm h-full flex flex-col"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -52,9 +52,9 @@ export function DigitalResourceCard({ resource, onPurchase }: DigitalResourceCar
       </div>
       
       {/* Enhanced thumbnail with modern overlay */}
-      <div className="relative z-10">
+      <div className="relative z-10 flex flex-col h-full">
         <div
-          className="relative h-56 w-full bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden group-hover:scale-105 transition-all duration-700 ease-out"
+          className="relative h-48 sm:h-56 md:h-64 w-full bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden group-hover:scale-105 transition-all duration-700 ease-out"
           style={{
             backgroundImage: `url(${thumbnailUrl})`,
             backgroundSize: "cover",
@@ -67,28 +67,28 @@ export function DigitalResourceCard({ resource, onPurchase }: DigitalResourceCar
           
           {/* Floating price badge */}
           {priceLabel && (
-            <div className="absolute top-4 right-4 z-20">
-              <div className={`px-4 py-2 rounded-2xl backdrop-blur-md shadow-lg border transition-all duration-300 ${
+            <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-20">
+              <div className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl backdrop-blur-md shadow-lg border transition-all duration-300 ${
                 isFree 
                   ? 'bg-green-500/90 text-white border-green-400/30' 
                   : 'bg-white/95 text-slate-900 border-white/40'
               }`}>
-                <span className="text-sm font-bold">{priceLabel}</span>
+                <span className="text-xs sm:text-sm font-bold">{priceLabel}</span>
               </div>
             </div>
           )}
           
           {/* Category badge */}
-          <div className="absolute top-4 left-4 z-20">
-            <Badge className="bg-white/20 backdrop-blur-md text-white border-white/30 px-3 py-1.5">
+          <div className="absolute top-3 sm:top-4 left-3 sm:left-4 z-20">
+            <Badge className="bg-white/20 backdrop-blur-md text-white border-white/30 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm">
               {resource.category || 'Digital Resource'}
             </Badge>
           </div>
           
           {/* Floating file type icon */}
-          <div className="absolute bottom-4 right-4 z-20">
-            <div className="w-12 h-12 bg-white/90 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
-              <div className="text-primary">
+          <div className="absolute bottom-3 sm:bottom-4 right-3 sm:right-4 z-20">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/90 backdrop-blur-md rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
+              <div className="text-primary [&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-5 sm:[&>svg]:h-5">
                 <FileTypeIcon type={resource.fileType} />
               </div>
             </div>
@@ -97,33 +97,33 @@ export function DigitalResourceCard({ resource, onPurchase }: DigitalResourceCar
         </div>
 
         {/* Modern content section */}
-        <div className="p-6">
+        <div className="flex-1 flex flex-col p-4 sm:p-5 md:p-6">
           {/* Title */}
           <div className="mb-3">
-            <h3 className="text-xl font-bold text-slate-900 leading-tight">
+            <h3 className="text-lg sm:text-xl font-bold text-slate-900 leading-tight">
               {resource.title}
             </h3>
           </div>
           
           {/* Description */}
-          <p className="text-slate-600 text-sm leading-relaxed mb-4">
+          <p className="text-slate-600 text-xs sm:text-sm leading-relaxed mb-4">
             {truncate(resource.description, 120)}
           </p>
           
           {/* Tags and level */}
-          <div className="flex items-center gap-2 mb-6">
-            <Badge variant="outline" className="rounded-full px-3 py-1 text-xs border-slate-200 text-slate-600">
+          <div className="flex items-center gap-2 mb-4 sm:mb-6">
+            <Badge variant="outline" className="rounded-full px-2 sm:px-3 py-1 text-xs border-slate-200 text-slate-600">
               {resource.fileType}
             </Badge>
-            <Badge variant="outline" className="rounded-full px-3 py-1 text-xs border-primary/20 text-primary bg-primary/5">
+            <Badge variant="outline" className="rounded-full px-2 sm:px-3 py-1 text-xs border-primary/20 text-primary bg-primary/5">
               {resource.level || 'All Levels'}
             </Badge>
           </div>
           
-          {/* Action button */}
+          {/* Action button - pushed to bottom with mt-auto */}
           <Button
             onClick={onPurchase}
-            className={`w-full rounded-2xl py-3 font-semibold text-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 ${
+            className={`mt-auto w-full rounded-xl sm:rounded-2xl py-2.5 sm:py-3 font-semibold text-xs sm:text-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 ${
               isFree
                 ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'
                 : 'bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white'

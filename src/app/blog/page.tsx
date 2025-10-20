@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, Feather, RefreshCw, Home, Menu, X } from "lucide-react";
 import { convertByteDataToImageUrl, getFallbackImage } from "@/lib/image-utils";
+import Footer from "@/components/layout/Footer";
 
 
 export default function BlogPage() {
@@ -57,7 +58,6 @@ export default function BlogPage() {
               <Link href="/#resources" className="text-gray-800 hover:text-primary transition-colors font-medium">Resources</Link>
               <Link href="/#contact" className="text-gray-800 hover:text-primary transition-colors font-medium">Contact</Link>
               <Link href="/blog" className="text-primary font-semibold border-b-2 border-primary">Blog</Link>
-              <Link href="/dashboard" className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors font-medium">Dashboard</Link>
             </div>
 
             {/* Mobile Menu Button */}
@@ -111,28 +111,30 @@ export default function BlogPage() {
               >
                 Blog
               </Link>
-              <div className="pt-2 mt-4 border-t border-gray-200/60">
-                <Link 
-                  href="/dashboard" 
-                  className="block px-4 py-3 bg-primary text-white rounded-lg font-semibold text-center shadow-md"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Dashboard
-                </Link>
-              </div>
             </div>
           )}
         </div>
       </nav>
 
       {/* Hero/Header */}
-      <section className="relative py-14 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center space-y-4">
-            <Badge className="px-3 py-1 bg-primary/10 text-primary border border-primary/20">Latest Insights</Badge>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[hsl(var(--foreground))] tracking-tight">Rose's Arabic Learning Blog</h1>
-            <p className="text-base sm:text-lg text-[hsl(var(--foreground))]/80 max-w-2xl mx-auto">
-              Practical tips, cultural notes, and learning strategies to master Palestinian & Jordanian Arabic accents.
+      <section className="relative py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {/* Decorative background elements */}
+        <div className="absolute inset-0 opacity-30 pointer-events-none">
+          <div className="absolute top-10 right-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 left-10 w-96 h-96 bg-accent/20 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center space-y-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-white to-accent/10 border border-primary/20 rounded-full shadow-sm">
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+              <span className="text-sm font-semibold text-primary">Latest Insights & Tips</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[hsl(var(--foreground))] tracking-tight">
+              Rose's <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Arabic Learning</span> Blog
+            </h1>
+            <p className="text-base sm:text-lg md:text-xl text-[hsl(var(--foreground))]/70 max-w-3xl mx-auto leading-relaxed">
+              Practical tips, cultural notes, and learning strategies to master Palestinian & Jordanian Arabic dialects. 💛
             </p>
           </div>
         </div>
@@ -201,70 +203,75 @@ export default function BlogPage() {
 
           {/* Posts grid with consistent heights */}
           {!loading && posts.length > 0 && (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 auto-rows-fr">
               {posts.map((post, idx) => (
                 <article key={(post.id ?? idx).toString()} className="group h-full">
-                  <Card className="group relative overflow-hidden rounded-2xl border border-primary/20 bg-white shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full flex flex-col">
-                    {/* Enhanced Featured Image with larger size */}
-                    <div 
-                      className="relative h-56 w-full bg-gradient-to-br from-muted/20 to-muted/40 overflow-hidden group-hover:scale-105 transition-transform duration-300"
-                      style={{
-                        backgroundImage: `url(${convertByteDataToImageUrl(post.thumbnail || post.image, getFallbackImage('blog'))})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                      }}
-                    >
-                      {/* Enhanced overlay with gradient */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
-                      
-                      {/* Author badge in top-left corner */}
-                      <div className="absolute top-3 left-3 z-20">
-                        <Badge className="bg-white/90 backdrop-blur-sm text-primary">
-                          <Feather className="w-3 h-3 mr-1" />
-                          {post.author || "Rose"}
-                        </Badge>
+                  <Card className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 h-full flex flex-col">
+                    {/* Modern gradient border */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20 rounded-3xl p-[1px]">
+                      <div className="bg-white rounded-3xl h-full w-full" />
+                    </div>
+                    
+                    <div className="relative z-10 flex flex-col h-full">
+                      {/* Enhanced Featured Image */}
+                      <div 
+                        className="relative h-48 sm:h-56 md:h-64 w-full bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden group-hover:scale-105 transition-all duration-700 ease-out"
+                        style={{
+                          backgroundImage: `url(${convertByteDataToImageUrl(post.thumbnail || post.image, getFallbackImage('blog'))})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                        }}
+                      >
+                        {/* Modern layered gradients */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-accent/15" />
+                        
+                        {/* Author badge */}
+                        <div className="absolute top-3 sm:top-4 left-3 sm:left-4 z-20">
+                          <Badge className="bg-white/90 backdrop-blur-md text-primary border-white/40 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm">
+                            <Feather className="w-3 h-3 mr-1" />
+                            {post.author || "Rose"}
+                          </Badge>
+                        </div>
+                        
+                        {post.published === false && (
+                          <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-20">
+                            <Badge className="bg-yellow-500/90 backdrop-blur-md text-white px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm">Draft</Badge>
+                          </div>
+                        )}
                       </div>
                       
-                      {post.published === false && (
-                        <div className="absolute top-3 right-3 z-20">
-                          <Badge className="bg-yellow-500/90 backdrop-blur-sm text-white">Draft</Badge>
-                        </div>
-                      )}
-                    </div>
-                    <CardHeader className="pb-3 p-5">
-                      <CardTitle className="text-xl sm:text-2xl font-semibold leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2">
-                        {post.title || "Untitled"}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex flex-col flex-grow p-5 pt-0">
-                      <div className="flex-grow space-y-4">
-                        <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+                      {/* Content section */}
+                      <div className="flex-1 flex flex-col p-4 sm:p-5 md:p-6">
+                        <CardTitle className="text-lg sm:text-xl font-bold text-slate-900 leading-tight mb-3 group-hover:text-primary transition-colors line-clamp-2">
+                          {post.title || "Untitled"}
+                        </CardTitle>
+                        
+                        <p className="text-xs sm:text-sm text-slate-600 line-clamp-3 leading-relaxed mb-4">
                           {post.description || post.excerpt || getExcerpt(post.content) || "No content available."}
                         </p>
                         
-                        <div className="flex items-center justify-between text-xs text-muted-foreground pt-2">
-                          <div className="inline-flex items-center gap-2">
-                            <CalendarDays className="w-4 h-4 text-primary" />
+                        <div className="flex items-center gap-2 text-xs text-slate-500 mb-4 sm:mb-6">
+                          <div className="flex items-center gap-1.5">
+                            <CalendarDays className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
                             <span className="font-medium">
                               {formatDate(
                                 post.createdDate || post.created || post.created_at || new Date().toISOString(),
                               )}
                             </span>
                           </div>
-                          <Badge variant="outline" className="rounded-full px-2 py-1">
-                            Article
-                          </Badge>
+                        </div>
+                        
+                        {/* Action button */}
+                        <div className="mt-auto">
+                          <Link href={`/blog/${encodeURIComponent((post.id ?? idx).toString())}`} className="block">
+                            <Button className="w-full rounded-xl sm:rounded-2xl py-2.5 sm:py-3 text-xs sm:text-sm bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                              Read Article →
+                            </Button>
+                          </Link>
                         </div>
                       </div>
-                      
-                      <div className="pt-4 mt-auto">
-                        <Link href={`/blog/${encodeURIComponent((post.id ?? idx).toString())}`} className="block">
-                          <Button className="w-full rounded-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all duration-200">
-                            Read Article
-                          </Button>
-                        </Link>
-                      </div>
-                    </CardContent>
+                    </div>
                   </Card>
                 </article>
               ))}
@@ -272,6 +279,9 @@ export default function BlogPage() {
           )}
         </div>
       </section>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

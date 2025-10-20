@@ -121,17 +121,17 @@ export default function DashboardPage() {
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-50">
         <DashboardNavbar />
-        <main className="container mx-auto px-4 py-8">
-          <div className="space-y-8">
-            <div className="flex justify-between items-center">
+        <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <div className="space-y-6 sm:space-y-8">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-                <p className="text-gray-600 mt-2">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">Dashboard</h1>
+                <p className="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2">
                   Manage your website content and settings
                 </p>
               </div>
               {activeSection !== "overview" && (
-                <Button variant="outline" onClick={() => setActiveSection("overview")}>
+                <Button variant="outline" onClick={() => setActiveSection("overview")} className="w-full sm:w-auto">
                   Back to Overview
                 </Button>
               )}

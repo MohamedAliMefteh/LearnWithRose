@@ -38,11 +38,13 @@ export type ContactFormData = {
 interface ContactSectionProps {
   courses: Course[];
   selectedCourse?: string;
+  isModal?: boolean;
 }
 
 export default function ContactSection({
   courses,
   selectedCourse,
+  isModal = false,
 }: ContactSectionProps) {
   const [formData, setFormData] = useState<ContactFormData>({
     fullName: "",
@@ -57,7 +59,7 @@ export default function ContactSection({
     additionalMessage: "",
   });
 
-  const [localSelectedCourse, setLocalSelectedCourse] = useState<string>("");
+  const [localSelectedCourse, setLocalSelectedCourse] = useState<string>(selectedCourse || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [submitMessage, setSubmitMessage] = useState('');
@@ -67,6 +69,8 @@ export default function ContactSection({
   useEffect(() => {
     if (selectedCourse) {
       setLocalSelectedCourse(String(selectedCourse));
+      // Also update the form data
+      setFormData(prev => ({ ...prev, interestedCourse: String(selectedCourse) }));
     }
   }, [selectedCourse]);
 
@@ -162,29 +166,36 @@ export default function ContactSection({
     }
   };
 
+  // Conditional wrapper for modal vs section
+  const Wrapper = isModal ? 'div' : 'section';
+  
   return (
-    <section
-      id="contact"
-      className="py-20 bg-gradient-to-br from-white via-accent/10 to-card/20 relative"
+    <Wrapper
+      {...(!isModal && { id: "contact" })}
+      className={isModal ? "" : "py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-white via-accent/10 to-card/20 relative"}
     >
-      <div
-        className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10"
-        style={{
-          background:
-            "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)",
-        }}
-      />
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-[hsl(var(--foreground))] mb-4">
-            Start Your Arabic Journey
-          </h2>
-          <p className="text-xl text-[hsl(var(--foreground))]">
-            Fill out the form below and I'll personally contact you within 24
-            hours to discuss your learning goals and recommend the perfect
-            course.
-          </p>
-        </div>
+      {!isModal && (
+        <div
+          className="absolute top-0 left-0 w-full h-12 pointer-events-none z-10"
+          style={{
+            background:
+              "linear-gradient(to bottom, transparent, hsl(var(--background))/60 80%)",
+          }}
+        />
+      )}
+      <div className={isModal ? "" : "max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"}>
+        {!isModal && (
+          <div className="text-center mb-10 sm:mb-12 lg:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[hsl(var(--foreground))] mb-3 sm:mb-4">
+              Start Your Arabic Journey
+            </h2>
+            <p className="text-base sm:text-lg md:text-xl text-[hsl(var(--foreground))] px-4">
+              Fill out the form below and I'll personally contact you within 24
+              hours to discuss your learning goals and recommend the perfect
+              course.
+            </p>
+          </div>
+        )}
 
         <Card id="contact-form" className="border-primary">
           <CardHeader>
@@ -229,9 +240,9 @@ export default function ContactSection({
               </Alert>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               {/* Personal Information */}
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Full Name *</label>
                   <Input
@@ -253,7 +264,7 @@ export default function ContactSection({
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Whatsapp number with your country code *</label>
                   <Input
@@ -432,6 +443,6 @@ export default function ContactSection({
           </CardContent>
         </Card>
       </div>
-    </section>
+    </Wrapper>
   );
 }

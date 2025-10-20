@@ -79,16 +79,48 @@ export function BlogManagement() {
     setSaving(true);
     try {
       if (isEditing && editingId != null) {
-        // For editing, use the legacy API for now (can be updated later)
-        await blogsAPI.update(editingId, {
-          title: form.title!,
-          content: form.content!,
-          author: form.author!,
-          featuredImage: form.featuredImage,
-          excerpt: form.excerpt,
-          published: form.published,
-        });
-        toast.success("Blog updated successfully");
+        // For editing with new thumbnail upload
+        if (thumbnailFile) {
+          // Use v2 API to update with new thumbnail - all data in FormData body (like create)
+          const token = getAuthToken();
+          const headers: HeadersInit = {
+            'accept': '*/*'
+          };
+          if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+          }
+
+          // FormData contains all fields including metadata (to avoid 431 error with long content)
+          const formDataUpload = new FormData();
+          formDataUpload.append('title', form.title!);
+          formDataUpload.append('description', form.excerpt || form.title!);
+          formDataUpload.append('content', form.content!); // Content in FormData body to support long text
+          formDataUpload.append('author', form.author!);
+          formDataUpload.append('thumbnailFile', thumbnailFile);
+
+          const response = await fetch(`/api/v2/articles/${editingId}/upload`, {
+            method: "PUT",
+            headers,
+            body: formDataUpload,
+          });
+          
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Failed to update blog: ${errorText}`);
+          }
+          toast.success("Blog updated successfully with new image");
+        } else {
+          // Use legacy API for updates without new thumbnail
+          await blogsAPI.update(editingId, {
+            title: form.title!,
+            content: form.content!,
+            author: form.author!,
+            featuredImage: form.featuredImage,
+            excerpt: form.excerpt,
+            published: form.published,
+          });
+          toast.success("Blog updated successfully");
+        }
       } else {
         // For new blogs, use v2 API with file upload
         const token = getAuthToken();
@@ -167,6 +199,8 @@ export function BlogManagement() {
       excerpt: blog.excerpt || "",
       published: blog.published ?? true
     });
+    setThumbnailFile(null);
+    setThumbnailPreview("");
     setViewMode("edit");
   };
 
@@ -243,123 +277,89 @@ export function BlogManagement() {
                 </div>
               </div>
 
-              {/* Thumbnail Upload Section for v2 API */}
-              {viewMode === "add" && (
-                <div className="space-y-4 p-4 bg-muted/30 rounded-lg border-2 border-dashed border-primary/20">
-                  <h3 className="text-lg font-semibold text-primary">Thumbnail Upload (v2 API)</h3>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium flex items-center gap-2">
-                      <ImageIcon className="w-4 h-4" />
-                      Featured Image/Thumbnail (Optional)
-                    </label>
-                    <div className="relative">
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleThumbnailFileChange}
-                        className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90"
-                      />
-                      {thumbnailFile && (
-                        <div className="mt-2 p-2 bg-green-50 rounded border border-green-200">
-                          <div className="text-xs text-green-700 font-medium">Selected: {thumbnailFile.name}</div>
-                          <div className="text-xs text-green-600">Size: {(thumbnailFile.size / 1024).toFixed(0)} KB</div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Thumbnail Preview */}
-                  {thumbnailPreview && (
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Thumbnail Preview:</label>
-                      <div 
-                        className="w-full h-32 bg-cover bg-center rounded-lg border-2 border-primary/20"
-                        style={{ backgroundImage: `url(${thumbnailPreview})` }}
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Legacy Featured Image URL for editing existing blogs */}
-              {viewMode === "edit" && (
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Featured Image URL</label>
+              {/* Thumbnail Upload Section - Available for both Add and Edit */}
+              <div className="space-y-4 p-4 bg-muted/30 rounded-lg border-2 border-dashed border-primary/20">
+                <h3 className="text-lg font-semibold text-primary">
+                  {viewMode === "edit" ? "Change Thumbnail Image" : "Thumbnail Upload"}
+                </h3>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4" />
+                    {viewMode === "edit" ? "Upload New Image (Optional)" : "Featured Image/Thumbnail (Optional)"}
+                  </label>
+                  <div className="relative">
                     <Input
-                      placeholder="/images/blog-featured.jpg or https://..."
-                      value={form.featuredImage || ""}
-                      onChange={(e) => setForm((f) => ({ ...f, featuredImage: e.target.value }))}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleThumbnailFileChange}
+                      className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90"
                     />
-                    {form.featuredImage && (
-                      <div className="mt-2">
-                        <div className="text-xs text-muted-foreground mb-1">Preview:</div>
-                        <div 
-                          className="w-full h-20 bg-cover bg-center rounded border"
-                          style={{
-                            backgroundImage: `url(${constructImageUrl(form.featuredImage, getFallbackImage('blog'))})`
-                          }}
-                        />
+                    {thumbnailFile && (
+                      <div className="mt-2 p-2 bg-green-50 rounded border border-green-200">
+                        <div className="text-xs text-green-700 font-medium">Selected: {thumbnailFile.name}</div>
+                        <div className="text-xs text-green-600">Size: {(thumbnailFile.size / 1024).toFixed(0)} KB</div>
                       </div>
                     )}
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Publication Status</label>
-                    <div className="flex items-center space-x-4 pt-2">
-                      <label className="flex items-center space-x-2">
-                        <input
-                          type="radio"
-                          name="published"
-                          checked={form.published === true}
-                          onChange={() => setForm((f) => ({ ...f, published: true }))}
-                          className="text-primary"
-                        />
-                        <span className="text-sm">Published</span>
-                      </label>
-                      <label className="flex items-center space-x-2">
-                        <input
-                          type="radio"
-                          name="published"
-                          checked={form.published === false}
-                          onChange={() => setForm((f) => ({ ...f, published: false }))}
-                          className="text-primary"
-                        />
-                        <span className="text-sm">Draft</span>
-                      </label>
-                    </div>
-                  </div>
+                  {viewMode === "edit" && !thumbnailFile && (
+                    <p className="text-xs text-muted-foreground">
+                      💡 Upload a new image to replace the current thumbnail, or leave empty to keep the existing one
+                    </p>
+                  )}
                 </div>
-              )}
 
-              {/* Publication Status for new blogs */}
-              {viewMode === "add" && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Publication Status</label>
-                  <div className="flex items-center space-x-4 pt-2">
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        name="published"
-                        checked={form.published === true}
-                        onChange={() => setForm((f) => ({ ...f, published: true }))}
-                        className="text-primary"
-                      />
-                      <span className="text-sm">Published</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        name="published"
-                        checked={form.published === false}
-                        onChange={() => setForm((f) => ({ ...f, published: false }))}
-                        className="text-primary"
-                      />
-                      <span className="text-sm">Draft</span>
-                    </label>
+                {/* Thumbnail Preview */}
+                {thumbnailPreview && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">New Thumbnail Preview:</label>
+                    <div 
+                      className="w-full h-32 bg-cover bg-center rounded-lg border-2 border-primary/20"
+                      style={{ backgroundImage: `url(${thumbnailPreview})` }}
+                    />
                   </div>
+                )}
+
+                {/* Show current image for editing */}
+                {viewMode === "edit" && !thumbnailPreview && form.featuredImage && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Current Thumbnail:</label>
+                    <div 
+                      className="w-full h-32 bg-cover bg-center rounded-lg border-2 border-slate-200"
+                      style={{
+                        backgroundImage: `url(${constructImageUrl(form.featuredImage, getFallbackImage('blog'))})`
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Publication Status */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Publication Status</label>
+                <div className="flex items-center space-x-4 pt-2">
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      name="published"
+                      checked={form.published === true}
+                      onChange={() => setForm((f) => ({ ...f, published: true }))}
+                      className="text-primary"
+                    />
+                    <span className="text-sm">Published</span>
+                  </label>
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      name="published"
+                      checked={form.published === false}
+                      onChange={() => setForm((f) => ({ ...f, published: false }))}
+                      className="text-primary"
+                    />
+                    <span className="text-sm">Draft</span>
+                  </label>
                 </div>
-              )}
+              </div>
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Excerpt</label>
