@@ -4,12 +4,23 @@ import React, { useState } from "react";
 import { Course } from "@/types/api";
 import { CourseCard } from "@/components/cards/course-card";
 import { CourseDetailsModal } from "@/components/cards/course-details-modal";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export interface CoursesSectionProps {
   loading: boolean;
   courses: Course[];
   onEnroll: (course?: Course | null) => void;
 }
+
+const ITEMS_PER_PAGE = 6;
 
 export default function CoursesSection({
   loading,
@@ -19,6 +30,7 @@ export default function CoursesSection({
   // Internal modal state moved into CoursesSection to encapsulate courses logic
   const [modalOpen, setModalOpen] = useState(false);
   const [modalCourse, setModalCourse] = useState<Course | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const handleInquiry = (courseId: string | number) => {
     const course = courses.find((c) => c.id === courseId) || null;
@@ -27,6 +39,18 @@ export default function CoursesSection({
   };
 
   const handleCloseModal = () => setModalOpen(false);
+
+  // Pagination logic
+  const sortedCourses = [...courses].sort((a, b) => (a?.order ?? 0) - (b?.order ?? 0));
+  const totalPages = Math.ceil(sortedCourses.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedCourses = sortedCourses.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    document.getElementById('courses')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <section
@@ -57,12 +81,64 @@ export default function CoursesSection({
             <div className="h-48 bg-gray-200 rounded animate-pulse" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 items-stretch">
-            {([...courses]
-              .sort((a, b) => (a?.order ?? 0) - (b?.order ?? 0))
-              .map((course) => (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 items-stretch">
+              {paginatedCourses.map((course) => (
                 <CourseCard key={course.id} course={course} onInquiry={handleInquiry} />
-              )))}
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-12">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                    
+                    {[...Array(totalPages)].map((_, i) => {
+                      const page = i + 1;
+                      if (
+                        page === 1 ||
+                        page === totalPages ||
+                        (page >= currentPage - 1 && page <= currentPage + 1)
+                      ) {
+                        return (
+                          <PaginationItem key={page}>
+                            <PaginationLink
+                              onClick={() => handlePageChange(page)}
+                              isActive={currentPage === page}
+                              className="cursor-pointer"
+                            >
+                              {page}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      } else if (page === currentPage - 2 || page === currentPage + 2) {
+                        return (
+                          <PaginationItem key={page}>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                        );
+                      }
+                      return null;
+                    })}
+                    
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
+                        className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+
             {/* Course Details Modal */}
             <CourseDetailsModal
               open={modalOpen}
@@ -73,7 +149,7 @@ export default function CoursesSection({
                 setModalOpen(false);
               }}
             />
-          </div>
+          </>
         )}
       </div>
     </section>

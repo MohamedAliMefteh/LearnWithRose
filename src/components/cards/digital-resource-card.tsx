@@ -6,15 +6,34 @@ import { Badge } from "@/components/ui/badge";
 import { FileText, Headphones, Video, File, Download, ExternalLink } from "lucide-react";
 import { DigitalResource } from "@/types/api";
 import { convertByteDataToImageUrl, getFallbackImage } from "@/lib/image-utils";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface DigitalResourceCardProps {
   resource: DigitalResource;
   onPurchase?: () => void;
+  onViewDetails?: () => void;
 }
 
 function truncate(text: string, max: number) {
   if (!text) return "";
   return text.length > max ? text.slice(0, max - 1).trimEnd() + "…" : text;
+}
+
+// Strip markdown syntax for plain text preview
+function stripMarkdown(text: string): string {
+  if (!text) return "";
+  return text
+    .replace(/#{1,6}\s+/g, '') // Remove headers
+    .replace(/\*\*(.+?)\*\*/g, '$1') // Remove bold
+    .replace(/\*(.+?)\*/g, '$1') // Remove italic
+    .replace(/\[(.+?)\]\(.+?\)/g, '$1') // Remove links, keep text
+    .replace(/`(.+?)`/g, '$1') // Remove inline code
+    .replace(/^[-*+]\s+/gm, '') // Remove list markers
+    .replace(/^\d+\.\s+/gm, '') // Remove numbered list markers
+    .replace(/^>\s+/gm, '') // Remove blockquotes
+    .replace(/\n+/g, ' ') // Replace newlines with spaces
+    .trim();
 }
 
 function FileTypeIcon({ type }: { type?: string }) {
@@ -31,7 +50,7 @@ function FileTypeIcon({ type }: { type?: string }) {
   return <File className="h-5 w-5" />;
 }
 
-export function DigitalResourceCard({ resource, onPurchase }: DigitalResourceCardProps) {
+export function DigitalResourceCard({ resource, onPurchase, onViewDetails }: DigitalResourceCardProps) {
   // Format price from amount field or use existing price field
   const priceLabel = resource.price?.trim() || (resource.amount > 0 ? `$${resource.amount}` : "Free");
   const [hovered, setHovered] = useState(false);
@@ -54,7 +73,8 @@ export function DigitalResourceCard({ resource, onPurchase }: DigitalResourceCar
       {/* Enhanced thumbnail with modern overlay */}
       <div className="relative z-10 flex flex-col h-full">
         <div
-          className="relative h-48 sm:h-56 md:h-64 w-full bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden group-hover:scale-105 transition-all duration-700 ease-out"
+          className="relative h-48 sm:h-56 md:h-64 w-full bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden group-hover:scale-105 transition-all duration-700 ease-out cursor-pointer"
+          onClick={onViewDetails}
           style={{
             backgroundImage: `url(${thumbnailUrl})`,
             backgroundSize: "cover",
@@ -106,8 +126,11 @@ export function DigitalResourceCard({ resource, onPurchase }: DigitalResourceCar
           </div>
           
           {/* Description */}
-          <p className="text-slate-600 text-xs sm:text-sm leading-relaxed mb-4">
-            {truncate(resource.description, 120)}
+          <p 
+            className="text-slate-600 text-xs sm:text-sm leading-relaxed mb-4 cursor-pointer hover:text-slate-800 transition-colors line-clamp-3"
+            onClick={onViewDetails}
+          >
+            {truncate(stripMarkdown(resource.description), 120)}
           </p>
           
           {/* Tags and level */}
@@ -136,7 +159,7 @@ export function DigitalResourceCard({ resource, onPurchase }: DigitalResourceCar
                 Download Free
               </>
             ) : (
-              `Purchase for ${priceLabel}`
+              'Get Yours Now'
             )}
           </Button>
         </div>

@@ -13,7 +13,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { DigitalResource } from "@/types/api";
 import { DigitalResourceCard } from "@/components/cards/digital-resource-card";
-import { Plus, Edit2, Trash2, ArrowLeft, Save, X, Upload, FileText, Image, Loader2 } from "lucide-react";
+import { Plus, Edit2, Trash2, ArrowLeft, Save, X, Upload, FileText, Image, Loader2, Eye, Edit } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -51,6 +53,7 @@ export function DigitalResourcesManagement() {
   const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [descriptionTab, setDescriptionTab] = useState<'write' | 'preview'>('write');
 
   // Debug log for isSaving state changes
   useEffect(() => {
@@ -352,15 +355,74 @@ export function DigitalResourcesManagement() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Description *</label>
-                <Textarea
-                  required
-                  value={formData.description}
-                  onChange={e => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Resource description"
-                  rows={3}
-                  disabled={isSaving}
-                />
+                <label className="text-sm font-medium">Description * (Markdown Supported)</label>
+                
+                {/* Write/Preview Tabs */}
+                <div className="flex gap-2 border-b">
+                  <button
+                    type="button"
+                    onClick={() => setDescriptionTab('write')}
+                    className={`px-4 py-2 text-sm font-medium transition-colors flex items-center gap-2 ${
+                      descriptionTab === 'write'
+                        ? 'border-b-2 border-primary text-primary'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                    disabled={isSaving}
+                  >
+                    <Edit className="w-4 h-4" />
+                    Write
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDescriptionTab('preview')}
+                    className={`px-4 py-2 text-sm font-medium transition-colors flex items-center gap-2 ${
+                      descriptionTab === 'preview'
+                        ? 'border-b-2 border-primary text-primary'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                    disabled={isSaving}
+                  >
+                    <Eye className="w-4 h-4" />
+                    Preview
+                  </button>
+                </div>
+
+                {/* Editor/Preview Content */}
+                {descriptionTab === 'write' ? (
+                  <Textarea
+                    required
+                    value={formData.description}
+                    onChange={e => setFormData({ ...formData, description: e.target.value })}
+                    placeholder="Write your description in Markdown...\n\nExamples:\n# Heading\n**Bold** *Italic*\n- List item\n[Link](url)"
+                    className="min-h-[200px] font-mono text-sm"
+                    disabled={isSaving}
+                  />
+                ) : (
+                  <div className="min-h-[200px] p-4 border rounded-md bg-muted/30">
+                    {formData.description ? (
+                      <div className="prose prose-sm max-w-none">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {formData.description}
+                        </ReactMarkdown>
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground text-sm">Nothing to preview yet. Write some markdown in the Write tab.</p>
+                    )}
+                  </div>
+                )}
+                
+                {/* Markdown Help */}
+                <div className="text-xs text-muted-foreground space-y-1 bg-muted/20 p-3 rounded-md">
+                  <p className="font-semibold">Markdown Quick Reference:</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <span><code className="bg-muted px-1 rounded"># Heading</code> - Large heading</span>
+                    <span><code className="bg-muted px-1 rounded">**bold**</code> - Bold text</span>
+                    <span><code className="bg-muted px-1 rounded">*italic*</code> - Italic text</span>
+                    <span><code className="bg-muted px-1 rounded">- item</code> - List item</span>
+                    <span><code className="bg-muted px-1 rounded">[text](url)</code> - Link</span>
+                    <span><code className="bg-muted px-1 rounded">`code`</code> - Inline code</span>
+                  </div>
+                </div>
               </div>
 
               {/* File Upload Section for v2 API */}

@@ -39,12 +39,14 @@ interface ContactSectionProps {
   courses: Course[];
   selectedCourse?: string;
   isModal?: boolean;
+  onSubmitSuccess?: () => void;
 }
 
 export default function ContactSection({
   courses,
   selectedCourse,
   isModal = false,
+  onSubmitSuccess,
 }: ContactSectionProps) {
   const [formData, setFormData] = useState<ContactFormData>({
     fullName: "",
@@ -153,6 +155,13 @@ export default function ContactSection({
           additionalMessage: "",
         });
         setLocalSelectedCourse("");
+        
+        // Close modal if in modal mode
+        if (isModal && onSubmitSuccess) {
+          setTimeout(() => {
+            onSubmitSuccess();
+          }, 2000); // Wait 2 seconds to show success message before closing
+        }
       } else {
         throw new Error("Failed to submit inquiry");
       }

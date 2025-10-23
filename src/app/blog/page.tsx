@@ -12,13 +12,24 @@ import { Badge } from "@/components/ui/badge";
 import { CalendarDays, Feather, RefreshCw, Home, Menu, X } from "lucide-react";
 import { convertByteDataToImageUrl, getFallbackImage } from "@/lib/image-utils";
 import Footer from "@/components/layout/Footer";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
+const ITEMS_PER_PAGE = 9;
 
 export default function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const load = async () => {
     setLoading(true);
@@ -38,6 +49,17 @@ export default function BlogPage() {
   useEffect(() => {
     load();
   }, []);
+
+  // Pagination logic
+  const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedPosts = posts.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-secondary/10 to-accent/10">
@@ -125,7 +147,21 @@ export default function BlogPage() {
         </div>
         
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center space-y-6">
+          {/* Back to Home Button - Compact & Mobile Friendly */}
+          <div className="mb-4 sm:mb-6">
+            <Link href="/">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="bg-white/90 backdrop-blur-md border border-primary/20 hover:bg-white hover:border-primary/40 transition-all duration-200 text-xs sm:text-sm px-3 py-2 sm:px-4 sm:py-2 h-8 sm:h-9"
+              >
+                <Home className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
+                <span className="hidden xs:inline">Back to </span>Home
+              </Button>
+            </Link>
+          </div>
+
+          <div className="text-center space-y-4 sm:space-y-6">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-white to-accent/10 border border-primary/20 rounded-full shadow-sm">
               <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
               <span className="text-sm font-semibold text-primary">Latest Insights & Tips</span>
@@ -203,8 +239,9 @@ export default function BlogPage() {
 
           {/* Posts grid with consistent heights */}
           {!loading && posts.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 auto-rows-fr">
-              {posts.map((post, idx) => (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 auto-rows-fr">
+                {paginatedPosts.map((post, idx) => (
                 <article key={(post.id ?? idx).toString()} className="group h-full">
                   <Card className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 h-full flex flex-col">
                     {/* Modern gradient border */}
@@ -276,6 +313,58 @@ export default function BlogPage() {
                 </article>
               ))}
             </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-12">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                    
+                    {[...Array(totalPages)].map((_, i) => {
+                      const page = i + 1;
+                      if (
+                        page === 1 ||
+                        page === totalPages ||
+                        (page >= currentPage - 1 && page <= currentPage + 1)
+                      ) {
+                        return (
+                          <PaginationItem key={page}>
+                            <PaginationLink
+                              onClick={() => handlePageChange(page)}
+                              isActive={currentPage === page}
+                              className="cursor-pointer"
+                            >
+                              {page}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      } else if (page === currentPage - 2 || page === currentPage + 2) {
+                        return (
+                          <PaginationItem key={page}>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                        );
+                      }
+                      return null;
+                    })}
+                    
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
+                        className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+          </>
           )}
         </div>
       </section>

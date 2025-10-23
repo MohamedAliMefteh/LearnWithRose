@@ -36,6 +36,7 @@ export default function EnrollModal({
             courses={courses}
             selectedCourse={selectedCourse}
             isModal={true}
+            onSubmitSuccess={onClose}
           />
         </div>
       </DialogContent>

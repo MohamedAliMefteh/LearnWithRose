@@ -35,9 +35,7 @@ export default function Footer() {
                 </h3>
               </div>
             </div>
-            <p className="text-gray-600 text-sm sm:text-base leading-relaxed max-w-md">
-              💛 Learn the <span className="font-semibold text-primary">#JordanianDialect</span> and the <span className="font-semibold text-primary">#PalestinianDialect</span> in a fun, creative, interactive, and effective method with your favorite teacher, Rose. 😌
-            </p>
+
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <span>Made with</span>
               <Heart className="w-4 h-4 text-red-500 fill-red-500 animate-pulse" />

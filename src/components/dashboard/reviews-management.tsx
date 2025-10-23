@@ -31,9 +31,7 @@ export function ReviewsManagement() {
     name: "",
     accent: "",
     content: "",
-    rating: 5,
-    profileImage: "",
-    courseName: ""
+    profileImage: ""
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -64,9 +62,7 @@ export function ReviewsManagement() {
       name: "",
       accent: "",
       content: "",
-      rating: 5,
-      profileImage: "",
-      courseName: ""
+      profileImage: ""
     });
   };
 
@@ -77,9 +73,7 @@ export function ReviewsManagement() {
       name: review.name || "",
       accent: review.accent || "",
       content: review.content || "",
-      rating: review.rating || 5,
-      profileImage: review.profileImage || "",
-      courseName: review.courseName || ""
+      profileImage: review.profileImage || ""
     });
   };
 
@@ -210,7 +204,7 @@ export function ReviewsManagement() {
               />
               <Input
                 type="text"
-                placeholder="Accent"
+                placeholder="Country"
                 value={formData.accent}
                 onChange={e => setFormData({ ...formData, accent: e.target.value })}
               />
@@ -220,24 +214,10 @@ export function ReviewsManagement() {
                 onChange={e => setFormData({ ...formData, content: e.target.value })}
               />
               <Input
-                type="number"
-                min={1}
-                max={5}
-                placeholder="Rating"
-                value={formData.rating}
-                onChange={e => setFormData({ ...formData, rating: Number(e.target.value) })}
-              />
-              <Input
                 type="text"
                 placeholder="Profile Image URL"
                 value={formData.profileImage}
                 onChange={e => setFormData({ ...formData, profileImage: e.target.value })}
-              />
-              <Input
-                type="text"
-                placeholder="Course Name"
-                value={formData.courseName}
-                onChange={e => setFormData({ ...formData, courseName: e.target.value })}
               />
               <div className="flex gap-2">
                 <Button onClick={handleSaveReview}>

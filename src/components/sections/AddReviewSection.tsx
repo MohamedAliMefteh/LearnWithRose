@@ -20,7 +20,7 @@ export default function AddReviewSection() {
           <CardHeader>
             <CardTitle className="text-xl sm:text-2xl">Leave a Review</CardTitle>
             <CardDescription className="text-sm sm:text-base">
-              Share your experience and help others choose the right course.
+              Share your experience learning Arabic with Rose.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -36,8 +36,6 @@ function AddReviewForm() {
   const [form, setForm] = useState({
     name: "",
     accent: "",
-    courseName: "",
-    rating: 5 as number,
     content: "",
   });
   const [submitting, setSubmitting] = useState(false);
@@ -57,14 +55,16 @@ function AddReviewForm() {
       setError("Please write your review.");
       return;
     }
-    if (form.rating < 1 || form.rating > 5) {
-      setError("Rating must be between 1 and 5.");
-      return;
-    }
-
     setSubmitting(true);
     try {
-      const payload = { id: 0, ...form } as any;
+      // Send all required fields to API, with defaults for hidden fields
+      const payload = { 
+        id: 0, 
+        ...form,
+        rating: 5, // Default rating
+        courseName: "", // Default empty course name
+        profileImage: "" // Default empty profile image
+      } as any;
       const res = await fetch("/api/testimonials", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -81,7 +81,7 @@ function AddReviewForm() {
       } catch {}
 
       setSuccess("Thank you! Your review has been submitted.");
-      setForm({ name: "", accent: "", courseName: "", rating: 5, content: "" });
+      setForm({ name: "", accent: "", content: "" });
     } catch (err: any) {
       setError(err?.message || "Something went wrong. Please try again later.");
     } finally {
@@ -98,28 +98,10 @@ function AddReviewForm() {
           onChange={(e) => setForm({ ...form, name: e.target.value })}
         />
         <Input
-          placeholder="Accent (e.g., Palestinian, Jordanian)"
+          placeholder="Country"
           value={form.accent}
           onChange={(e) => setForm({ ...form, accent: e.target.value })}
         />
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-        <Input
-          placeholder="Course Name (optional)"
-          value={form.courseName}
-          onChange={(e) => setForm({ ...form, courseName: e.target.value })}
-        />
-        <div className="flex items-center gap-3">
-          <label className="text-sm text-muted-foreground">Rating</label>
-          <Input
-            type="number"
-            min={1}
-            max={5}
-            value={form.rating}
-            onChange={(e) => setForm({ ...form, rating: Number(e.target.value) })}
-            className="w-28"
-          />
-        </div>
       </div>
       <Textarea
         placeholder="Write your review..."

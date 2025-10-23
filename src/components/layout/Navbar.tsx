@@ -50,12 +50,6 @@ export default function Navbar({ scrollToSection }: NavbarProps) {
             >
               Resources
             </button>
-            <button
-              onClick={() => scrollToSection("contact")}
-              className="text-gray-800 hover:text-primary transition-colors font-medium"
-            >
-              Contact
-            </button>
             <Link
               href="/blog"
               className="text-gray-800 hover:text-primary transition-colors font-medium"
@@ -97,12 +91,6 @@ export default function Navbar({ scrollToSection }: NavbarProps) {
               className="block w-full text-left px-4 py-3 text-gray-800 hover:text-primary hover:bg-gray-50 rounded-lg transition-all duration-200 font-medium"
             >
               Resources
-            </button>
-            <button
-              onClick={() => handleNavClick("contact")}
-              className="block w-full text-left px-4 py-3 text-gray-800 hover:text-primary hover:bg-gray-50 rounded-lg transition-all duration-200 font-medium"
-            >
-              Contact
             </button>
             <Link
               href="/blog"

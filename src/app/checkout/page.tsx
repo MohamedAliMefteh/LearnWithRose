@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { convertByteDataToImageUrl, getFallbackImage } from "@/lib/image-utils";
 import { ArrowLeft, Shield, CreditCard, Lock, CheckCircle, FileText, Headphones, Video, File } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 function loadPayPal(clientId: string): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -59,7 +61,6 @@ function CheckoutContent() {
   const [email, setEmail] = useState("");
   const [amount, setAmount] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const paypalButtonsRef = useRef<HTMLDivElement | null>(null);
   
   // Get item data from session storage (more secure than URL params)
@@ -216,18 +217,6 @@ function CheckoutContent() {
     return true;
   }
 
-  const handlePayClick = async () => {
-    // Re-render buttons to ensure latest amount/email
-    setLoading(true);
-    try {
-      const ok = validate();
-      if (!ok) return;
-      // Buttons will re-render via dependency changes
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // File type icon helper
   function FileTypeIcon({ type }: { type?: string }) {
     const t = (type || "").toLowerCase();
@@ -252,9 +241,9 @@ function CheckoutContent() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
       </div>
       
-      <div className="relative z-10 max-w-6xl mx-auto p-6">
+      <div className="relative z-10 max-w-6xl mx-auto p-4 sm:p-6">
         {/* Header with back button */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
           <Button
             variant="ghost"
             size="sm"
@@ -265,14 +254,14 @@ function CheckoutContent() {
             Back
           </Button>
           <div className="flex-1">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-primary to-accent bg-clip-text text-transparent">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-slate-900 via-primary to-accent bg-clip-text text-transparent">
               Secure Checkout
             </h1>
-            <p className="text-slate-600 mt-1">Complete your purchase securely with PayPal</p>
+            <p className="text-slate-600 mt-1 text-sm sm:text-base">Complete your purchase securely with PayPal</p>
           </div>
           <div className="flex items-center gap-2 text-green-600 bg-green-50 px-3 py-2 rounded-xl">
             <Shield className="w-4 h-4" />
-            <span className="text-sm font-medium">SSL Secured</span>
+            <span className="text-xs sm:text-sm font-medium">SSL Secured</span>
           </div>
         </div>
 
@@ -300,7 +289,7 @@ function CheckoutContent() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {/* Item Details Card */}
           <Card className="lg:col-span-2 overflow-hidden border-0 shadow-xl bg-white/80 backdrop-blur-sm rounded-3xl">
             {/* Enhanced gradient border */}
@@ -324,26 +313,26 @@ function CheckoutContent() {
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10" />
                     
                     {/* Floating badges */}
-                    <div className="absolute top-6 left-6">
+                    <div className="absolute top-3 sm:top-4 md:top-6 left-3 sm:left-4 md:left-6">
                       {checkoutItem?.category && (
-                        <Badge className="bg-white/20 backdrop-blur-md text-white border-white/30 px-4 py-2 text-sm font-medium">
+                        <Badge className="bg-white/20 backdrop-blur-md text-white border-white/30 px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 text-xs sm:text-sm font-medium">
                           {checkoutItem.category}
                         </Badge>
                       )}
                     </div>
                     
-                    <div className="absolute top-6 right-6">
-                      <div className="w-14 h-14 bg-white/90 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-lg">
-                        <div className="text-primary">
+                    <div className="absolute top-3 sm:top-4 md:top-6 right-3 sm:right-4 md:right-6">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-white/90 backdrop-blur-md rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg">
+                        <div className="text-primary [&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-5 sm:[&>svg]:h-5">
                           <FileTypeIcon type={itemType} />
                         </div>
                       </div>
                     </div>
                     
                     {/* Price badge */}
-                    <div className="absolute bottom-6 right-6">
-                      <div className="bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl shadow-lg border border-white/40">
-                        <span className="text-lg font-bold text-slate-900">${min.toFixed(2)}</span>
+                    <div className="absolute bottom-3 sm:bottom-4 md:bottom-6 right-3 sm:right-4 md:right-6">
+                      <div className="bg-white/95 backdrop-blur-md px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded-xl sm:rounded-2xl shadow-lg border border-white/40">
+                        <span className="text-sm sm:text-base md:text-lg font-bold text-slate-900">${min.toFixed(2)}</span>
                       </div>
                     </div>
                   </div>
@@ -363,37 +352,39 @@ function CheckoutContent() {
                 )}
               </CardHeader>
               
-              <CardContent className="p-8">
-                <div className="space-y-6">
-                  {/* Title and rating */}
+              <CardContent className="p-4 sm:p-6 md:p-8">
+                <div className="space-y-4 sm:space-y-6">
+                  {/* Title and type */}
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h2 className="text-3xl font-bold text-slate-900 leading-tight mb-2">{itemName}</h2>
-                      <div className="flex items-center gap-3 text-slate-600">
-                        <span className="capitalize text-sm font-medium">{itemType}</span>
+                      <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 leading-tight mb-2">{itemName}</h2>
+                      <div className="flex items-center gap-2 sm:gap-3 text-slate-600">
+                        <Badge variant="outline" className="capitalize text-xs sm:text-sm">{itemType}</Badge>
                       </div>
                     </div>
                   </div>
                   
-                  {/* Description */}
+                  {/* Description - Most Important */}
                   {(checkoutItem?.description || item?.description) && (
-                    <div className="bg-slate-50 rounded-2xl p-6">
-                      <h3 className="font-semibold text-slate-900 mb-2">Description</h3>
-                      <p className="text-slate-700 leading-relaxed">
-                        {checkoutItem?.description || item?.description}
-                      </p>
+                    <div className="bg-slate-50 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6">
+                      <h3 className="font-semibold text-slate-900 mb-2 sm:mb-3 text-sm sm:text-base">Description</h3>
+                      <div className="prose prose-sm sm:prose-base md:prose-lg max-w-none text-slate-700 leading-relaxed">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {checkoutItem?.description || item?.description}
+                        </ReactMarkdown>
+                      </div>
                     </div>
                   )}
                   
                   {/* Features/Benefits */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-center gap-3 p-4 bg-green-50 rounded-2xl">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                      <span className="text-sm font-medium text-green-800">Instant Download</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-green-50 rounded-xl sm:rounded-2xl">
+                      <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 shrink-0" />
+                      <span className="text-xs sm:text-sm font-medium text-green-800">Instant Download</span>
                     </div>
-                    <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-2xl">
-                      <Shield className="w-5 h-5 text-blue-600" />
-                      <span className="text-sm font-medium text-blue-800">Secure Payment</span>
+                    <div className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-blue-50 rounded-xl sm:rounded-2xl">
+                      <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 shrink-0" />
+                      <span className="text-xs sm:text-sm font-medium text-blue-800">Secure Payment</span>
                     </div>
                   </div>
                 </div>
@@ -402,45 +393,45 @@ function CheckoutContent() {
           </Card>
 
           {/* Payment Card */}
-          <Card className="overflow-hidden border-0 shadow-xl bg-white/80 backdrop-blur-sm rounded-3xl sticky top-6">
+          <Card className="overflow-hidden border-0 shadow-xl bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl lg:sticky lg:top-6">
             {/* Enhanced gradient border */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20 rounded-3xl p-[1px]">
               <div className="bg-white/90 backdrop-blur-sm rounded-3xl h-full w-full" />
             </div>
             
             <div className="relative z-10">
-              <CardHeader className="pb-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center">
-                    <CreditCard className="w-5 h-5 text-white" />
+              <CardHeader className="pb-3 sm:pb-4">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-accent rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0">
+                    <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-slate-900">Payment Details</h3>
-                    <p className="text-sm text-slate-600">Secure checkout with PayPal</p>
+                    <h3 className="text-base sm:text-lg md:text-xl font-bold text-slate-900">Payment Details</h3>
+                    <p className="text-xs sm:text-sm text-slate-600">Secure checkout with PayPal</p>
                   </div>
                 </div>
               </CardHeader>
               
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-4 sm:space-y-6">
                 {/* Order Summary */}
-                <div className="bg-slate-50 rounded-2xl p-6 space-y-4">
-                  <h4 className="font-semibold text-slate-900 flex items-center gap-2">
+                <div className="bg-slate-50 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4">
+                  <h4 className="font-semibold text-slate-900 flex items-center gap-2 text-sm sm:text-base">
                     <div className="w-2 h-2 bg-primary rounded-full" />
                     Order Summary
                   </h4>
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-slate-600">Item Price</span>
-                      <span className="font-semibold text-slate-900">${min.toFixed(2)}</span>
+                      <span className="text-slate-600 text-xs sm:text-sm">Item Price</span>
+                      <span className="font-semibold text-slate-900 text-sm sm:text-base">${min.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-slate-600">Processing Fee</span>
-                      <span className="font-semibold text-green-600">Free</span>
+                      <span className="text-slate-600 text-xs sm:text-sm">Processing Fee</span>
+                      <span className="font-semibold text-green-600 text-sm sm:text-base">Free</span>
                     </div>
-                    <div className="border-t border-slate-200 pt-3">
+                    <div className="border-t border-slate-200 pt-2 sm:pt-3">
                       <div className="flex justify-between items-center">
-                        <span className="font-semibold text-slate-900">Total</span>
-                        <span className="text-2xl font-bold text-primary">${Number(amount || min).toFixed(2)}</span>
+                        <span className="font-semibold text-slate-900 text-sm sm:text-base">Total</span>
+                        <span className="text-xl sm:text-2xl font-bold text-primary">${Number(amount || min).toFixed(2)}</span>
                       </div>
                     </div>
                   </div>
@@ -458,9 +449,9 @@ function CheckoutContent() {
                     placeholder="your@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="h-12 rounded-xl border-slate-200 focus:border-primary focus:ring-primary/20 bg-white/50 backdrop-blur-sm"
+                    className="h-10 sm:h-12 text-sm sm:text-base rounded-xl border-slate-200 focus:border-primary focus:ring-primary/20 bg-white/50 backdrop-blur-sm"
                   />
-                  <p className="text-xs text-slate-500">Receipt will be sent to this email</p>
+                  <p className="text-[10px] sm:text-xs text-slate-500">Receipt will be sent to this email</p>
                 </div>
                 
                 {/* Amount Input */}
@@ -478,12 +469,12 @@ function CheckoutContent() {
                       step="0.01"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
-                      className="h-12 pl-8 rounded-xl border-slate-200 focus:border-accent focus:ring-accent/20 bg-white/50 backdrop-blur-sm font-semibold"
+                      className="h-10 sm:h-12 pl-8 text-sm sm:text-base rounded-xl border-slate-200 focus:border-accent focus:ring-accent/20 bg-white/50 backdrop-blur-sm font-semibold"
                       disabled={min === 0}
                     />
                   </div>
-                  <div className={`rounded-xl p-3 ${min === 0 ? 'bg-green-50' : 'bg-blue-50'}`}>
-                    <p className={`text-xs font-medium ${min === 0 ? 'text-green-700' : 'text-blue-700'}`}>
+                  <div className={`rounded-xl p-2 sm:p-3 ${min === 0 ? 'bg-green-50' : 'bg-blue-50'}`}>
+                    <p className={`text-[10px] sm:text-xs font-medium ${min === 0 ? 'text-green-700' : 'text-blue-700'}`}>
                       {min === 0 ? (
                         <>🎉 This item is FREE! You can still pay to support our work.</>
                       ) : (
@@ -503,15 +494,6 @@ function CheckoutContent() {
                   </div>
                 )}
 
-                {/* Update Button */}
-                <Button 
-                  disabled={loading} 
-                  onClick={handlePayClick}
-                  className="w-full h-12 rounded-xl bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  {loading ? "Updating..." : "Update Payment"}
-                </Button>
-
                 {/* PayPal Buttons Container */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
@@ -524,9 +506,9 @@ function CheckoutContent() {
                 </div>
                 
                 {/* Security Notice */}
-                <div className="flex items-center justify-center gap-2 text-slate-500 text-xs">
+                <div className="flex items-center justify-center gap-2 text-slate-500 text-[10px] sm:text-xs">
                   <Lock className="w-3 h-3" />
-                  <span>Your payment information is secure and encrypted</span>
+                  <span className="text-center">Your payment information is secure and encrypted</span>
                 </div>
               </CardContent>
             </div>
@@ -534,21 +516,21 @@ function CheckoutContent() {
         </div>
         
         {/* Trust Indicators */}
-        <div className="mt-12 text-center">
-          <div className="inline-flex items-center gap-6 bg-white/60 backdrop-blur-sm rounded-2xl px-8 py-4 shadow-lg">
+        <div className="mt-8 sm:mt-12 text-center">
+          <div className="inline-flex flex-col sm:flex-row items-center gap-3 sm:gap-6 bg-white/60 backdrop-blur-sm rounded-xl sm:rounded-2xl px-4 sm:px-8 py-3 sm:py-4 shadow-lg">
             <div className="flex items-center gap-2 text-slate-600">
-              <Shield className="w-4 h-4 text-green-600" />
-              <span className="text-sm font-medium">SSL Encrypted</span>
+              <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+              <span className="text-xs sm:text-sm font-medium">SSL Encrypted</span>
             </div>
-            <div className="w-px h-6 bg-slate-200" />
+            <div className="hidden sm:block w-px h-6 bg-slate-200" />
             <div className="flex items-center gap-2 text-slate-600">
-              <CheckCircle className="w-4 h-4 text-blue-600" />
-              <span className="text-sm font-medium">Secure Payments</span>
+              <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+              <span className="text-xs sm:text-sm font-medium">Secure Payments</span>
             </div>
-            <div className="w-px h-6 bg-slate-200" />
+            <div className="hidden sm:block w-px h-6 bg-slate-200" />
             <div className="flex items-center gap-2 text-slate-600">
-              <CreditCard className="w-4 h-4 text-purple-600" />
-              <span className="text-sm font-medium">PayPal Protected</span>
+              <CreditCard className="w-3 h-3 sm:w-4 sm:h-4 text-purple-600" />
+              <span className="text-xs sm:text-sm font-medium">PayPal Protected</span>
             </div>
           </div>
         </div>

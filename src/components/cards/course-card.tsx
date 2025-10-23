@@ -116,13 +116,6 @@ export function CourseCard({ course, onInquiry, showDetailsButton = true }: Cour
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10" />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-accent/15" />
           
-          {/* Floating price badge */}
-          <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-20">
-            <div className="bg-white/95 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl shadow-lg border border-white/40">
-              <span className="text-xs sm:text-sm font-bold text-slate-900">${course.price}</span>
-            </div>
-          </div>
-          
           {/* Accent/Language badge */}
           <div className="absolute top-3 sm:top-4 left-3 sm:left-4 z-20">
             <Badge className="bg-primary/90 backdrop-blur-md text-white border-primary/30 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm capitalize">
@@ -135,6 +128,13 @@ export function CourseCard({ course, onInquiry, showDetailsButton = true }: Cour
             <div className="flex items-center gap-1.5 sm:gap-2 bg-white/20 backdrop-blur-md px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl">
               <Award className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
               <span className="text-white text-xs sm:text-sm font-medium capitalize">{course.level}</span>
+            </div>
+          </div>
+          
+          {/* Price badge - Bottom Right */}
+          <div className="absolute bottom-3 sm:bottom-4 right-3 sm:right-4 z-20">
+            <div className="bg-white/95 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl shadow-lg border border-white/40">
+              <span className="text-xs sm:text-sm font-bold text-slate-900">${course.price}</span>
             </div>
           </div>
           
