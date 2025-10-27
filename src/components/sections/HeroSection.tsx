@@ -132,7 +132,7 @@ export default function HeroSection({ bioData, loading, scrollToSection }: HeroS
                 variant="outline"
                 size="lg"
                 className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 border-primary text-primary hover:bg-primary hover:text-white w-full sm:w-auto"
-                onClick={() => scrollToSection("contact-form")}
+                onClick={() => scrollToSection("resources")}
               >
                 <MessageCircle className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                 Start Learning Today

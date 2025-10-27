@@ -76,7 +76,7 @@ export function CourseDetailsModal({ open, onClose, course, onEnroll }: CourseDe
         {/* Footer actions */}
         <div className="px-6 pb-6 flex justify-center">
           <Button onClick={() => onEnroll?.(course)} className="bg-primary text-white hover:bg-primary/90 w-full sm:w-2/3 md:w-1/2 text-base py-6">
-            Enroll
+            Enroll Now !
           </Button>
         </div>
 
