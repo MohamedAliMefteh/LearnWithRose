@@ -95,7 +95,7 @@ export function CourseCard({ course, onInquiry, showDetailsButton = true }: Cour
     <Card 
       className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 w-full h-full flex flex-col backdrop-blur-sm"
       onMouseEnter={() => setIsHovered(true)}
-      onClick={() => onInquiry(course.id)}
+      onClick={() => onInquiry?.(course.id)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Modern gradient border */}
@@ -181,7 +181,7 @@ export function CourseCard({ course, onInquiry, showDetailsButton = true }: Cour
           {showDetailsButton && onInquiry && (
             <Button 
               className="w-full rounded-xl sm:rounded-2xl py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105" 
-              onClick={() => onInquiry(course.id)}
+              onClick={() => onInquiry?.(course.id)}
             >
               Description
             </Button>
