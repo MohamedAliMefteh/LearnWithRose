@@ -105,7 +105,6 @@ export default function ResourcesSection({ loading, resources }: ResourcesSectio
                 <DigitalResourceCard
                   key={index}
                   resource={resource}
-                  onPurchase={() => handlePurchase(resource)}
                   onViewDetails={() => handleViewDetails(resource)}
                 />
               ))}

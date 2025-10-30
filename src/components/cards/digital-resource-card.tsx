@@ -145,7 +145,7 @@ export function DigitalResourceCard({ resource, onPurchase, onViewDetails }: Dig
           
           {/* Action button - pushed to bottom with mt-auto */}
           <Button
-            onClick={onPurchase}
+            onClick={onViewDetails}
             className={`mt-auto w-full rounded-xl sm:rounded-2xl py-2.5 sm:py-3 font-semibold text-xs sm:text-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 ${
               isFree
                 ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'

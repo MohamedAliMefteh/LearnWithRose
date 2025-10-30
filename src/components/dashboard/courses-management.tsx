@@ -9,11 +9,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { CourseCard } from "@/components/cards/course-card";
 import { CourseForm } from "./course-form";
 import { coursesAPI } from "@/lib/courses-api";
 import { Course } from "@/types/api";
-import { Plus, Edit2, Trash2, ArrowLeft, Shield, GripVertical } from "lucide-react";
+import { Plus, Edit2, Trash2, ArrowLeft, Shield, GripVertical, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/components/providers/auth-provider";
 import {
@@ -41,6 +42,9 @@ export function CoursesManagement() {
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const [isSavingOrder, setIsSavingOrder] = useState<boolean>(false);
   const [savedCourses, setSavedCourses] = useState<Course[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+  const pageSize = 6;
 
   // Helper to move array item
   const arrayMove = <T,>(arr: T[], from: number, to: number): T[] => {
@@ -173,6 +177,41 @@ export function CoursesManagement() {
     // In dashboard context, we don't need to handle inquiries
   };
 
+  // Filter courses based on search query
+  const filteredCourses = courses.filter((course) => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      course.title.toLowerCase().includes(query) ||
+      course.description?.toLowerCase().includes(query) ||
+      course.accent?.toLowerCase().includes(query) ||
+      course.level?.toLowerCase().includes(query)
+    );
+  });
+
+  // Client-side pagination
+  const totalPages = Math.ceil(filteredCourses.length / pageSize);
+  const startIndex = currentPage * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedCourses = filteredCourses.slice(startIndex, endIndex);
+
+  // Reset to first page when search changes
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [searchQuery]);
+
+  const handlePreviousPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages - 1) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
   if (viewMode === "add" || viewMode === "edit") {
     return (
       <div className="space-y-6">
@@ -229,12 +268,31 @@ export function CoursesManagement() {
           </div>
         </CardHeader>
         <CardContent>
+          {/* Search Bar */}
+          <div className="mb-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                type="text"
+                placeholder="Search by title, description, accent, or level..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            {searchQuery && (
+              <div className="mt-2 text-sm text-gray-500">
+                Found {filteredCourses.length} result{filteredCourses.length !== 1 ? 's' : ''}
+              </div>
+            )}
+          </div>
+
           <div className="flex items-start justify-between mb-4">
-            <p className="text-sm text-gray-500">Drag using the handle to reorder courses. Don’t forget to click <span className="font-medium text-gray-700">Save order</span>.</p>
+            <p className="text-sm text-gray-500">Drag using the handle to reorder courses. Don't forget to click <span className="font-medium text-gray-700">Save order</span>.</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" role="list" aria-label="Courses reorder list">
             {(() => {
-              const sorted = [...courses].sort((a, b) => (a?.order ?? 0) - (b?.order ?? 0));
+              const sorted = [...paginatedCourses].sort((a, b) => (a?.order ?? 0) - (b?.order ?? 0));
               return sorted.map((course, index) => (
                 <div
                   key={course.id}
@@ -352,6 +410,37 @@ export function CoursesManagement() {
                 <Plus className="h-4 w-4 mr-2" />
                 Add Your First Course
               </Button>
+            </div>
+          )}
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-sm text-gray-500">
+                Page {currentPage + 1} of {totalPages} ({filteredCourses.length} course{filteredCourses.length !== 1 ? 's' : ''})
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 0}
+                  className="flex items-center gap-1"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleNextPage}
+                  disabled={currentPage >= totalPages - 1}
+                  className="flex items-center gap-1"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           )}
         </CardContent>
