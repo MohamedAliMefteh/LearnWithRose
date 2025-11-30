@@ -1,0 +1,247 @@
+/**
+ * Rich Text Content Styles
+ * Additional styling for HTML content rendered from TipTap editor
+ */
+
+/* TipTap Editor Styles - Make the editable area fill space and be clickable */
+.ProseMirror {
+  min-height: inherit;
+  outline: none;
+  padding: 1.5rem;
+  cursor: text;
+  width: 100%;
+  height: 100%;
+}
+
+.ProseMirror:focus {
+  outline: none;
+}
+
+/* Placeholder styling - more visible and centered */
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #94a3b8;
+  pointer-events: none;
+  height: 0;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+/* Ensure empty paragraphs still take up space for clicking */
+.ProseMirror p {
+  min-height: 1.5em;
+}
+
+/* Image styling in editor */
+.ProseMirror img {
+  max-width: 100%; /* Prevent images from being larger than container */
+  height: auto !important; /* Always maintain aspect ratio */
+  border-radius: 0.5rem;
+  margin: 1rem auto !important;
+  display: block !important;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+}
+
+/* Allow inline width styles to work */
+.ProseMirror img[style*="width"],
+.ProseMirror img[width] {
+  /* Inline width takes precedence */
+}
+
+.ProseMirror img:hover {
+  transform: scale(1.01);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.ProseMirror img.ProseMirror-selectednode {
+  outline: 3px solid #3b82f6;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+/* Image sizes - these can be overridden by inline styles */
+.ProseMirror img.editor-image {
+  max-width: 100%;
+}
+
+/* Ensure styled images respect their width attribute */
+.ProseMirror img[style*="width"] {
+  /* Inline styles will take precedence, this just ensures proper rendering */
+}
+
+/* Image alignment support */
+.ProseMirror img[style*="float: left"] {
+  float: left;
+  margin-right: 1rem;
+}
+
+.ProseMirror img[style*="float: right"] {
+  float: right;
+  margin-left: 1rem;
+}
+
+.ProseMirror img[style*="display: block"] {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.rich-text-content {
+  /* Ensure proper spacing and typography */
+  line-height: 1.75;
+}
+
+.rich-text-content h1,
+.rich-text-content h2,
+.rich-text-content h3,
+.rich-text-content h4,
+.rich-text-content h5,
+.rich-text-content h6 {
+  font-weight: 700;
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+  line-height: 1.3;
+}
+
+.rich-text-content h1 {
+  font-size: 2em;
+}
+
+.rich-text-content h2 {
+  font-size: 1.5em;
+}
+
+.rich-text-content h3 {
+  font-size: 1.25em;
+}
+
+.rich-text-content p {
+  margin-bottom: 1em;
+}
+
+.rich-text-content a {
+  color: #0066cc;
+  text-decoration: underline;
+}
+
+.rich-text-content a:hover {
+  color: #0052a3;
+}
+
+.rich-text-content ul,
+.rich-text-content ol {
+  margin-left: 1.5em;
+  margin-bottom: 1em;
+}
+
+.rich-text-content ul {
+  list-style-type: disc;
+}
+
+.rich-text-content ol {
+  list-style-type: decimal;
+}
+
+.rich-text-content li {
+  margin-bottom: 0.5em;
+}
+
+.rich-text-content blockquote {
+  border-left: 4px solid #e2e8f0;
+  padding-left: 1.5em;
+  margin: 1.5em 0;
+  font-style: italic;
+  color: #64748b;
+}
+
+.rich-text-content code {
+  background-color: #f1f5f9;
+  padding: 0.2em 0.4em;
+  border-radius: 0.25em;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.rich-text-content pre {
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5em;
+  padding: 1em;
+  overflow-x: auto;
+  margin: 1.5em 0;
+}
+
+.rich-text-content pre code {
+  background-color: transparent;
+  padding: 0;
+  font-size: 0.875em;
+}
+
+.rich-text-content img {
+  max-width: 100%;
+  height: auto !important; /* Always maintain aspect ratio */
+  border-radius: 0.5em;
+  margin: 1.5em auto;
+  display: block;
+}
+
+/* Respect inline width styles from editor */
+.rich-text-content img[style*="width"] {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.rich-text-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+}
+
+.rich-text-content th,
+.rich-text-content td {
+  border: 1px solid #e2e8f0;
+  padding: 0.75em;
+  text-align: left;
+}
+
+.rich-text-content th {
+  background-color: #f8fafc;
+  font-weight: 600;
+}
+
+/* Arabic text direction support */
+.rich-text-content [dir="rtl"] {
+  text-align: right;
+  direction: rtl;
+}
+
+.rich-text-content [dir="ltr"] {
+  text-align: left;
+  direction: ltr;
+}
+
+/* Text colors from editor */
+.rich-text-content [style*="color"] {
+  /* Preserve inline color styles from editor */
+}
+
+/* Highlights from editor */
+.rich-text-content mark {
+  padding: 0.1em 0.2em;
+  border-radius: 0.2em;
+}
+
+/* Text alignment from editor */
+.rich-text-content [style*="text-align: center"] {
+  text-align: center !important;
+}
+
+.rich-text-content [style*="text-align: right"] {
+  text-align: right !important;
+}
+
+.rich-text-content [style*="text-align: left"] {
+  text-align: left !important;
+}

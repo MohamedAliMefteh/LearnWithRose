@@ -11,8 +11,7 @@ import { Edit2, Trash2, Plus, Loader2, Save, X, Image as ImageIcon } from "lucid
 import { blogsAPI } from "@/lib/blogs-api";
 import { BlogPost } from "@/types/api";
 import { constructImageUrl, getFallbackImage } from "@/lib/image-utils";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { TiptapEditor } from "@/components/dashboard/tiptap-editor";
 
 function stripHtml(html: string) {
   return html
@@ -47,7 +46,6 @@ export function BlogManagement() {
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [editingId, setEditingId] = useState<string | number | undefined>(undefined);
   const [saving, setSaving] = useState<boolean>(false);
-  const [previewMode, setPreviewMode] = useState<boolean>(false);
 
   useEffect(() => {
     fetchBlogs();
@@ -371,166 +369,27 @@ export function BlogManagement() {
                 />
               </div>
               <div className="space-y-2">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                  <label className="text-sm font-medium">Content (Markdown)</label>
-                  <div className="flex gap-2 w-full sm:w-auto">
-                    <Button
-                      type="button"
-                      variant={!previewMode ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setPreviewMode(false)}
-                      className="flex-1 sm:flex-none"
-                    >
-                      Write
-                    </Button>
-                    <Button
-                      type="button"
-                      variant={previewMode ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setPreviewMode(true)}
-                      className="flex-1 sm:flex-none"
-                    >
-                      Preview
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="bg-white border rounded-md min-h-[400px] sm:min-h-[500px]">
-                  {!previewMode ? (
-                    // Markdown Editor
-                    <div className="p-4">
-                      <Textarea
-                        placeholder="Write your blog content in Markdown...
-
-Examples / أمثلة:
-# Heading 1 / عنوان رئيسي
-## Heading 2 / عنوان فرعي
-### Heading 3 / عنوان صغير
-
-**Bold text** / **نص عريض** and *italic text* / *نص مائل*
-
-- Bullet point 1 / نقطة أولى
-- Bullet point 2 / نقطة ثانية
-  - Nested item / عنصر متداخل
-
-1. Numbered item 1 / عنصر مرقم ١
-2. Numbered item 2 / عنصر مرقم ٢
-
-`inline code` / `كود مضمن`
-
-```
-code block / بلوك كود
-```
-
-> Blockquote / اقتباس
-
-[Link text](https://example.com) / [نص الرابط](https://example.com)
-
-![Image alt text](https://example.com/image.jpg) / ![نص بديل للصورة](https://example.com/image.jpg)
-
-Arabic text direction: Use dir='rtl' for RTL paragraphs
-اتجاه النص العربي: استخدم dir='rtl' للفقرات من اليمين لليسار"
-                        value={form.content || ""}
-                        onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
-                        className="min-h-[300px] sm:min-h-[350px] font-mono text-sm resize-none border-0 focus:ring-0"
-                        dir="auto"
-                        style={{ fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace, "Noto Sans Arabic", "Arabic UI Text"' }}
-                      />
-                    </div>
-                  ) : (
-                    // Markdown Preview
-                    <div className="p-4">
-                      <div className="prose prose-slate max-w-none">
-                        {form.content ? (
-                          <ReactMarkdown
-                            remarkPlugins={[remarkGfm]}
-                            components={{
-                              h1: ({ children }) => (
-                                <h1 className="text-2xl font-bold mb-4 mt-6 text-slate-900" dir="auto" style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}>{children}</h1>
-                              ),
-                              h2: ({ children }) => (
-                                <h2 className="text-xl font-semibold mb-3 mt-5 text-slate-800" dir="auto" style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}>{children}</h2>
-                              ),
-                              h3: ({ children }) => (
-                                <h3 className="text-lg font-medium mb-2 mt-4 text-slate-800" dir="auto" style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}>{children}</h3>
-                              ),
-                              p: ({ children }) => (
-                                <p className="text-base leading-relaxed mb-4 text-slate-700" dir="auto" style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}>{children}</p>
-                              ),
-                              a: ({ href, children }) => (
-                                <a 
-                                  href={href} 
-                                  className="text-primary hover:text-primary/80 underline"
-                                  target={href?.startsWith('http') ? '_blank' : undefined}
-                                  rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
-                                >
-                                  {children}
-                                </a>
-                              ),
-                              code: ({ children, className }) => {
-                                const isInline = !className;
-                                return isInline ? (
-                                  <code className="bg-slate-100 text-primary px-1.5 py-0.5 rounded text-sm font-mono">
-                                    {children}
-                                  </code>
-                                ) : (
-                                  <code className={className}>{children}</code>
-                                );
-                              },
-                              pre: ({ children }) => (
-                                <pre className="bg-slate-100 border border-slate-200 rounded-lg p-4 overflow-x-auto text-sm font-mono">
-                                  {children}
-                                </pre>
-                              ),
-                              blockquote: ({ children }) => (
-                                <blockquote className="border-l-4 border-primary/30 pl-6 py-2 my-6 bg-slate-50/50 rounded-r-lg" dir="auto" style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}>
-                                  <div className="text-slate-600 italic">{children}</div>
-                                </blockquote>
-                              ),
-                              ul: ({ children }) => (
-                                <ul className="list-disc pl-6 space-y-2 mb-4" dir="auto" style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}>{children}</ul>
-                              ),
-                              ol: ({ children }) => (
-                                <ol className="list-decimal pl-6 space-y-2 mb-4" dir="auto" style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}>{children}</ol>
-                              ),
-                              li: ({ children }) => (
-                                <li className="text-base leading-relaxed text-slate-700" dir="auto" style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}>{children}</li>
-                              ),
-                              img: ({ src, alt }) => (
-                                <div className="my-6">
-                                  <img 
-                                    src={src} 
-                                    alt={alt || ''} 
-                                    className="rounded-lg shadow-md max-w-full h-auto mx-auto"
-                                  />
-                                  {alt && (
-                                    <p className="text-center text-sm text-slate-500 mt-2 italic">{alt}</p>
-                                  )}
-                                </div>
-                              ),
-                            }}
-                          >
-                            {form.content}
-                          </ReactMarkdown>
-                        ) : (
-                          <div className="text-slate-500 italic text-center py-8">
-                            Start writing in the "Write" tab to see the preview here...
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
-                {/* Markdown Help */}
+                <label className="text-sm font-medium">Content (Rich Text Editor) *</label>
+                <TiptapEditor
+                  value={form.content || ""}
+                  onChange={(html) => setForm((f) => ({ ...f, content: html }))}
+                  placeholder="Write your article content here... Supports English, Arabic, and mixed text with automatic direction detection."
+                  minHeight="500px"
+                />
                 <div className="text-xs text-slate-500 bg-slate-50 p-3 rounded border" dir="auto">
-                  <strong>Markdown Tips / نصائح الماركداون:</strong>
+                  <strong>📝 Rich Text Editor Features:</strong>
                   <br />
-                  <span className="font-mono">
-                    # للعناوين / for headings, **عريض / bold**, *مائل / italic*, - للقوائم / for lists, `كود / code`, &gt; للاقتباس / for quotes
-                  </span>
+                  • <strong>Formatting:</strong> Bold, Italic, Underline, Strikethrough, Colors, Highlights
                   <br />
-                  <strong>Arabic Support:</strong> Use dir="auto" for mixed content, automatic RTL/LTR detection
+                  • <strong>Structure:</strong> Headings (H1-H3), Lists (Bullet/Numbered), Blockquotes, Code Blocks
+                  <br />
+                  • <strong>Media:</strong> Links, Image Upload (from computer), Image URL
+                  <br />
+                  • <strong>Images:</strong> Upload, URL, or drag & drop (max 5MB). Resize: Select image → S/M/L/Full
+                  <br />
+                  • <strong>Arabic Support:</strong> Full RTL/LTR support with automatic direction detection
+                  <br />
+                  • <strong>Fonts:</strong> 50+ fonts including 12 Arabic fonts (Noto Sans Arabic, Cairo, Amiri, etc.)
                 </div>
               </div>
               <div className="flex gap-2 justify-end">

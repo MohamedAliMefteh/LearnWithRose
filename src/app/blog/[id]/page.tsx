@@ -12,8 +12,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, Feather, Home, ArrowLeft, Clock, Eye, BookOpen, Menu, X as CloseIcon, Share2, Link as LinkIcon, Facebook, Twitter, Linkedin, Check, ArrowUp } from "lucide-react";
 import { constructImageUrl, getFallbackImage, convertByteDataToImageUrl } from "@/lib/image-utils";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import Footer from "@/components/layout/Footer";
 
 
@@ -224,10 +222,10 @@ export default function BlogDetailPage() {
         </div>
       </nav>
 
-      {/* Modern Hero Section */}
+      {/* Hero Image Section */}
       <section className="relative overflow-hidden">
-        {/* Hero Background */}
-        <div className="relative h-[50vh] sm:h-[60vh] min-h-[300px] sm:min-h-[400px] max-h-[600px]">
+        {/* Hero Background - Just the image */}
+        <div className="relative h-[40vh] sm:h-[50vh] min-h-[250px] sm:min-h-[350px] max-h-[500px]">
           <div 
             className="absolute inset-0 bg-cover bg-center transition-all duration-700"
             style={{
@@ -240,87 +238,96 @@ export default function BlogDetailPage() {
               })()})` : `url(${getFallbackImage('blog')})`
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-accent/20" />
+          {/* Lighter overlay for better image visibility */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/10 to-transparent" />
           
           {/* Floating Navigation */}
           <div className="absolute top-6 left-6 z-10">
             <Button
               variant="ghost"
               onClick={() => router.push("/blog")}
-              className="bg-white/20 backdrop-blur-md text-white border border-white/30 hover:bg-white/30 transition-all duration-200"
+              className="bg-white/90 backdrop-blur-md text-slate-800 border border-white/50 hover:bg-white shadow-lg transition-all duration-200"
             >
               <ArrowLeft className="w-4 h-4 mr-2" /> Back to Blog
             </Button>
           </div>
-          
-          {/* Hero Content */}
-          <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 lg:p-12">
-            <div className="max-w-7xl mx-auto">
-              {loading ? (
-                <div className="space-y-4">
-                  <Skeleton className="h-8 w-3/4 bg-white/20" />
-                  <Skeleton className="h-6 w-1/2 bg-white/20" />
-                  <Skeleton className="h-4 w-2/3 bg-white/20" />
-                </div>
-              ) : post ? (
-                <>
-                  {/* Badges */}
-                  <div className="flex items-center gap-3 mb-6">
-                    <Badge className="bg-white/20 backdrop-blur-md text-white border border-white/30 px-3 py-1.5">
-                      <BookOpen className="w-3 h-3 mr-1" />
-                      Article
+        </div>
+
+        {/* Title and Meta Section - Below the image */}
+        <div className="bg-white border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+            {loading ? (
+              <div className="space-y-4">
+                <Skeleton className="h-8 w-3/4" />
+                <Skeleton className="h-6 w-1/2" />
+                <Skeleton className="h-4 w-2/3" />
+              </div>
+            ) : post ? (
+              <>
+                {/* Badges */}
+                <div className="flex items-center gap-3 mb-6">
+                  <Badge className="bg-primary/10 text-primary border border-primary/20 px-3 py-1.5">
+                    <BookOpen className="w-3 h-3 mr-1" />
+                    Article
+                  </Badge>
+                  {post.published === false && (
+                    <Badge className="bg-yellow-500/10 text-yellow-700 border border-yellow-500/20 px-3 py-1.5">
+                      Draft
                     </Badge>
-                    {post.published === false && (
-                      <Badge className="bg-yellow-500/90 backdrop-blur-md text-white border border-yellow-400/30 px-3 py-1.5">
-                        Draft
-                      </Badge>
-                    )}
-                  </div>
-                  
-                  {/* Title */}
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 leading-tight tracking-tight max-w-5xl">
-                    {post.title || "Untitled"}
-                  </h1>
-                  
-                  {/* Excerpt */}
-                  {post.excerpt && (
-                    <p className="text-base sm:text-lg md:text-xl text-white/90 mb-6 leading-relaxed max-w-4xl">
-                      {post.excerpt}
-                    </p>
                   )}
-                  
-                  {/* Meta Information */}
-                  <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-white/80">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
-                        <Feather className="w-4 h-4" />
-                      </div>
-                      <span className="font-medium">{post.author || "Rose"}</span>
+                </div>
+                
+                {/* Title */}
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-4 leading-tight tracking-tight max-w-5xl">
+                  {post.title || "Untitled"}
+                </h1>
+                
+                {/* Excerpt */}
+                {post.excerpt && (
+                  <p className="text-lg sm:text-xl text-slate-600 mb-6 leading-relaxed max-w-4xl">
+                    {post.excerpt}
+                  </p>
+                )}
+                
+                {/* Meta Information */}
+                <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-slate-600 border-t pt-6">
+                  <div className="flex items-center gap-2">
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                      <Feather className="w-5 h-5 text-primary" />
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
-                        <CalendarDays className="w-4 h-4" />
-                      </div>
-                      <span>{formatDate(post.createdDate || (post as any).created || (post as any).created_at || new Date().toISOString())}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
-                        <Clock className="w-4 h-4" />
-                      </div>
-                      <span>{calculateReadTime(post.content)} min read</span>
+                    <div>
+                      <div className="text-xs text-slate-500">Written by</div>
+                      <div className="font-medium text-slate-900">{post.author || "Rose"}</div>
                     </div>
                   </div>
-                </>
-              ) : (
-                <div className="text-center">
-                  <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4">
-                    Post Not Found
-                  </h1>
-                  <p className="text-xl text-white/80">The blog post you're looking for doesn't exist or has been moved.</p>
+                  <div className="flex items-center gap-2">
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                      <CalendarDays className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <div className="text-xs text-slate-500">Published</div>
+                      <div className="font-medium text-slate-900">{formatDate(post.createdDate || (post as any).created || (post as any).created_at || new Date().toISOString())}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                      <Clock className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <div className="text-xs text-slate-500">Read time</div>
+                      <div className="font-medium text-slate-900">{calculateReadTime(post.content)} min</div>
+                    </div>
+                  </div>
                 </div>
-              )}
-            </div>
+              </>
+            ) : (
+              <div className="text-center py-12">
+                <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-4">
+                  Post Not Found
+                </h1>
+                <p className="text-xl text-slate-600">The blog post you're looking for doesn't exist or has been moved.</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -391,151 +398,15 @@ export default function BlogDetailPage() {
                         style={{
                           maxWidth: readingMode ? '65ch' : 'none',
                           margin: readingMode ? '0 auto' : '0',
+                          fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif',
                         }}
-                      >
-                        <ReactMarkdown
-                          remarkPlugins={[remarkGfm]}
-                          className={`transition-all duration-300 ${
-                            readingMode 
-                              ? 'leading-loose text-slate-800' 
-                              : 'leading-relaxed text-slate-700'
-                          }`}
-                          components={{
-                          // Custom styling for different elements with Arabic support
-                          h1: ({ children }) => (
-                            <h1 
-                              className={`font-bold ${readingMode ? 'text-3xl mb-6 mt-8' : 'text-2xl mb-4 mt-6'} text-slate-900`}
-                              dir="auto"
-                              style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}
-                            >
-                              {children}
-                            </h1>
-                          ),
-                          h2: ({ children }) => (
-                            <h2 
-                              className={`font-semibold ${readingMode ? 'text-2xl mb-5 mt-7' : 'text-xl mb-3 mt-5'} text-slate-800`}
-                              dir="auto"
-                              style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}
-                            >
-                              {children}
-                            </h2>
-                          ),
-                          h3: ({ children }) => (
-                            <h3 
-                              className={`font-medium ${readingMode ? 'text-xl mb-4 mt-6' : 'text-lg mb-2 mt-4'} text-slate-800`}
-                              dir="auto"
-                              style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}
-                            >
-                              {children}
-                            </h3>
-                          ),
-                          p: ({ children }) => (
-                            <p 
-                              className={`${readingMode ? 'text-xl leading-loose mb-6' : 'text-lg leading-relaxed mb-4'} text-slate-700`}
-                              dir="auto"
-                              style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}
-                            >
-                              {children}
-                            </p>
-                          ),
-                          a: ({ href, children }) => (
-                            <a 
-                              href={href} 
-                              className="text-primary hover:text-primary/80 underline decoration-primary/30 hover:decoration-primary/60 transition-colors"
-                              target={href?.startsWith('http') ? '_blank' : undefined}
-                              rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
-                            >
-                              {children}
-                            </a>
-                          ),
-                          code: ({ children, className }) => {
-                            const isInline = !className;
-                            return isInline ? (
-                              <code className="bg-slate-100 text-primary px-1.5 py-0.5 rounded text-sm font-mono">
-                                {children}
-                              </code>
-                            ) : (
-                              <code className={className}>{children}</code>
-                            );
-                          },
-                          pre: ({ children }) => (
-                            <pre className={`bg-slate-100 border border-slate-200 rounded-lg p-4 overflow-x-auto ${readingMode ? 'text-base' : 'text-sm'} font-mono`}>
-                              {children}
-                            </pre>
-                          ),
-                          blockquote: ({ children }) => (
-                            <blockquote 
-                              className="border-l-4 border-primary/30 pl-6 py-2 my-6 bg-slate-50/50 rounded-r-lg"
-                              dir="auto"
-                              style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}
-                            >
-                              <div className="text-slate-600 italic">
-                                {children}
-                              </div>
-                            </blockquote>
-                          ),
-                          ul: ({ children }) => (
-                            <ul 
-                              className={`list-disc pl-6 ${readingMode ? 'space-y-3 mb-6' : 'space-y-2 mb-4'}`}
-                              dir="auto"
-                              style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}
-                            >
-                              {children}
-                            </ul>
-                          ),
-                          ol: ({ children }) => (
-                            <ol 
-                              className={`list-decimal pl-6 ${readingMode ? 'space-y-3 mb-6' : 'space-y-2 mb-4'}`}
-                              dir="auto"
-                              style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}
-                            >
-                              {children}
-                            </ol>
-                          ),
-                          li: ({ children }) => (
-                            <li 
-                              className={`${readingMode ? 'text-lg leading-loose' : 'text-base leading-relaxed'} text-slate-700`}
-                              dir="auto"
-                              style={{ fontFamily: '"Noto Sans Arabic", "Arabic UI Text", system-ui, sans-serif' }}
-                            >
-                              {children}
-                            </li>
-                          ),
-                          img: ({ src, alt }) => (
-                            <div className="my-8">
-                              <img 
-                                src={src} 
-                                alt={alt || ''} 
-                                className="rounded-lg shadow-md max-w-full h-auto mx-auto"
-                                loading="lazy"
-                              />
-                              {alt && (
-                                <p className="text-center text-sm text-slate-500 mt-2 italic">{alt}</p>
-                              )}
-                            </div>
-                          ),
-                          table: ({ children }) => (
-                            <div className="overflow-x-auto my-6">
-                              <table className="min-w-full border border-slate-200 rounded-lg">
-                                {children}
-                              </table>
-                            </div>
-                          ),
-                          th: ({ children }) => (
-                            <th className="border border-slate-200 bg-slate-50 px-4 py-2 text-left font-semibold text-slate-800">
-                              {children}
-                            </th>
-                          ),
-                          td: ({ children }) => (
-                            <td className="border border-slate-200 px-4 py-2 text-slate-700">
-                              {children}
-                            </td>
-                          ),
-                        }}
-                      >
-                        {post.content || ''}
-                      </ReactMarkdown>
-                      </div>
+                        className={`rich-text-content transition-all duration-300 ${
+                          readingMode 
+                            ? 'leading-loose text-slate-800' 
+                            : 'leading-relaxed text-slate-700'
+                        }`}
+                        dangerouslySetInnerHTML={{ __html: post.content }}
+                      />
                     </div>
                   ) : (
                     <div className="text-center py-12">
